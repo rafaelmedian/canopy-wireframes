@@ -145,15 +145,24 @@ function Component() {
 ```
 
 ## Don'ts
+- ❌ **DON'T create custom components if shadcn/ui already has one** (e.g., use Sidebar, not custom sidebar)
 - ❌ Don't use fixed colors (`bg-gray-100`, `text-gray-900`)
 - ❌ Don't use oversized text (`text-5xl`, `text-6xl`)
 - ❌ Don't override shadcn component styles
 - ❌ Don't ignore dark mode
-- ❌ Don't create custom components when shadcn has one
 - ❌ Don't use inline styles
 - ❌ Don't forget responsive design
+- ❌ Don't reinvent the wheel - check shadcn/ui docs first
+- ❌ Don't create custom form inputs, modals, dialogs, tooltips, etc.
+- ❌ Don't create custom navigation components if shadcn has them
 
 ## Do's
+- ✅ **ALWAYS check shadcn/ui components first before creating custom ones**
+- ✅ Use shadcn/ui Sidebar component for navigation sidebars
+- ✅ Use shadcn/ui NavigationMenu for navigation
+- ✅ Use shadcn/ui Form components for all forms
+- ✅ Use shadcn/ui Dialog for modals
+- ✅ Use shadcn/ui Sheet for slide-out panels
 - ✅ Use semantic color tokens
 - ✅ Follow shadcn component patterns
 - ✅ Keep it simple and clean
