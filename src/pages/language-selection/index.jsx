@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import LaunchpadSidebar from '@/components/LaunchpadSidebar'
+import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
 
@@ -28,7 +28,8 @@ export default function LanguageSelection() {
 
   const handleContinue = () => {
     if (selectedLanguage) {
-      navigate('/launchpad/repository')
+      const language = languages.find(l => l.id === selectedLanguage)
+      navigate('/launchpad/repository', { state: { language: language.name } })
     }
   }
 

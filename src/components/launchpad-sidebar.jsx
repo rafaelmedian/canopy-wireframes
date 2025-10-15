@@ -21,7 +21,7 @@ const steps = [
 
 export default function LaunchpadSidebar({ currentStep = 1, completedSteps = [] }) {
   return (
-    <Sidebar collapsible="none" className="border-r min-h-screen">
+    <Sidebar collapsible="none" className="border-r min-h-screen sticky top-0">
       <SidebarHeader className="p-6">
         <img
           src="/svg/logo.svg"
