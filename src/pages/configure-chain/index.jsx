@@ -4,7 +4,8 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ArrowLeft, ArrowRight, X, Info } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { ArrowLeft, ArrowRight, X, Info, HelpCircle } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
@@ -66,10 +67,11 @@ export default function ConfigureChain() {
   const isFormValid = chainName && tokenName && ticker && tokenSupply && halvingDays && blockTime
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <LaunchpadSidebar currentStep={3} completedSteps={[1, 2]} />
-      
-      <SidebarInset>
+    <TooltipProvider>
+      <SidebarProvider defaultOpen={true}>
+        <LaunchpadSidebar currentStep={3} completedSteps={[1, 2]} />
+        
+        <SidebarInset>
         {/* Header */}
         <div className="flex justify-end p-2 border-b mb-10">
           <Button
@@ -96,105 +98,156 @@ export default function ConfigureChain() {
             </div>
 
             {/* Form */}
-            <div className="space-y-6">
-              {/* Chain Name */}
-              <div className="space-y-2">
-                <Label htmlFor="chainName" className="block text-sm font-medium">
-                  Chain Name
-                </Label>
-                <Input
-                  id="chainName"
-                  placeholder="Enter chain name"
-                  value={chainName}
-                  onChange={(e) => setChainName(e.target.value)}
-                />
+            <div className="space-y-8">
+              {/* Basic Info Group */}
+              <div className="space-y-6">
+                {/* Chain Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="chainName" className="flex items-center gap-2 text-sm font-medium">
+                    Chain Name
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>The name of your blockchain network</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Example: "Ethereum", "Solana", "MyChain"</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <Input
+                    id="chainName"
+                    placeholder="Enter chain name"
+                    value={chainName}
+                    onChange={(e) => setChainName(e.target.value)}
+                  />
+                </div>
+
+                {/* Token Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="tokenName" className="flex items-center gap-2 text-sm font-medium">
+                    Token Name
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>The full name of your native token</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Example: "Ether", "Bitcoin", "MyToken"</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <Input
+                    id="tokenName"
+                    placeholder="Enter your token name"
+                    value={tokenName}
+                    onChange={(e) => setTokenName(e.target.value)}
+                  />
+                </div>
+
+                {/* Ticker */}
+                <div className="space-y-2">
+                  <Label htmlFor="ticker" className="flex items-center gap-2 text-sm font-medium">
+                    Ticker
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>The trading symbol for your token</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Example: "ETH", "BTC", "USDC" (3-5 characters)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <Input
+                    id="ticker"
+                    placeholder="Enter your ticker"
+                    value={ticker}
+                    onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                    maxLength={10}
+                  />
+                </div>
               </div>
 
-              {/* Token Name */}
-              <div className="space-y-2">
-                <Label htmlFor="tokenName" className="block text-sm font-medium">
-                  Token Name
-                </Label>
-                <Input
-                  id="tokenName"
-                  placeholder="Enter your token name"
-                  value={tokenName}
-                  onChange={(e) => setTokenName(e.target.value)}
+              {/* Divider */}
+              <div className="border-t border-border" />
 
-                />
-              </div>
+              {/* Token Economics Group */}
+              <div className="space-y-6">
+                {/* Token Supply */}
+                <div className="space-y-2">
+                  <Label htmlFor="tokenSupply" className="flex items-center gap-2 text-sm font-medium">
+                    Token Supply
+                  </Label>
+                  <Input
+                    id="tokenSupply"
+                    type="number"
+                    value={tokenSupply}
+                    readOnly
+                    disabled
+                    className="bg-muted opacity-75 cursor-not-allowed"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    The total number of tokens that will ever exist. This cannot be changed after launch.
+                  </p>
+                </div>
 
-              {/* Ticker */}
-              <div className="space-y-2">
-                <Label htmlFor="ticker" className="block text-sm font-medium">
-                  Ticker
-                </Label>
-                <Input
-                  id="ticker"
-                  placeholder="Enter your ticker"
-                  value={ticker}
-                  onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                {/* Halving Schedule */}
+                <div className="space-y-2">
+                  <Label htmlFor="halvingDays" className="flex items-center gap-2 text-sm font-medium">
+                    Halving Schedule (days)
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Halving reduces mining rewards by 50% at set intervals</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Like Bitcoin's 4-year halving cycle. Enter days between halvings.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <Input
+                    id="halvingDays"
+                    type="number"
+                    placeholder="365"
+                    value={halvingDays}
+                    onChange={(e) => setHalvingDays(e.target.value)}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    How many days between each halving event
+                  </p>
+                </div>
 
-                  maxLength={10}
-                />
-              </div>
-
-              {/* Token Supply */}
-              <div className="space-y-2">
-                <Label htmlFor="tokenSupply" className="block text-sm font-medium">
-                  Token Supply
-                </Label>
-                <Input
-                  id="tokenSupply"
-                  type="number"
-                  value={tokenSupply}
-                  readOnly
-                  className=" bg-muted"
-                />
-                <p className="text-sm text-muted-foreground">
-                  The total number of tokens that will ever exist. This cannot be changed after launch.
-                </p>
-              </div>
-
-              {/* Halving Schedule */}
-              <div className="space-y-2">
-                <Label htmlFor="halvingDays" className="block text-sm font-medium">
-                  Halving Schedule (days)
-                </Label>
-                <Input
-                  id="halvingDays"
-                  type="number"
-                  placeholder="365"
-                  value={halvingDays}
-                  onChange={(e) => setHalvingDays(e.target.value)}
-
-                />
-                <p className="text-sm text-muted-foreground">
-                  How many days between each halving event
-                </p>
-              </div>
-
-              {/* Block Time */}
-              <div className="space-y-2">
-                <Label htmlFor="blockTime" className="block text-sm font-medium">
-                  Block Time
-                  <span className="ml-2 text-muted-foreground text-xs">(can be updated later)</span>
-                </Label>
-                <Select value={blockTime} onValueChange={setBlockTime}>
-                  <SelectTrigger >
-                    <SelectValue placeholder="Select block time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {blockTimeOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-sm text-muted-foreground">
-                  Time between blocks, from 5 seconds up to 5 minutes
-                </p>
+                {/* Block Time */}
+                <div className="space-y-2">
+                  <Label htmlFor="blockTime" className="flex items-center gap-2 text-sm font-medium">
+                    Block Time
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>Time between new blocks being added to the chain</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Bitcoin: ~10 min, Ethereum: ~12 sec. Faster = more transactions.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </Label>
+                  <Select value={blockTime} onValueChange={setBlockTime}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select block time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {blockTimeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">
+                    Can be updated later to optimize network performance
+                  </p>
+                </div>
               </div>
 
               {/* Summary Card */}
@@ -259,5 +312,6 @@ export default function ConfigureChain() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </TooltipProvider>
   )
 }
