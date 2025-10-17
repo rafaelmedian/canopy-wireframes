@@ -25,7 +25,7 @@ const mockChainData = {
   name: 'Onchain ENS',
   ticker: 'OENS',
   creator: 'Onchain ENS',
-  description: 'Token Chain Project: Revolutionizing Digital Asset Management\n\nIntegrated with Ethereum\'s robust infrastructure, our platform is designed to enhance the way digital assets are managed and exchanged. Our technology enables seamless, transparent, and efficient transactions, unlocking new possibilities for users and developers alike. Experience unmatched security, flexibility, and interoperability with our innovative solution, tailored to meet the evolving needs of the blockchain ecosystem.',
+  description: 'Integrated with Ethereum\'s robust infrastructure, our platform is designed to enhance the way digital assets are managed and exchanged. Our technology enables seamless, transparent, and efficient transactions, unlocking new possibilities for users and developers alike. Experience unmatched security, flexibility, and interoperability with our innovative solution, tailored to meet the evolving needs of the blockchain ecosystem.',
   logo: null, // Will show placeholder
   brandColor: '#10b981',
   language: 'TypeScript',
@@ -131,31 +131,31 @@ export default function LaunchPage() {
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
               {/* Chain Header */}
-              <Card className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4">
+              <Card className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                     {/* Logo Placeholder */}
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                      <span className="text-xl font-bold text-white">
+                    <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm font-bold text-white">
                         {mockChainData.ticker[0]}
                       </span>
                     </div>
 
                     <div className="space-y-1">
-                      <h2 className="text-2xl font-bold">{mockChainData.name}</h2>
-                      <p className="text-sm text-muted-foreground">
-                        by {mockChainData.creator} • Created on Onchain ENS • minted 1mo ago
+                      <h2 className="text-base font-medium">{mockChainData.name}</h2>
+                      <p className="text-xs text-gray-400">
+                        ${mockChainData.ticker} on Onchain ENS • created 13m ago
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {/* Share Button */}
-                    <Button variant="ghost" size="icon">
+                    <Button variant="outline" size="icon" className="h-[30px] w-[30px] rounded-lg">
                       <Upload className="w-4 h-4" />
                     </Button>
                     {/* Favorite Button */}
-                    <Button variant="outline" size="icon" className="rounded-lg">
+                    <Button variant="outline" size="icon" className="h-[30px] w-[30px] rounded-lg">
                       <Heart className="w-4 h-4" />
                     </Button>
                   </div>
@@ -204,17 +204,11 @@ export default function LaunchPage() {
                           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
                           <XAxis
                             dataKey="time"
-                            className="text-xs"
-                            stroke="hsl(var(--muted-foreground))"
+                            tick={{ fill: '#71717a', fontSize: 12 }}
                             axisLine={false}
                             tickLine={false}
                           />
-                          <YAxis
-                            className="text-xs"
-                            stroke="hsl(var(--muted-foreground))"
-                            axisLine={false}
-                            tickLine={false}
-                          />
+                          <YAxis hide />
                           <Tooltip
                             contentStyle={{
                               backgroundColor: 'hsl(var(--card))',
@@ -277,11 +271,25 @@ export default function LaunchPage() {
                       {/* About Section */}
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <Activity className="w-5 h-5" />
-                          <span className="text-sm font-medium">1.3B</span>
-                          <Badge variant="secondary" className="text-xs">$3.91m</Badge>
-                        </div>
+                          {mockChainData.socialLinks.slice(0, 4).map((link, idx) => {
+                            const isGithub = link.platform === 'github'
 
+                            return (
+                                <a
+                                    key={idx}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 px-2 py-1 bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors"
+                                >
+                                  {getSocialIcon(link.platform)}
+                                  {isGithub && (
+                                      <span className="text-xs text-white">23 stars</span>
+                                  )}
+                                </a>
+                            )
+                          })}
+                        </div>
                         <h3 className="text-lg font-semibold">
                           Token Chain Project: Revolutionizing Digital Asset Management
                         </h3>
@@ -289,14 +297,6 @@ export default function LaunchPage() {
                         <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                           {mockChainData.description}
                         </p>
-
-                        <div className="flex items-center gap-2">
-                          {mockChainData.socialLinks.slice(0, 4).map((link, idx) => (
-                            <Button key={idx} variant="outline" size="icon" className="w-8 h-8">
-                              {getSocialIcon(link.platform)}
-                            </Button>
-                          ))}
-                        </div>
                       </div>
 
                       <Separator />
