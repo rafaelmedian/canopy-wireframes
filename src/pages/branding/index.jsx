@@ -8,6 +8,7 @@ import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import LogoUpload from './components/logo-upload'
 import GalleryCarousel from './components/gallery-carousel'
+import {Badge} from "@/components/ui/badge.jsx";
 
 export default function Branding() {
   const navigate = useNavigate()
@@ -163,9 +164,13 @@ export default function Branding() {
 
               {/* Gallery Component */}
               <div className="space-y-2">
-                <Label className="block text-sm font-medium">
-                  Gallery
-                </Label>
+                <div className="flex items-center gap-2">
+                  <Label className="block text-sm font-medium">
+                    Gallery
+                    {' '}
+                  </Label>
+                  <Badge variant="secondary" className="text-xs">Optional</Badge>
+                </div>
                 <p className="text-sm text-muted-foreground">
                   This will help your chain stand out and build trust among others. We recommend adding at least three images or videos.
                 </p>

@@ -40,6 +40,17 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
   - Optional initial purchase in CNPY tokens
   - "Why should I buy?" expandable information section
   - Tooltip explaining CNPY usage for initial purchase
+  - 1:1 token ratio display showing tokens received
+- **Review & Payment**:
+  - Comprehensive summary of all configuration data
+  - Organized sections: Language & Repository, Chain Details, Branding & Media, Links & Documentation, Launch Settings
+  - Repository name display (not full URL)
+  - Social media icons matching platform selection
+  - File/URL icons for whitepapers
+  - Edit buttons for each section linking back to respective steps
+  - Payment summary with lighter card background
+  - Important launch notice with key information
+  - Placeholder data for demonstration ($GAME, MyGameChain, etc.)
 - **Form Validation**: Inline error messages and validation for all inputs
 - **Dark Mode First**: Modern, clean interface optimized for dark mode
 - **Step-by-Step Guidance**: Clear workflow with progress tracking in sidebar
@@ -91,8 +102,10 @@ src/
 │   │       └── gallery-carousel.jsx
 │   ├── links/
 │   │   └── index.jsx       # Step 5: Links & documentation
-│   └── launch-settings/
-│       └── index.jsx       # Step 6: Launch settings
+│   ├── launch-settings/
+│   │   └── index.jsx       # Step 6: Launch settings
+│   └── review/
+│       └── index.jsx       # Step 7: Review & payment
 │
 ├── lib/
 │   └── utils.js            # Utility functions
@@ -161,7 +174,7 @@ The launcher guides users through these steps:
 5. **Branding & Media** ✅ - Add logo, brand color, description, and gallery (images/videos)
 6. **Links & Documentation** ✅ - Add social links and whitepapers (files or URLs)
 7. **Launch Settings** ✅ - Configure graduation threshold and optional initial purchase
-8. **Review & Payment** 🚧 - Final review and payment (Coming Soon)
+8. **Review & Payment** ✅ - Final review, summary, and payment (using placeholder data)
 
 ## 🧪 Scripts
 

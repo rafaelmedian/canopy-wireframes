@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, X, Target, Coins, Info, HelpCircle } from 'lucid
 import { useNavigate, useLocation } from 'react-router-dom'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import {Badge} from "@/components/ui/badge.jsx";
 
 export default function LaunchSettings() {
   const navigate = useNavigate()
@@ -109,8 +110,8 @@ export default function LaunchSettings() {
                   <Coins className="w-5 h-5 text-muted-foreground" />
                   <Label className="text-lg font-semibold">
                     Initial Purchase{' '}
-                    <span className="text-sm font-normal text-muted-foreground">(Optional)</span>
                   </Label>
+                  <Badge variant="secondary" className="text-xs">Optional</Badge>
                 </div>
 
                 <div className="space-y-2">
