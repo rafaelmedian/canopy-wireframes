@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Trash2, GripVertical, Upload } from 'lucide-react'
+import { Trash2, GripVertical, Upload, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function GalleryCarousel({ galleryItems, setGalleryItems, galleryInputRef, onUpload }) {
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0)
   const [editingNameIndex, setEditingNameIndex] = useState(null)
   const [draggedIndex, setDraggedIndex] = useState(null)
+  const scrollContainerRef = useRef(null)
 
   const handleGalleryRemove = (index) => {
     setGalleryItems(prev => prev.filter((_, i) => i !== index))
@@ -57,6 +58,16 @@ export default function GalleryCarousel({ galleryItems, setGalleryItems, gallery
     setDraggedIndex(null)
   }
 
+  const handleScroll = (direction) => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 200
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   if (galleryItems.length === 0) {
     return (
       <div
@@ -85,6 +96,30 @@ export default function GalleryCarousel({ galleryItems, setGalleryItems, gallery
       {/* Main Preview */}
       <Card className="p-4">
         <div className="relative">
+          {/* Left Arrow on Main Preview */}
+          {currentGalleryIndex > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setCurrentGalleryIndex(currentGalleryIndex - 1)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+          )}
+
+          {/* Right Arrow on Main Preview */}
+          {currentGalleryIndex < galleryItems.length - 1 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setCurrentGalleryIndex(currentGalleryIndex + 1)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 hover:bg-background"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          )}
+
           {galleryItems[currentGalleryIndex].type === 'image' ? (
             <img
               src={galleryItems[currentGalleryIndex].preview}
@@ -135,9 +170,27 @@ export default function GalleryCarousel({ galleryItems, setGalleryItems, gallery
         </div>
       </Card>
 
-      {/* Thumbnail Grid with Drag & Drop */}
-      <div className="grid grid-cols-4 gap-3">
-        {galleryItems.map((item, index) => (
+      {/* Thumbnail Scrollable List */}
+      <div className="flex gap-3 p-1 overflow-hidden">
+        {/* Add More Button - Fixed Position */}
+        <Card
+          onClick={() => galleryInputRef.current?.click()}
+          className="flex-shrink-0 w-32 h-25.5 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
+        >
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <Upload className="w-6 h-6" />
+            <p className="text-xs font-medium">Add more</p>
+          </div>
+        </Card>
+
+        {/* Scrollable Container with max width */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-3 p-1 overflow-x-auto scrollbar-hide flex-1"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {/* Gallery Items */}
+          {galleryItems.map((item, index) => (
           <Card
             key={index}
             draggable
@@ -145,7 +198,7 @@ export default function GalleryCarousel({ galleryItems, setGalleryItems, gallery
             onDragOver={(e) => handleDragOver(e, index)}
             onDragEnd={handleDragEnd}
             onClick={() => setCurrentGalleryIndex(index)}
-            className={`relative cursor-pointer overflow-hidden group ${
+            className={`relative flex-shrink-0 w-32 cursor-pointer overflow-hidden group ${
               currentGalleryIndex === index
                 ? 'ring-2 ring-primary'
                 : 'hover:ring-2 hover:ring-primary/50'
@@ -200,17 +253,9 @@ export default function GalleryCarousel({ galleryItems, setGalleryItems, gallery
             </div>
           </Card>
         ))}
+        </div>
       </div>
 
-      {/* Add more button */}
-      <Button
-        variant="outline"
-        onClick={() => galleryInputRef.current?.click()}
-        className="w-full"
-      >
-        <Upload className="w-4 h-4 mr-2" />
-        Add more images or videos
-      </Button>
       <input
         ref={galleryInputRef}
         type="file"
