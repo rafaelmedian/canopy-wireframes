@@ -115,6 +115,12 @@ export default function Branding() {
     setEditingNameIndex(null)
   }
 
+  const handleNameKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      setEditingNameIndex(null)
+    }
+  }
+
   // Handle drag and drop
   const handleDragStart = (index) => {
     setDraggedIndex(index)
@@ -354,19 +360,20 @@ export default function Branding() {
                               value={galleryItems[currentGalleryIndex].customName || galleryItems[currentGalleryIndex].file.name}
                               onChange={(e) => handleNameEdit(currentGalleryIndex, e.target.value)}
                               onBlur={handleNameBlur}
+                              onKeyDown={handleNameKeyDown}
                               autoFocus
                               className="font-medium"
                             />
                           ) : (
                             <p
-                              className="font-medium cursor-pointer hover:text-primary transition-colors truncate"
+                              className="font-medium cursor-text hover:bg-muted px-2 py-1 -mx-2 -my-1 rounded transition-colors truncate"
                               onClick={() => handleNameClick(currentGalleryIndex)}
                               title="Click to edit name"
                             >
                               {galleryItems[currentGalleryIndex].customName || galleryItems[currentGalleryIndex].file.name}
                             </p>
                           )}
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-muted-foreground mt-1">
                             {currentGalleryIndex + 1} of {galleryItems.length}
                           </p>
                         </div>
