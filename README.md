@@ -24,7 +24,16 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
   - Brand color picker with hex input
   - Description textarea (20-500 chars, mandatory)
   - Gallery upload supporting images and videos
-  - Carousel navigation for gallery items
+  - Carousel navigation with horizontal scrolling
+  - Drag-and-drop thumbnail reordering
+  - Editable file names
+- **Links & Documentation**:
+  - Dynamic social media links (Website, Twitter/X, Telegram, Discord, GitHub, Medium, Reddit, LinkedIn)
+  - Platform-specific icons for each social link
+  - Add/remove social platforms with validation (min. 1 required)
+  - Optional whitepapers section with unified list
+  - File upload (PDF, DOC, DOCX) and URL support
+  - Metadata fetching for whitepaper URLs
 - **Form Validation**: Inline error messages and validation for all inputs
 - **Dark Mode First**: Modern, clean interface optimized for dark mode
 - **Step-by-Step Guidance**: Clear workflow with progress tracking in sidebar
@@ -69,8 +78,13 @@ src/
 │   │       └── github-connect-dialog.jsx
 │   ├── configure-chain/
 │   │   └── index.jsx       # Step 3: Configure chain & token
-│   └── branding/
-│       └── index.jsx       # Step 4: Add branding
+│   ├── branding/
+│   │   ├── index.jsx       # Step 4: Add branding
+│   │   └── components/
+│   │       ├── logo-upload.jsx
+│   │       └── gallery-carousel.jsx
+│   └── links/
+│       └── index.jsx       # Step 5: Links & documentation
 │
 ├── lib/
 │   └── utils.js            # Utility functions
@@ -137,7 +151,7 @@ The launcher guides users through these steps:
 3. **Repository Connection** ✅ - Fork template and connect GitHub repository
 4. **Chain Configuration** ✅ - Set chain name, token details, halving schedule, and block time
 5. **Branding & Media** ✅ - Add logo, brand color, description, and gallery (images/videos)
-6. **Links & Documentation** 🚧 - Add social links and docs (Coming Soon)
+6. **Links & Documentation** ✅ - Add social links and whitepapers (files or URLs)
 7. **Launch Settings** 🚧 - Configure launch parameters (Coming Soon)
 8. **Review & Payment** 🚧 - Final review and payment (Coming Soon)
 

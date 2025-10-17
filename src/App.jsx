@@ -4,6 +4,7 @@ import LanguageSelection from '@/pages/language-selection'
 import ConnectRepo from '@/pages/connect-repo'
 import ConfigureChain from '@/pages/configure-chain'
 import Branding from '@/pages/branding'
+import Links from '@/pages/links'
 import { Button } from '@/components/ui/button'
 
 function HomePage() {
@@ -37,7 +38,7 @@ function App() {
         <Route path="/launchpad/repository" element={<ConnectRepo />} />
         <Route path="/launchpad/configure" element={<ConfigureChain />} />
         <Route path="/launchpad/branding" element={<Branding />} />
-        <Route path="/launchpad/trust" element={<div className="p-8">Step 5: Build Trust (Coming Soon)</div>} />
+        <Route path="/launchpad/links" element={<Links />} />
         <Route path="/launchpad/settings" element={<div className="p-8">Step 6: Launch Settings (Coming Soon)</div>} />
         <Route path="/launchpad/review" element={<div className="p-8">Step 7: Review & Payment (Coming Soon)</div>} />
         <Route path="/launchpad/success" element={<div className="p-8">Launch Complete! (Coming Soon)</div>} />
