@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { ChevronLeft, ChevronRight, Globe, Github, FileText, Link as LinkIcon, ExternalLink, Coins, BookOpen } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Globe, Github, FileText, Link as LinkIcon, ExternalLink, Coins, BookOpen, Layers, Clock, Calendar, TrendingUp } from 'lucide-react'
 
 // Custom social icons
 const TwitterIcon = () => (
@@ -129,14 +129,20 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
           </div>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Total Supply</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Layers className="w-4 h-4" />
+                  <span>Total Supply</span>
+                </div>
                 <p className="text-lg font-semibold">
                   {parseInt(chainData.tokenomics.totalSupply).toLocaleString()} {chainData.ticker}
                 </p>
               </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Block Time</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="w-4 h-4" />
+                  <span>Block Time</span>
+                </div>
                 <p className="text-lg font-semibold">
                   {chainData.tokenomics.blockTime >= 60
                     ? `${chainData.tokenomics.blockTime / 60} min`
@@ -147,8 +153,11 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
 
             <div className="h-px bg-border" />
 
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Halving Schedule</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="w-4 h-4" />
+                <span>Halving Schedule</span>
+              </div>
               <p className="text-lg font-semibold">
                 Every {chainData.tokenomics.halvingDays} days
               </p>
@@ -157,14 +166,20 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
             <div className="h-px bg-border" />
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Blocks per Day</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Layers className="w-4 h-4" />
+                  <span>Blocks per Day</span>
+                </div>
                 <p className="text-lg font-semibold">
                   {Math.floor((24 * 60 * 60) / chainData.tokenomics.blockTime).toLocaleString()}
                 </p>
               </div>
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Est. Year 1 Emission</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Est. Year 1 Emission</span>
+                </div>
                 <p className="text-lg font-semibold">
                   ~{chainData.tokenomics.yearOneEmission.toLocaleString()} {chainData.ticker}
                 </p>
