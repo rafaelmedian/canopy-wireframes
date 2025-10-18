@@ -62,10 +62,10 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
   - Interactive price chart with time period selection (1H, 1D, 1W, 1M, 1Y, ALL)
   - Live statistics: Volume, MCap, Virtual Liquidity, Holders
 - **Tabbed Interface**:
-  - **Overview**: Social links with counters (GitHub stars), description, image gallery
-  - **Holders**: Holder list (coming soon)
-  - **Code**: Repository information and language details
-  - **Block Explorer**: Blockchain explorer integration (coming soon)
+  - **Overview**: Social links with counters, description, image gallery, tokenomics section, whitepapers & documentation
+  - **Holders**: Token holder rankings with truncated addresses, colorful avatars, balance and percentage of supply
+  - **Code**: Repository information with GitHub stats (stars, forks), language details, license, topics/tags
+  - **Block Explorer**: Network statistics, recent blocks and transactions, search functionality, status badges
 - **Trading Panel**: CNPY token swap interface with connect wallet integration
 - **Modular Architecture**: Component-based structure for maintainability
 
@@ -133,10 +133,13 @@ src/
 │   └── launch-page/              # Chain detail page
 │       ├── index.jsx             # Main page component
 │       └── components/           # Page-specific components
-│           ├── chain-header.jsx  # Chain logo, name, actions
-│           ├── price-chart.jsx   # Chart with graduation tracker
-│           ├── overview-tab.jsx  # Overview content with gallery
-│           └── trading-panel.jsx # Token swap interface
+│           ├── chain-header.jsx       # Chain logo, name, actions
+│           ├── price-chart.jsx        # Chart with graduation tracker
+│           ├── overview-tab.jsx       # Overview with tokenomics & whitepapers
+│           ├── holders-tab.jsx        # Token holder rankings
+│           ├── code-tab.jsx           # Repository & language details
+│           ├── block-explorer-tab.jsx # Blockchain explorer
+│           └── trading-panel.jsx      # Token swap interface
 │
 ├── lib/
 │   └── utils.js                 # Utility functions
