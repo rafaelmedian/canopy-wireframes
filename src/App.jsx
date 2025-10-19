@@ -41,10 +41,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/launch" element={<LaunchPage />} />
-        <Route path="/launch/my-chain" element={<LaunchPageOwner />} />
+        <Route path="/chain/someone-else-chain" element={<LaunchPage />} />
+        <Route path="/chain/my-chain" element={<LaunchPageOwner />} />
         <Route path="/launchpad" element={<LaunchpadOverview />} />
-        {/* Placeholder routes for future steps */}
         <Route path="/launchpad/language" element={<LanguageSelection />} />
         <Route path="/launchpad/repository" element={<ConnectRepo />} />
         <Route path="/launchpad/configure" element={<ConfigureChain />} />
