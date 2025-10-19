@@ -142,7 +142,8 @@ const mockChainData = {
         to: '0xdD2FD4581271e230360230F9337D5c0430Bf44C0',
         amount: 2500,
         status: 'success',
-        timestamp: 8
+        timestamp: 8,
+        blockNumber: 245789
       },
       {
         hash: '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199b8d1f3e5c7a9b1d3f5e7c9a1',
@@ -150,7 +151,8 @@ const mockChainData = {
         to: '0x2546BcD3c84621e976D8185a91A922aE77ECEc30',
         amount: 15000,
         status: 'success',
-        timestamp: 18
+        timestamp: 18,
+        blockNumber: 245789
       },
       {
         hash: '0xdD2FD4581271e230360230F9337D5c0430Bf44C0c7a0e2f4b6d8a0e2f4b6d8a0',
@@ -158,7 +160,8 @@ const mockChainData = {
         to: '0x3E5e9111Ae8eB78Fe1CC3bb8915d5D461F3Ef9A9',
         amount: 8750,
         status: 'pending',
-        timestamp: 28
+        timestamp: 28,
+        blockNumber: 245788
       },
       {
         hash: '0xbDA5747bFD65F08deb54cb465eB87D40e51B197Ed6b9f1e3c5a7d9f1e3c5a7d9',
@@ -166,7 +169,8 @@ const mockChainData = {
         to: '0xACa94ef8bD5ffEE41947b4585a84BdA5a3d3DA6E',
         amount: 5200,
         status: 'success',
-        timestamp: 38
+        timestamp: 38,
+        blockNumber: 245787
       },
       {
         hash: '0x2546BcD3c84621e976D8185a91A922aE77ECEc30e5a8d0f2b4c6e8d0f2b4c6e8',
@@ -174,7 +178,8 @@ const mockChainData = {
         to: '0x610B717796ad172B316836AC95a2ffad065CeaB4',
         amount: 12000,
         status: 'success',
-        timestamp: 48
+        timestamp: 48,
+        blockNumber: 245786
       },
       {
         hash: '0x95cED938F7991cd0dFcb48F0a06a40FA1aF46EBCf4b7c9e1a3d5f7c9e1a3d5f7',
@@ -182,7 +187,8 @@ const mockChainData = {
         to: '0xF7eB46Fa95CCfB7642fA4a2E3f3C9748F0a4a8D9',
         amount: 3300,
         status: 'failed',
-        timestamp: 58
+        timestamp: 58,
+        blockNumber: 245785
       },
       {
         hash: '0x3E5e9111Ae8eB78Fe1CC3bb8915d5D461F3Ef9A9a3c6d8f0b2e4a6c8f0b2e4a6',
@@ -190,7 +196,8 @@ const mockChainData = {
         to: '0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67',
         amount: 6800,
         status: 'success',
-        timestamp: 68
+        timestamp: 68,
+        blockNumber: 245784
       },
       {
         hash: '0x28a8746e75304c0780E39d3a14F80f7E4fe3951Cb2e5d7f9a1c3e5d7f9a1c3e5',
@@ -198,7 +205,8 @@ const mockChainData = {
         to: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
         amount: 9500,
         status: 'success',
-        timestamp: 78
+        timestamp: 78,
+        blockNumber: 245783
       },
       {
         hash: '0xACa94ef8bD5ffEE41947b4585a84BdA5a3d3DA6Ed1f4c6a8e0b2d4f6a8e0b2d4',
@@ -206,7 +214,8 @@ const mockChainData = {
         to: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
         amount: 18500,
         status: 'pending',
-        timestamp: 88
+        timestamp: 88,
+        blockNumber: 245782
       },
       {
         hash: '0x1dF62f291b2E969fB0849d99D9Ce41e2F137006ee0c3f5b7d9a1e3f5b7d9a1e3',
@@ -214,7 +223,8 @@ const mockChainData = {
         to: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
         amount: 4100,
         status: 'success',
-        timestamp: 98
+        timestamp: 98,
+        blockNumber: 245781
       }
     ]
   }

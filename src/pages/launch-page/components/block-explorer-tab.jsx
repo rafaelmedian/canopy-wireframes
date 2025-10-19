@@ -1,10 +1,35 @@
+import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Activity, Box, ArrowRightLeft, Search, ExternalLink, CheckCircle2, Clock, XCircle } from 'lucide-react'
+import TransactionDetailSheet from './transaction-detail-sheet'
+import BlockDetailSheet from './block-detail-sheet'
 
 export default function BlockExplorerTab({ chainData }) {
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
+  const [selectedBlock, setSelectedBlock] = useState(null)
+  const [transactionSheetOpen, setTransactionSheetOpen] = useState(false)
+  const [blockSheetOpen, setBlockSheetOpen] = useState(false)
+
+  const handleTransactionClick = (tx) => {
+    setSelectedTransaction({ ...tx, blockNumber: chainData.explorer?.currentBlock || 245789 })
+    setTransactionSheetOpen(true)
+  }
+
+  const handleBlockClick = (block) => {
+    setSelectedBlock(block)
+    setBlockSheetOpen(true)
+  }
+
+  const handleBlockClickFromTransaction = (blockNumber) => {
+    const block = chainData.explorer?.recentBlocks?.find(b => b.number === blockNumber)
+    if (block) {
+      setSelectedBlock(block)
+      setBlockSheetOpen(true)
+    }
+  }
   // Truncate hash/address to crypto standard format
   const truncateHash = (hash) => {
     return `${hash.slice(0, 6)}...${hash.slice(-4)}`
@@ -134,9 +159,10 @@ export default function BlockExplorerTab({ chainData }) {
         <div className="overflow-x-auto">
           <div>
             {(chainData.explorer?.recentBlocks || []).map((block, idx) => (
-              <div
+              <button
                 key={block.number}
-                className="flex items-center justify-between py-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
+                onClick={() => handleBlockClick(block)}
+                className="w-full flex items-center justify-between py-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors cursor-pointer text-left"
               >
                 <div className="flex items-center gap-4 flex-1">
                   <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
@@ -165,7 +191,7 @@ export default function BlockExplorerTab({ chainData }) {
                     {truncateHash(block.hash)}
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -187,9 +213,10 @@ export default function BlockExplorerTab({ chainData }) {
         <div className="overflow-x-auto">
           <div>
             {(chainData.explorer?.recentTransactions || []).map((tx, idx) => (
-              <div
+              <button
                 key={tx.hash}
-                className="flex items-center justify-between py-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
+                onClick={() => handleTransactionClick(tx)}
+                className="w-full flex items-center justify-between py-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors cursor-pointer text-left"
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg flex-shrink-0">
@@ -220,11 +247,27 @@ export default function BlockExplorerTab({ chainData }) {
                   </div>
                   {getStatusBadge(tx.status)}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
       </Card>
+
+      {/* Detail Sheets */}
+      <TransactionDetailSheet
+        transaction={selectedTransaction}
+        ticker={chainData.ticker}
+        open={transactionSheetOpen}
+        onOpenChange={setTransactionSheetOpen}
+        onBlockClick={handleBlockClickFromTransaction}
+      />
+      <BlockDetailSheet
+        block={selectedBlock}
+        chainData={chainData}
+        open={blockSheetOpen}
+        onOpenChange={setBlockSheetOpen}
+        onTransactionClick={handleTransactionClick}
+      />
     </div>
   )
 }
