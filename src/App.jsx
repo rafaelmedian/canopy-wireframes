@@ -8,7 +8,9 @@ import Links from '@/pages/launch-chain/links'
 import LaunchSettings from '@/pages/launch-chain/launch-settings'
 import Review from '@/pages/launch-chain/review'
 import LaunchPage from '@/pages/launch-page'
+import LaunchPageOwner from '@/pages/launch-page-owner'
 import { Button } from '@/components/ui/button'
+import { Toaster } from '@/components/ui/sonner'
 import { useNavigate } from 'react-router-dom'
 
 function HomePage() {
@@ -40,6 +42,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/launch" element={<LaunchPage />} />
+        <Route path="/launch/my-chain" element={<LaunchPageOwner />} />
         <Route path="/launchpad" element={<LaunchpadOverview />} />
         {/* Placeholder routes for future steps */}
         <Route path="/launchpad/language" element={<LanguageSelection />} />
@@ -51,6 +54,7 @@ function App() {
         <Route path="/launchpad/review" element={<Review />} />
         <Route path="/launchpad/success" element={<div className="p-8">Launch Complete! (Coming Soon)</div>} />
       </Routes>
+      <Toaster />
     </Router>
   )
 }

@@ -16,7 +16,9 @@ export default function PriceChart({ chainData }) {
             <p className="text-xs text-muted-foreground">Marketcap</p>
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-semibold">${(chainData.marketCap / 1000).toFixed(0)}k</h3>
-              <span className="text-xs text-muted-foreground">+${chainData.priceChange24h}</span>
+              {chainData.priceChange24h !== 0 && (
+                <span className="text-xs text-muted-foreground">+${chainData.priceChange24h}</span>
+              )}
             </div>
           </div>
 

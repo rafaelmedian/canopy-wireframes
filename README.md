@@ -55,7 +55,7 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
 
 #### Chain Detail Page
 - **Main Sidebar**: Sticky navigation with search, "Create L1 chain" button, and connect wallet
-- **Chain Header**: Compact display with logo, name, ticker, and action buttons (share, favorite)
+- **Chain Header**: Compact display with logo, name, ticker, and share button
 - **Price Chart & Analytics**:
   - Market cap display with 24h change
   - Graduation progress tracker
@@ -64,8 +64,10 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
 - **Tabbed Interface**:
   - **Overview**:
     - Social links with platform-specific icons (GitHub with star count)
+    - Project title with chain-specific tagline
     - Project description
     - Image gallery with navigation arrows and thumbnails
+    - Quick Stats Grid (summary cards for Holders, Code, Block Explorer with navigation)
     - Tokenomics section with icons (Total Supply, Block Time, Halving Schedule, Blocks per Day, Year 1 Emission)
     - Whitepapers & documentation with file/URL type indicators and metadata
   - **Holders**:
@@ -89,13 +91,13 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
       - Block number, timestamp, transaction count, block reward, hash
       - Clickable blocks opening detail sheets
       - Empty state with search icon when no results
-      - "Show More" button with loading state (hidden during search)
+      - "Show More" button with loading state (hidden when < 8 blocks or during search)
     - Recent Transactions section with:
       - Inline search functionality for hash/addresses
       - Transaction hash, from/to addresses, amount, status badges (Success/Pending/Failed)
       - Clickable transactions opening detail sheets
       - Empty state when no search results
-      - "Show More" button with loading state (hidden during search)
+      - "Show More" button with loading state (hidden when < 8 transactions or during search)
     - Transaction Detail Sheet:
       - Transaction hash with copy-to-clipboard
       - Status badge and timestamp
@@ -106,7 +108,16 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
       - Overview tab: Block number, timestamp, transaction count, block reward, block hash, previous block hash (all with copy buttons)
       - Transactions tab: List of all transactions in block (clickable), dynamic counter showing actual transaction count
 - **Trading Panel**: CNPY token swap interface with connect wallet integration
+- **Report a Problem**:
+  - Centered button at bottom of detail page
+  - Dialog with 3-step flow:
+    1. Choose main reason (6 categories with icons: Scam/Fraud, Inappropriate Content, Security Concerns, Misleading Information, Market Manipulation, Legal/Copyright Issues)
+    2. Specify the issue (dynamic radio options based on main reason)
+    3. Additional comments (optional, 500 char limit with counter)
+  - Toast notifications for success/error feedback
+  - Consistent form styling with launcher workflow
 - **Modular Architecture**: Component-based structure for maintainability
+- **Owner View Variant**: Separate page showing newly launched chain with minimal activity (1 holder, flat price chart, "Virtual" badge)
 
 #### General Features
 - **Form Validation**: Inline error messages and validation for all inputs

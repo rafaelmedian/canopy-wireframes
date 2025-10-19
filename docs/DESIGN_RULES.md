@@ -97,15 +97,76 @@
   - With `text-base`: `w-5 h-5`
   - With `text-lg`: `w-6 h-6`
 
-### 10. Forms
-- Use shadcn/ui form components (Input, Label, Select, etc.)
+### 10. Forms & Input Fields
+
+#### Labels
+- **Size & Weight**: `text-sm font-medium`
+- **Display**: `block` for block-level labels
+- **Example**:
+  ```jsx
+  <Label htmlFor="fieldId" className="block text-sm font-medium">
+    Field Name
+  </Label>
+  ```
+
+#### Optional Field Indicators
+- Use Badge component with secondary variant
+- **Style**: `variant="secondary" className="text-xs"`
+- **Placement**: Next to label in flex container with gap
+- **Example**:
+  ```jsx
+  <div className="flex items-center gap-2">
+    <Label className="block text-sm font-medium">
+      Field Name
+    </Label>
+    <Badge variant="secondary" className="text-xs">Optional</Badge>
+  </div>
+  ```
+
+#### Spacing
+- **Between label and input**: `space-y-2`
+- **Between form fields**: `space-y-6` for related fields
+- **Between form sections**: `space-y-8`
+- **Between radio button items**: `space-y-3`
+- **Between radio button and label**: `space-x-3`
+
+#### Character Counters
+- For textareas with max length limits
+- **Style**: `text-sm text-muted-foreground`
+- **Format**: `{currentLength}/{maxLength} characters`
+- **Example**:
+  ```jsx
+  <Textarea maxLength={500} />
+  <p className="text-sm text-muted-foreground">
+    {value.length}/500 characters
+  </p>
+  ```
+
+#### Form Components
+- Use shadcn/ui form components (Input, Label, Select, Textarea, RadioGroup, etc.)
 - Group related fields with proper spacing
 - Clear labels and helpful descriptions
-- Inline validation messages
+- Inline validation messages with `text-sm text-destructive`
+
+#### Tooltips for Help
 - Use Tooltip component with HelpCircle icon for contextual help
-  - Place HelpCircle icon next to labels: `className="flex items-center gap-2"`
-  - Icon size: `w-3.5 h-3.5` with `text-muted-foreground`
-  - Wrap entire app/page with `<TooltipProvider>` at root level
+- Place HelpCircle icon next to labels: `className="flex items-center gap-2"`
+- Icon size: `w-3.5 h-3.5` with `text-muted-foreground`
+- Wrap entire app/page with `<TooltipProvider>` at root level
+- **Example**:
+  ```jsx
+  <Label className="flex items-center gap-2 text-sm font-medium">
+    Field Name
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs">
+        <p>Helpful explanation</p>
+      </TooltipContent>
+    </Tooltip>
+  </Label>
+  ```
 
 ### 11. Information Display
 - Use Card components with muted backgrounds for informational sections

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Heart, Upload } from 'lucide-react'
+import { Upload } from 'lucide-react'
 
 export default function ChainHeader({ chainData }) {
   return (
@@ -17,7 +17,7 @@ export default function ChainHeader({ chainData }) {
           <div className="space-y-1">
             <h2 className="text-base font-medium">{chainData.name}</h2>
             <p className="text-xs text-gray-400">
-              ${chainData.ticker} on Onchain ENS • created 13m ago
+              ${chainData.ticker} on {chainData.name} • created 13m ago
             </p>
           </div>
         </div>
@@ -26,10 +26,6 @@ export default function ChainHeader({ chainData }) {
           {/* Share Button */}
           <Button variant="outline" size="icon" className="h-[30px] w-[30px] rounded-lg">
             <Upload className="w-4 h-4" />
-          </Button>
-          {/* Favorite Button */}
-          <Button variant="outline" size="icon" className="h-[30px] w-[30px] rounded-lg">
-            <Heart className="w-4 h-4" />
           </Button>
         </div>
       </div>

@@ -80,7 +80,7 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
               })}
             </div>
             <h3 className="text-lg font-semibold">
-              Token Chain Project: Revolutionizing Digital Asset Management
+              {chainData.title}
             </h3>
 
             <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">

@@ -271,7 +271,7 @@ export default function BlockExplorerTab({ chainData }) {
         </div>
 
         {/* Show More Button */}
-        {filteredBlocks.length > 0 && !blockSearchQuery && (
+        {filteredBlocks.length >= 8 && !blockSearchQuery && (
           <div className="mt-4">
             {loadingMoreBlocks ? (
               <div className="flex items-center justify-center py-2">
@@ -389,7 +389,7 @@ export default function BlockExplorerTab({ chainData }) {
         </div>
 
         {/* Show More Button */}
-        {filteredTransactions.length > 0 && !transactionSearchQuery && (
+        {filteredTransactions.length >= 8 && !transactionSearchQuery && (
           <div className="mt-4">
             {loadingMoreTransactions ? (
               <div className="flex items-center justify-center py-2">

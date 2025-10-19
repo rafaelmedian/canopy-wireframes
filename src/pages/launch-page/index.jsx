@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
@@ -10,6 +11,7 @@ import CodeTab from './components/code-tab'
 import HoldersTab from './components/holders-tab'
 import BlockExplorerTab from './components/block-explorer-tab'
 import TradingPanel from './components/trading-panel'
+import ReportProblemButton from './components/report-problem-button'
 import { Globe, Github } from 'lucide-react'
 
 // Mock data - will be replaced by API calls
@@ -17,11 +19,13 @@ const mockChainData = {
   name: 'Onchain ENS',
   ticker: 'OENS',
   creator: 'Onchain ENS',
-  description: 'Integrated with Ethereum\'s robust infrastructure, our platform is designed to enhance the way digital assets are managed and exchanged. Our technology enables seamless, transparent, and efficient transactions, unlocking new possibilities for users and developers alike. Experience unmatched security, flexibility, and interoperability with our innovative solution, tailored to meet the evolving needs of the blockchain ecosystem.',
+  title: 'Onchain ENS: Decentralized Naming for the Future',
+  description: 'Integrated with Canopy\'s robust infrastructure, our platform is designed to enhance the way digital assets are managed and exchanged. Our technology enables seamless, transparent, and efficient transactions, unlocking new possibilities for users and developers alike. Experience unmatched security, flexibility, and interoperability with our innovative solution, tailored to meet the evolving needs of the blockchain ecosystem.',
   logo: null, // Will show placeholder
   brandColor: '#10b981',
   language: 'TypeScript',
   repositoryName: 'eliezerpujols/mygamechain',
+  isVirtual: true, // Flag to show virtual badge
 
   // Market data
   currentPrice: 0.011647,
@@ -34,7 +38,7 @@ const mockChainData = {
 
   // Launch settings
   graduationThreshold: 50000,
-  remainingToGraduation: 233230,
+  remainingToGraduation: 27000,
 
   // Gallery
   gallery: [null, null, null], // Placeholders
@@ -250,6 +254,9 @@ export default function LaunchPage() {
             </button>
             <span>/</span>
             <span className="text-foreground">Onchain ENS</span>
+            <Badge variant="outline" className="border-purple-500/50 text-purple-500 ml-2">
+              Virtual
+            </Badge>
           </div>
         </div>
 
@@ -290,6 +297,9 @@ export default function LaunchPage() {
                   <BlockExplorerTab chainData={mockChainData} />
                 </TabsContent>
               </Tabs>
+
+              {/* Report a Problem Button */}
+              <ReportProblemButton chainData={mockChainData} />
             </div>
 
             {/* Right Sidebar */}
