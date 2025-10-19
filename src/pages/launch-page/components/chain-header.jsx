@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Upload } from 'lucide-react'
+import { Upload, Star } from 'lucide-react'
 
 export default function ChainHeader({ chainData }) {
+  const [isFavorited, setIsFavorited] = useState(false)
+
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between">
@@ -24,6 +27,16 @@ export default function ChainHeader({ chainData }) {
 
         {!chainData.isDraft && (
           <div className="flex items-center gap-3">
+            {/* Favorite Button */}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-[30px] w-[30px] rounded-lg"
+              onClick={() => setIsFavorited(!isFavorited)}
+            >
+              <Star className={`w-4 h-4 ${isFavorited ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+            </Button>
+
             {/* Share Button */}
             <Button variant="outline" size="icon" className="h-[30px] w-[30px] rounded-lg">
               <Upload className="w-4 h-4" />

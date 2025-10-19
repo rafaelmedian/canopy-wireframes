@@ -4,7 +4,9 @@ import { Progress } from '@/components/ui/progress'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function PriceChart({ chainData }) {
-  const graduationProgress = (chainData.marketCap / chainData.graduationThreshold) * 100
+  const graduationProgress = chainData.isGraduated
+    ? 100
+    : (chainData.marketCap / chainData.graduationThreshold) * 100
 
   return (
     <Card className="p-1">
@@ -25,7 +27,10 @@ export default function PriceChart({ chainData }) {
           {/* Right: Graduation Progress */}
           <div className="space-y-2 w-[216px]">
             <p className="text-xs text-muted-foreground text-right">
-              ${(chainData.remainingToGraduation / 1000).toFixed(2)}k until graduation
+              {chainData.isGraduated
+                ? `$${(chainData.graduationThreshold / 1000).toFixed(0)}k graduated`
+                : `$${(chainData.remainingToGraduation / 1000).toFixed(2)}k until graduation`
+              }
             </p>
             <Progress value={graduationProgress} className="h-2.5" />
           </div>
