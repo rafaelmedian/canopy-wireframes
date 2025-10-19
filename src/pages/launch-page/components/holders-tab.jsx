@@ -1,7 +1,8 @@
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
 
-export default function HoldersTab({ holders = [], ticker = 'tokens' }) {
+export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolders }) {
   // Safety check
   if (!Array.isArray(holders)) {
     console.error('HoldersTab: holders is not an array', holders)
@@ -47,12 +48,14 @@ export default function HoldersTab({ holders = [], ticker = 'tokens' }) {
     return ((balance / totalTokens) * 100).toFixed(2)
   }
 
+  const showOthersCount = totalHolders && totalHolders > holders.length
+
   return (
     <Card className="p-6 mt-4">
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-semibold">Token Holders</h3>
-          <p className="text-sm text-muted-foreground">{holders.length} holders</p>
+          <h3 className="text-lg font-semibold">Top Holders</h3>
+          <p className="text-sm text-muted-foreground">{totalHolders || holders.length} holders</p>
         </div>
 
         <div>
@@ -93,6 +96,15 @@ export default function HoldersTab({ holders = [], ticker = 'tokens' }) {
             </div>
           ))}
         </div>
+
+        {showOthersCount && (
+          <>
+            <Separator className="my-4" />
+            <p className="text-sm text-center text-muted-foreground">
+              Among {(totalHolders - holders.length).toLocaleString()} others
+            </p>
+          </>
+        )}
 
         {holders.length === 0 && (
           <div className="text-center py-12">

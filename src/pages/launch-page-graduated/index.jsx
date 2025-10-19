@@ -4,44 +4,45 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
-import ChainHeader from './components/chain-header'
-import PriceChart from './components/price-chart'
-import OverviewTab from './components/overview-tab'
-import CodeTab from './components/code-tab'
-import HoldersTab from './components/holders-tab'
-import BlockExplorerTab from './components/block-explorer-tab'
-import TradingPanel from './components/trading-panel'
-import ReportProblemButton from './components/report-problem-button'
+import ChainHeader from '../launch-page/components/chain-header'
+import PriceChart from '../launch-page/components/price-chart'
+import OverviewTab from '../launch-page/components/overview-tab'
+import CodeTab from '../launch-page/components/code-tab'
+import HoldersTab from '../launch-page/components/holders-tab'
+import BlockExplorerTab from '../launch-page/components/block-explorer-tab'
+import TradingPanel from '../launch-page/components/trading-panel'
+import ReportProblemButton from '../launch-page/components/report-problem-button'
 import { Globe, Github } from 'lucide-react'
 
-// Mock data - will be replaced by API calls
-const mockChainData = {
+// Mock data for graduated chain (reached threshold)
+const graduatedChainData = {
   name: 'Onchain ENS',
   ticker: 'OENS',
   creator: 'Onchain ENS',
   title: 'Onchain ENS: Decentralized Naming for the Future',
   description: 'Integrated with Canopy\'s robust infrastructure, our platform is designed to enhance the way digital assets are managed and exchanged. Our technology enables seamless, transparent, and efficient transactions, unlocking new possibilities for users and developers alike. Experience unmatched security, flexibility, and interoperability with our innovative solution, tailored to meet the evolving needs of the blockchain ecosystem.',
-  logo: null, // Will show placeholder
+  logo: null,
   brandColor: '#10b981',
   language: 'TypeScript',
   repositoryName: 'eliezerpujols/mygamechain',
-  isVirtual: true, // Flag to show virtual badge
+  isVirtual: false, // No longer virtual
+  isGraduated: true, // Flag to show graduated badge
 
-  // Market data
+  // Market data - graduated chains have higher values
   currentPrice: 0.011647,
-  marketCap: 23000,
-  mcap: 23,
-  volume: 6500,
-  virtualLiq: 14500,
-  holderCount: 21,
+  marketCap: 52000, // Above threshold
+  mcap: 52,
+  volume: 8500,
+  virtualLiq: 0, // No virtual liquidity for graduated chains
+  holderCount: 5021, // Total holders (showing top 21)
   priceChange24h: 15.6,
 
-  // Launch settings
+  // Launch settings - reached threshold
   graduationThreshold: 50000,
-  remainingToGraduation: 27000,
+  remainingToGraduation: 0, // Graduated!
 
   // Gallery
-  gallery: [null, null, null], // Placeholders
+  gallery: [null, null, null],
 
   // Social links
   socialLinks: [
@@ -57,7 +58,7 @@ const mockChainData = {
       id: 1,
       type: 'file',
       name: 'Technical Whitepaper.pdf',
-      size: 2457600, // 2.4 MB in bytes
+      size: 2457600,
     },
     {
       id: 2,
@@ -78,7 +79,7 @@ const mockChainData = {
   // Tokenomics
   tokenomics: {
     totalSupply: '1000000000',
-    blockTime: 10, // seconds
+    blockTime: 10,
     halvingDays: 365,
     yearOneEmission: 137442250
   },
@@ -125,19 +126,19 @@ const mockChainData = {
 
   // Block Explorer data
   explorer: {
-    currentBlock: 45789,
-    totalTransactions: 152847,
+    currentBlock: 245789,
+    totalTransactions: 2523847, // Higher for graduated chains
     recentBlocks: [
-      { number: 45789, hash: '0x8f5c7d9a2b1e4f3c6a8d9e2f1b4c7a5d9e2f1b4c7a5d9e2f1b4c', transactions: 156, timestamp: 15 },
-      { number: 45788, hash: '0x7e4b6c8a1d2f5e3c7b9a2d1f4e6c8a1d2f5e3c7b9a2d1f4e6c8a', transactions: 142, timestamp: 25 },
-      { number: 45787, hash: '0x6d3a5b7c9e1f4d2c6a8b9e1d3f5c7a9e1d3f5c7a9e1d3f5c7a9e', transactions: 189, timestamp: 35 },
-      { number: 45786, hash: '0x5c2b4a6d8e0f3c1b5a7d9e0c2f4b6d8e0c2f4b6d8e0c2f4b6d8e', transactions: 201, timestamp: 45 },
-      { number: 45785, hash: '0x4b1a3c5d7e9f2b0c4a6d8e9c1f3b5d7e9c1f3b5d7e9c1f3b5d7e', transactions: 178, timestamp: 55 },
-      { number: 45784, hash: '0x3a0b2c4d6e8f1a9c3b5d7e8c0f2b4d6e8c0f2b4d6e8c0f2b4d6e', transactions: 165, timestamp: 65 },
-      { number: 45783, hash: '0x2c1a3b5d7e9f0c8a2b4d6e7c9f1b3d5e7c9f1b3d5e7c9f1b3d5e', transactions: 193, timestamp: 75 },
-      { number: 45782, hash: '0x1b0a2c4d6e8f9b7c1a3d5e6c8f0b2d4e6c8f0b2d4e6c8f0b2d4e', transactions: 147, timestamp: 85 },
-      { number: 45781, hash: '0x0a9b1c3d5e7f8a6b0c2d4e5c7f9b1d3e5c7f9b1d3e5c7f9b1d3e', transactions: 182, timestamp: 95 },
-      { number: 45780, hash: '0x9a8b0c2d4e6f7a5b9c1d3e4c6f8b0d2e4c6f8b0d2e4c6f8b0d2e', transactions: 159, timestamp: 105 }
+      { number: 245789, hash: '0x8f5c7d9a2b1e4f3c6a8d9e2f1b4c7a5d9e2f1b4c7a5d9e2f1b4c', transactions: 156, timestamp: 15 },
+      { number: 245788, hash: '0x7e4b6c8a1d2f5e3c7b9a2d1f4e6c8a1d2f5e3c7b9a2d1f4e6c8a', transactions: 142, timestamp: 25 },
+      { number: 245787, hash: '0x6d3a5b7c9e1f4d2c6a8b9e1d3f5c7a9e1d3f5c7a9e1d3f5c7a9e', transactions: 189, timestamp: 35 },
+      { number: 245786, hash: '0x5c2b4a6d8e0f3c1b5a7d9e0c2f4b6d8e0c2f4b6d8e0c2f4b6d8e', transactions: 201, timestamp: 45 },
+      { number: 245785, hash: '0x4b1a3c5d7e9f2b0c4a6d8e9c1f3b5d7e9c1f3b5d7e9c1f3b5d7e', transactions: 178, timestamp: 55 },
+      { number: 245784, hash: '0x3a0b2c4d6e8f1a9c3b5d7e8c0f2b4d6e8c0f2b4d6e8c0f2b4d6e', transactions: 165, timestamp: 65 },
+      { number: 245783, hash: '0x2c1a3b5d7e9f0c8a2b4d6e7c9f1b3d5e7c9f1b3d5e7c9f1b3d5e', transactions: 193, timestamp: 75 },
+      { number: 245782, hash: '0x1b0a2c4d6e8f9b7c1a3d5e6c8f0b2d4e6c8f0b2d4e6c8f0b2d4e', transactions: 147, timestamp: 85 },
+      { number: 245781, hash: '0x0a9b1c3d5e7f8a6b0c2d4e5c7f9b1d3e5c7f9b1d3e5c7f9b1d3e', transactions: 182, timestamp: 95 },
+      { number: 245780, hash: '0x9a8b0c2d4e6f7a5b9c1d3e4c6f8b0d2e4c6f8b0d2e4c6f8b0d2e', transactions: 159, timestamp: 105 }
     ],
     recentTransactions: [
       {
@@ -147,7 +148,7 @@ const mockChainData = {
         amount: 2500,
         status: 'success',
         timestamp: 8,
-        blockNumber: 45789
+        blockNumber: 245789
       },
       {
         hash: '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199b8d1f3e5c7a9b1d3f5e7c9a1',
@@ -156,7 +157,7 @@ const mockChainData = {
         amount: 15000,
         status: 'success',
         timestamp: 18,
-        blockNumber: 45789
+        blockNumber: 245789
       },
       {
         hash: '0xdD2FD4581271e230360230F9337D5c0430Bf44C0c7a0e2f4b6d8a0e2f4b6d8a0',
@@ -165,7 +166,7 @@ const mockChainData = {
         amount: 8750,
         status: 'pending',
         timestamp: 28,
-        blockNumber: 45788
+        blockNumber: 245788
       },
       {
         hash: '0xbDA5747bFD65F08deb54cb465eB87D40e51B197Ed6b9f1e3c5a7d9f1e3c5a7d9',
@@ -174,7 +175,7 @@ const mockChainData = {
         amount: 5200,
         status: 'success',
         timestamp: 38,
-        blockNumber: 45787
+        blockNumber: 245787
       },
       {
         hash: '0x2546BcD3c84621e976D8185a91A922aE77ECEc30e5a8d0f2b4c6e8d0f2b4c6e8',
@@ -183,7 +184,7 @@ const mockChainData = {
         amount: 12000,
         status: 'success',
         timestamp: 48,
-        blockNumber: 45786
+        blockNumber: 245786
       },
       {
         hash: '0x95cED938F7991cd0dFcb48F0a06a40FA1aF46EBCf4b7c9e1a3d5f7c9e1a3d5f7',
@@ -192,7 +193,7 @@ const mockChainData = {
         amount: 3300,
         status: 'failed',
         timestamp: 58,
-        blockNumber: 45785
+        blockNumber: 245785
       },
       {
         hash: '0x3E5e9111Ae8eB78Fe1CC3bb8915d5D461F3Ef9A9a3c6d8f0b2e4a6c8f0b2e4a6',
@@ -201,7 +202,7 @@ const mockChainData = {
         amount: 6800,
         status: 'success',
         timestamp: 68,
-        blockNumber: 45784
+        blockNumber: 245784
       },
       {
         hash: '0x28a8746e75304c0780E39d3a14F80f7E4fe3951Cb2e5d7f9a1c3e5d7f9a1c3e5',
@@ -210,7 +211,7 @@ const mockChainData = {
         amount: 9500,
         status: 'success',
         timestamp: 78,
-        blockNumber: 45783
+        blockNumber: 245783
       },
       {
         hash: '0xACa94ef8bD5ffEE41947b4585a84BdA5a3d3DA6Ed1f4c6a8e0b2d4f6a8e0b2d4',
@@ -219,7 +220,7 @@ const mockChainData = {
         amount: 18500,
         status: 'pending',
         timestamp: 88,
-        blockNumber: 45782
+        blockNumber: 245782
       },
       {
         hash: '0x1dF62f291b2E969fB0849d99D9Ce41e2F137006ee0c3f5b7d9a1e3f5b7d9a1e3',
@@ -228,13 +229,13 @@ const mockChainData = {
         amount: 4100,
         status: 'success',
         timestamp: 98,
-        blockNumber: 45781
+        blockNumber: 245781
       }
     ]
   }
 }
 
-export default function LaunchPage() {
+export default function LaunchPageGraduated() {
   const navigate = useNavigate()
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0)
   const [activeTab, setActiveTab] = useState('overview')
@@ -254,8 +255,8 @@ export default function LaunchPage() {
             </button>
             <span>/</span>
             <span className="text-foreground">Onchain ENS</span>
-            <Badge variant="outline" className="border-purple-500/50 text-purple-500 ml-2">
-              Virtual
+            <Badge variant="outline" className="border-green-500/50 text-green-500 ml-2">
+              Graduated
             </Badge>
           </div>
         </div>
@@ -264,21 +265,21 @@ export default function LaunchPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
-              <ChainHeader chainData={mockChainData} />
-              <PriceChart chainData={mockChainData} />
+              <ChainHeader chainData={graduatedChainData} />
+              <PriceChart chainData={graduatedChainData} />
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="w-full justify-start">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="holders">Holders (21)</TabsTrigger>
+                  <TabsTrigger value="holders">Holders ({graduatedChainData.holderCount.toLocaleString()})</TabsTrigger>
                   <TabsTrigger value="code">Code</TabsTrigger>
                   <TabsTrigger value="block-explorer">Block Explorer</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview">
                   <OverviewTab
-                    chainData={mockChainData}
+                    chainData={graduatedChainData}
                     currentGalleryIndex={currentGalleryIndex}
                     setCurrentGalleryIndex={setCurrentGalleryIndex}
                     onNavigateToTab={setActiveTab}
@@ -287,28 +288,28 @@ export default function LaunchPage() {
 
                 <TabsContent value="holders">
                   <HoldersTab
-                    holders={mockChainData.holders}
-                    ticker={mockChainData.ticker}
-                    totalHolders={mockChainData.holderCount}
+                    holders={graduatedChainData.holders}
+                    ticker={graduatedChainData.ticker}
+                    totalHolders={graduatedChainData.holderCount}
                   />
                 </TabsContent>
 
                 <TabsContent value="code">
-                  <CodeTab chainData={mockChainData} />
+                  <CodeTab chainData={graduatedChainData} />
                 </TabsContent>
 
                 <TabsContent value="block-explorer">
-                  <BlockExplorerTab chainData={mockChainData} />
+                  <BlockExplorerTab chainData={graduatedChainData} />
                 </TabsContent>
               </Tabs>
 
               {/* Report a Problem Button */}
-              <ReportProblemButton chainData={mockChainData} />
+              <ReportProblemButton chainData={graduatedChainData} />
             </div>
 
             {/* Right Sidebar */}
             <div className="space-y-6">
-              <TradingPanel chainData={mockChainData} />
+              <TradingPanel chainData={graduatedChainData} />
             </div>
           </div>
         </div>

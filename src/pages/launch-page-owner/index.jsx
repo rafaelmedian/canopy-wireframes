@@ -188,7 +188,11 @@ export default function LaunchPageOwner() {
                 </TabsContent>
 
                 <TabsContent value="holders">
-                  <HoldersTab holders={newChainData.holders} ticker={newChainData.ticker} />
+                  <HoldersTab
+                    holders={newChainData.holders}
+                    ticker={newChainData.ticker}
+                    totalHolders={newChainData.holderCount}
+                  />
                 </TabsContent>
 
                 <TabsContent value="code">
