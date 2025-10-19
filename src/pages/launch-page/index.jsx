@@ -26,9 +26,9 @@ const mockChainData = {
   // Market data
   currentPrice: 0.011647,
   marketCap: 23000,
-  mcap: 1.88,
-  volume: 2328,
-  virtualLiq: 2328,
+  mcap: 23,
+  volume: 6500,
+  virtualLiq: 14500,
   holderCount: 3318,
   priceChange24h: 15.6,
 

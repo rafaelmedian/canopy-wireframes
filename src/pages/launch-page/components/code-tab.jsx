@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Code2, Star, GitFork, ExternalLink } from 'lucide-react'
+import { Github, Star, GitFork, ExternalLink } from 'lucide-react'
 
 export default function CodeTab({ chainData }) {
   return (
@@ -10,35 +10,31 @@ export default function CodeTab({ chainData }) {
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-muted rounded-lg">
-              <Code2 className="w-6 h-6 text-primary" />
+              <Github className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-1">
                 {chainData.repositoryName}
               </h3>
-              <p className="text-sm text-muted-foreground">
-                Open source blockchain implementation
-              </p>
+              {/* Stats */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 text-sm">
+                  <Star className="w-4 h-4 text-yellow-500" />
+                  <span className="font-medium">23</span>
+                  <span className="text-muted-foreground">stars</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <GitFork className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-medium">8</span>
+                  <span className="text-muted-foreground">forks</span>
+                </div>
+              </div>
             </div>
           </div>
           <Button variant="outline" size="sm" className="gap-2">
             <ExternalLink className="w-4 h-4" />
             View on GitHub
           </Button>
-        </div>
-
-        {/* Stats */}
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 text-sm">
-            <Star className="w-4 h-4 text-yellow-500" />
-            <span className="font-medium">23</span>
-            <span className="text-muted-foreground">stars</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <GitFork className="w-4 h-4 text-muted-foreground" />
-            <span className="font-medium">8</span>
-            <span className="text-muted-foreground">forks</span>
-          </div>
         </div>
 
         <div className="h-px bg-border" />

@@ -161,6 +161,10 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
               <p className="text-lg font-semibold">
                 Every {chainData.tokenomics.halvingDays} days
               </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Block rewards reduce by 50% every {chainData.tokenomics.halvingDays} days,
+                similar to Bitcoin's halving mechanism
+              </p>
             </div>
 
             <div className="h-px bg-border" />
