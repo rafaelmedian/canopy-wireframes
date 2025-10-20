@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { ArrowLeft, ArrowRight, X, Upload, Trash2, Globe, Github, Linkedin, Link as LinkIcon, FileText } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 
@@ -197,10 +198,11 @@ export default function Links() {
   )
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <div className="flex min-h-screen bg-background">
+      <MainSidebar variant="compact" />
       <LaunchpadSidebar currentStep={5} completedSteps={[1, 2, 3, 4]} />
 
-      <SidebarInset>
+      <div className="flex-1 overflow-auto">
         {/* Header */}
         <div className="flex justify-end p-2 border-b mb-10">
           <Button
@@ -426,7 +428,7 @@ export default function Links() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   )
 }

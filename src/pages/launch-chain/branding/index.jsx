@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import LogoUpload from './components/logo-upload'
@@ -96,10 +97,11 @@ export default function Branding() {
   const isFormValid = logo && description && !errors.description
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <div className="flex min-h-screen bg-background">
+      <MainSidebar variant="compact" />
       <LaunchpadSidebar currentStep={4} completedSteps={[1, 2, 3]} />
 
-      <SidebarInset>
+      <div className="flex-1 overflow-auto">
         {/* Header */}
         <div className="flex justify-end p-2 border-b mb-10">
           <Button
@@ -206,7 +208,7 @@ export default function Branding() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   )
 }

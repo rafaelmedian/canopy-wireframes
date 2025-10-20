@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, X, Edit, AlertCircle, Github, Globe, FileText, Link as LinkIcon } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 
@@ -90,10 +91,11 @@ export default function Review() {
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <div className="flex min-h-screen bg-background">
+      <MainSidebar variant="compact" />
       <LaunchpadSidebar currentStep={7} completedSteps={[1, 2, 3, 4, 5, 6]} />
 
-      <SidebarInset>
+      <div className="flex-1 overflow-auto">
         {/* Header */}
         <div className="flex justify-end p-2 border-b mb-10">
           <Button
@@ -389,7 +391,7 @@ export default function Review() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   )
 }

@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, ArrowRight, X, ExternalLink, Github } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import GitHubConnectDialog from './components/github-connect-dialog'
@@ -46,10 +47,11 @@ export default function ConnectRepo() {
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <div className="flex min-h-screen bg-background">
+      <MainSidebar variant="compact" />
       <LaunchpadSidebar currentStep={2} completedSteps={[1]} />
-      
-      <SidebarInset>
+
+      <div className="flex-1 overflow-auto">
         {/* Header */}
         <div className="flex justify-end p-2 border-b mb-10">
           <Button
@@ -208,15 +210,15 @@ export default function ConnectRepo() {
             </div>
           </div>
         </div>
-      </SidebarInset>
+      </div>
 
       {/* GitHub Connect Dialog */}
-      <GitHubConnectDialog 
+      <GitHubConnectDialog
         open={showGitHubDialog}
         onOpenChange={setShowGitHubDialog}
         onConnect={handleConnectRepo}
         language={selectedLanguage}
       />
-    </SidebarProvider>
+    </div>
   )
 }

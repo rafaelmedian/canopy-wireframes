@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { ArrowLeft, ArrowRight, X, Target, Coins, Info, HelpCircle } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import {Badge} from "@/components/ui/badge.jsx";
@@ -41,10 +42,11 @@ export default function LaunchSettings() {
 
   return (
     <TooltipProvider>
-      <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen bg-background">
+        <MainSidebar variant="compact" />
         <LaunchpadSidebar currentStep={6} completedSteps={[1, 2, 3, 4, 5]} />
 
-        <SidebarInset>
+        <div className="flex-1 overflow-auto">
         {/* Header */}
         <div className="flex justify-end p-2 border-b mb-10">
           <Button
@@ -239,8 +241,8 @@ export default function LaunchSettings() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
     </TooltipProvider>
   )
 }

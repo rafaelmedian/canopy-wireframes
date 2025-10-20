@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
@@ -38,10 +39,15 @@ export default function LanguageSelection() {
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <div className="flex min-h-screen bg-background">
+      {/* Compact Main Sidebar */}
+      <MainSidebar variant="compact" />
+
+      {/* Launch Progress Sidebar */}
       <LaunchpadSidebar currentStep={1} completedSteps={[]} />
-      
-      <SidebarInset>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
         {/* Header */}
         <div className="flex justify-end p-2 border-b mb-10">
           <Button
@@ -79,8 +85,8 @@ export default function LanguageSelection() {
                   onClick={() => setSelectedLanguage(lang.id)}
                 >
                   <div className="flex flex-col items-center space-y-3">
-                    <img 
-                      src={lang.iconUrl} 
+                    <img
+                      src={lang.iconUrl}
                       alt={`${lang.name} logo`}
                       className="w-12 h-12 object-contain brightness-0 invert"
                     />
@@ -100,7 +106,7 @@ export default function LanguageSelection() {
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </Button>
-              
+
               <Button
                 onClick={handleContinue}
                 disabled={!selectedLanguage}
@@ -112,7 +118,7 @@ export default function LanguageSelection() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   )
 }
