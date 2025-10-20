@@ -55,20 +55,25 @@ export default function MainSidebar({ variant = 'default' }) {
 
             {/* Navigation */}
             <nav className="flex flex-col items-center gap-2">
-              <button className="w-[57px] h-9 flex items-center justify-center rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
                 <Zap className="w-4 h-4" />
+                <span className="text-[10px]">Launchpad</span>
               </button>
-              <button className="w-[57px] h-9 flex items-center justify-center rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
                 <BarChart3 className="w-4 h-4" />
+                <span className="text-[10px]">Explorer</span>
               </button>
-              <button className="w-[57px] h-9 flex items-center justify-center rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
                 <Activity className="w-4 h-4" />
+                <span className="text-[10px]">Staking</span>
               </button>
-              <button className="w-[57px] h-9 flex items-center justify-center rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
                 <TrendingUp className="w-4 h-4" />
+                <span className="text-[10px]">Trade</span>
               </button>
-              <button className="w-[57px] h-9 flex items-center justify-center rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
                 <User className="w-4 h-4" />
+                <span className="text-[10px]">Profile</span>
               </button>
             </nav>
           </div>
