@@ -113,7 +113,8 @@ export default function MilestonesTab({ chainData, isOwner = false }) {
   const getMilestoneStatus = (milestone) => {
     const progress = Math.min((milestone.current / milestone.requirement) * 100, 100)
     const isCompleted = progress >= 100
-    const isLocked = milestone.id > 1 && milestones[milestone.id - 2].current < milestones[milestone.id - 2].requirement
+    // Only lock milestones for owner chains
+    const isLocked = isOwner && milestone.id > 1 && milestones[milestone.id - 2].current < milestones[milestone.id - 2].requirement
 
     return { progress, isCompleted, isLocked }
   }
