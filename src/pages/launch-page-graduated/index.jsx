@@ -34,7 +34,7 @@ const graduatedChainData = {
   marketCap: 52000, // Above threshold
   mcap: 52,
   volume: 8500,
-  virtualLiq: 0, // No virtual liquidity for graduated chains
+  virtualLiq: 12000, // AMM pool liquidity (migrated from bonding curve at graduation)
   holderCount: 5021, // Total holders (showing top 21)
   priceChange24h: 15.6,
 

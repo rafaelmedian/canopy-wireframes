@@ -218,7 +218,9 @@ export default function PriceChart({ chainData }) {
                 <span className="font-medium">${chainData.mcap}</span>
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-xs text-muted-foreground">Virtual Liq</span>
+                <span className="text-xs text-muted-foreground">
+                  {chainData.isGraduated ? 'Liquidity' : 'Virtual Liq'}
+                </span>
                 <span className="font-medium">${chainData.virtualLiq}</span>
               </div>
               <div className="flex items-baseline gap-1.5">

@@ -78,9 +78,11 @@ export default function ChainListItem({ chain }) {
           <p className="text-sm font-medium">{chain.holderCount || 0}</p>
         </div>
 
-        {/* Virtual Liquidity */}
+        {/* Liquidity */}
         <div className="text-center">
-          <p className="text-xs text-muted-foreground mb-1">Virtual Liq</p>
+          <p className="text-xs text-muted-foreground mb-1">
+            {chain.marketCap >= chain.goal ? 'Liquidity' : 'Virtual Liq'}
+          </p>
           <p className="text-sm font-medium">
             ${((chain.marketCap * 0.4 || 0) / 1000).toFixed(1)}k
           </p>
