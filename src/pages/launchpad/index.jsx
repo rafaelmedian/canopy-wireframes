@@ -14,16 +14,13 @@ const MOCK_TOP_CHAINS = [
     logo: null,
     brandColor: '#f59e0b',
     tagline: 'Airbnb on the blockchain',
-    description: 'Buy an initial chain supply with $700 in crypto on your take everything on-chain.',
-    marketCap: 27650,
-    goal: 60000,
-    change24h: 2.5,
-    currentPrice: 0.0045,
-    holderCount: 143,
-    volume: 8500,
-    priceHistory: Array.from({ length: 20 }, (_, i) => ({
-      value: 0.0045 + (Math.sin(i / 3) * 0.0008)
-    })),
+    description: 'Decentralized short-term rental marketplace. List your property, earn crypto, zero platform fees.',
+    marketCap: 34200,
+    goal: 50000,
+    change24h: 15.3,
+    currentPrice: 0.0068,
+    holderCount: 287,
+    volume: 12400,
     url: '/chain/onchain-bnb'
   },
   {
@@ -33,16 +30,13 @@ const MOCK_TOP_CHAINS = [
     logo: null,
     brandColor: '#8b5cf6',
     tagline: 'Master the DeFi universe',
-    description: 'The next generation DeFi protocol with revolutionary staking mechanisms.',
-    marketCap: 42100,
-    goal: 60000,
-    change24h: 5.7,
-    currentPrice: 0.0078,
-    holderCount: 287,
-    volume: 12400,
-    priceHistory: Array.from({ length: 20 }, (_, i) => ({
-      value: 0.0078 + (Math.sin(i / 2.5) * 0.0012)
-    })),
+    description: 'Next-gen DeFi protocol with auto-compounding yields and cross-chain liquidity pools.',
+    marketCap: 47800,
+    goal: 50000,
+    change24h: 22.7,
+    currentPrice: 0.0095,
+    holderCount: 512,
+    volume: 18900,
     url: '/chain/defi-masters'
   },
   {
@@ -52,16 +46,13 @@ const MOCK_TOP_CHAINS = [
     logo: null,
     brandColor: '#ec4899',
     tagline: 'Your NFT marketplace reimagined',
-    description: 'Trade, collect, and create NFTs in a decentralized marketplace.',
-    marketCap: 38900,
-    goal: 60000,
-    change24h: -1.2,
-    currentPrice: 0.0062,
-    holderCount: 198,
-    volume: 9800,
-    priceHistory: Array.from({ length: 20 }, (_, i) => ({
-      value: 0.0062 + (Math.sin(i / 4) * 0.001)
-    })),
+    description: 'Zero-fee NFT marketplace with AI-powered discovery and instant royalty payments.',
+    marketCap: 28600,
+    goal: 50000,
+    change24h: 8.4,
+    currentPrice: 0.0057,
+    holderCount: 423,
+    volume: 15200,
     url: '/chain/nft-galaxy'
   },
   {
@@ -71,16 +62,13 @@ const MOCK_TOP_CHAINS = [
     logo: null,
     brandColor: '#10b981',
     tagline: 'Sustainable blockchain for tomorrow',
-    description: 'Carbon-neutral blockchain powering the green energy revolution.',
-    marketCap: 51200,
-    goal: 60000,
-    change24h: 3.4,
-    currentPrice: 0.0091,
-    holderCount: 412,
-    volume: 15600,
-    priceHistory: Array.from({ length: 20 }, (_, i) => ({
-      value: 0.0091 + (Math.sin(i / 3.5) * 0.0015)
-    })),
+    description: 'Carbon-negative proof-of-stake blockchain. Every transaction plants a tree.',
+    marketCap: 41300,
+    goal: 50000,
+    change24h: 18.9,
+    currentPrice: 0.0083,
+    holderCount: 658,
+    volume: 21700,
     url: '/chain/green-energy'
   }
 ]
@@ -92,10 +80,13 @@ const MOCK_CHAINS = [
     ticker: 'MVP',
     logo: null,
     brandColor: '#3b82f6',
-    description: 'Building the infrastructure for the next generation metaverse experiences.',
-    marketCap: 18500,
+    description: 'Building spatial computing infrastructure for immersive 3D experiences and virtual worlds.',
+    marketCap: 24500,
     goal: 50000,
-    change24h: 8.2,
+    change24h: 11.8,
+    currentPrice: 0.0049,
+    holderCount: 318,
+    volume: 8900,
     url: '/chain/metaverse-protocol'
   },
   {
@@ -104,10 +95,13 @@ const MOCK_CHAINS = [
     ticker: 'GFC',
     logo: null,
     brandColor: '#f97316',
-    description: 'Play-to-earn gaming ecosystem with revolutionary tokenomics.',
-    marketCap: 23400,
+    description: 'Play-to-earn gaming platform with skill-based tournaments and NFT item marketplace.',
+    marketCap: 31200,
     goal: 50000,
-    change24h: 4.5,
+    change24h: 7.2,
+    currentPrice: 0.0062,
+    holderCount: 445,
+    volume: 13600,
     url: '/chain/gamefi-chain'
   },
   {
@@ -116,10 +110,13 @@ const MOCK_CHAINS = [
     ticker: 'SOCL',
     logo: null,
     brandColor: '#06b6d4',
-    description: 'Decentralized social media platform owned by the community.',
-    marketCap: 31200,
+    description: 'Decentralized social network where creators own their content and earn from engagement.',
+    marketCap: 19700,
     goal: 50000,
-    change24h: -2.1,
+    change24h: 5.6,
+    currentPrice: 0.0039,
+    holderCount: 892,
+    volume: 6800,
     url: '/chain/social-connect'
   },
   {
@@ -128,10 +125,13 @@ const MOCK_CHAINS = [
     ticker: 'AITB',
     logo: null,
     brandColor: '#a855f7',
-    description: 'Automated trading strategies powered by artificial intelligence.',
-    marketCap: 45600,
+    description: 'Machine learning powered trading algorithms with real-time market analysis.',
+    marketCap: 43600,
     goal: 50000,
-    change24h: 12.3,
+    change24h: 19.4,
+    currentPrice: 0.0087,
+    holderCount: 234,
+    volume: 24100,
     url: '/chain/ai-trading'
   },
   {
@@ -140,10 +140,13 @@ const MOCK_CHAINS = [
     ticker: 'CCB',
     logo: null,
     brandColor: '#14b8a6',
-    description: 'Seamlessly transfer assets across multiple blockchain networks.',
-    marketCap: 28900,
+    description: 'Instant cross-chain asset transfers with minimal fees and maximum security.',
+    marketCap: 36800,
     goal: 50000,
-    change24h: 1.8,
+    change24h: 13.2,
+    currentPrice: 0.0074,
+    holderCount: 567,
+    volume: 19200,
     url: '/chain/cross-chain'
   },
   {
@@ -152,10 +155,13 @@ const MOCK_CHAINS = [
     ticker: 'PRIV',
     logo: null,
     brandColor: '#6366f1',
-    description: 'Anonymous transactions with enterprise-grade privacy features.',
-    marketCap: 37100,
+    description: 'Zero-knowledge proof transactions ensuring complete anonymity and data privacy.',
+    marketCap: 27400,
     goal: 50000,
-    change24h: 6.7,
+    change24h: 9.1,
+    currentPrice: 0.0055,
+    holderCount: 189,
+    volume: 11300,
     url: '/chain/privacy-shield'
   },
   {
@@ -164,10 +170,13 @@ const MOCK_CHAINS = [
     ticker: 'REDAO',
     logo: null,
     brandColor: '#84cc16',
-    description: 'Fractional real estate ownership through blockchain technology.',
-    marketCap: 19800,
+    description: 'Tokenized property investments starting from $100. Earn rental income daily.',
+    marketCap: 38900,
     goal: 50000,
-    change24h: -0.5,
+    change24h: 14.7,
+    currentPrice: 0.0078,
+    holderCount: 421,
+    volume: 16500,
     url: '/chain/real-estate-dao'
   },
   {
@@ -176,10 +185,13 @@ const MOCK_CHAINS = [
     ticker: 'MRC',
     logo: null,
     brandColor: '#f43f5e',
-    description: 'Empowering artists with direct ownership of their music rights.',
-    marketCap: 26300,
+    description: 'Direct artist-to-fan music platform with instant royalty payments and NFT albums.',
+    marketCap: 22100,
     goal: 50000,
-    change24h: 3.9,
+    change24h: 6.3,
+    currentPrice: 0.0044,
+    holderCount: 734,
+    volume: 9400,
     url: '/chain/music-rights'
   }
 ]

@@ -5,10 +5,15 @@ import { LineChart, Line, ResponsiveContainer } from 'recharts'
 export default function TopChainCard({ chain }) {
   const progress = (chain.marketCap / chain.goal) * 100
 
-  // Generate simple chart data for visualization
-  const chartData = chain.priceHistory || Array.from({ length: 40 }, (_, i) => ({
-    value: chain.currentPrice + (Math.random() - 0.5) * (chain.currentPrice * 0.2)
-  }))
+  // Generate weekly trend chart data
+  const chartData = chain.priceHistory || Array.from({ length: 50 }, (_, i) => {
+    const baseValue = chain.currentPrice * 0.6 // Start lower
+    const growthFactor = (i / 50) * 0.8 // Strong upward trend
+    const volatility = (Math.sin(i / 3) + Math.random() - 0.5) * 0.15 // Add volatility
+    return {
+      value: baseValue + (chain.currentPrice * growthFactor) + (chain.currentPrice * volatility)
+    }
+  })
 
   return (
     <Card className="p-6 bg-gradient-to-br from-card to-muted/20">
