@@ -10,6 +10,7 @@ import OverviewTab from './components/overview-tab'
 import CodeTab from './components/code-tab'
 import HoldersTab from './components/holders-tab'
 import BlockExplorerTab from './components/block-explorer-tab'
+import MilestonesTab from './components/milestones-tab'
 import TradingPanel from './components/trading-panel'
 import ReportProblemButton from './components/report-problem-button'
 import { Globe, Github } from 'lucide-react'
@@ -272,6 +273,7 @@ export default function LaunchPage() {
                 <TabsList className="w-full justify-start">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="holders">Holders (21)</TabsTrigger>
+                  <TabsTrigger value="milestones">Milestones</TabsTrigger>
                   <TabsTrigger value="code">Code</TabsTrigger>
                   <TabsTrigger value="block-explorer">Block Explorer</TabsTrigger>
                 </TabsList>
@@ -291,6 +293,10 @@ export default function LaunchPage() {
                     ticker={mockChainData.ticker}
                     totalHolders={mockChainData.holderCount}
                   />
+                </TabsContent>
+
+                <TabsContent value="milestones">
+                  <MilestonesTab chainData={mockChainData} />
                 </TabsContent>
 
                 <TabsContent value="code">

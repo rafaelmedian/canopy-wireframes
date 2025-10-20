@@ -11,6 +11,11 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
 ### Implemented Features ✅
 
 #### Launch Chain Workflow
+- **Launch Overview Dialog**:
+  - Modal dialog triggered from homepage or sidebar "Create L1 chain" button
+  - Shows 5 key requirements for launching a blockchain
+  - Clean design with icons, descriptions, and time estimate
+  - No routing - appears as overlay on any page
 - **Template-Based Chain Creation**: Pre-configured templates for Python, Go, Rust, and TypeScript
 - **GitHub Integration**: Direct repository connection and forking workflow
 - **Language Selection**: Visual language picker with devicon library icons
@@ -55,7 +60,9 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
   - Placeholder data for demonstration ($GAME, MyGameChain, etc.)
 
 #### Chain Detail Page
-- **Main Sidebar**: Sticky navigation with search, "Create L1 chain" button, and connect wallet
+- **Main Sidebar**:
+  - Sticky navigation with search and connect wallet
+  - "Create L1 chain" button opens launch overview dialog (no page navigation)
 - **Chain Header**:
   - Compact display with logo, name, ticker
   - Favorite button (star icon, toggles filled yellow when favorited)
@@ -190,13 +197,12 @@ src/
 │   │   ├── textarea.jsx
 │   │   ├── tooltip.jsx
 │   │   └── ...
-│   ├── launchpad-sidebar.jsx     # Launch workflow navigation
-│   └── main-sidebar.jsx          # Main app navigation
+│   ├── launch-overview-dialog.jsx # Launch overview modal (triggered globally)
+│   ├── launchpad-sidebar.jsx      # Launch workflow navigation
+│   └── main-sidebar.jsx           # Main app navigation with dialog trigger
 │
 ├── pages/                        # Page components (views)
 │   ├── launch-chain/             # Launch workflow pages
-│   │   ├── launchpad-overview/
-│   │   │   └── index.jsx        # Welcome/overview screen
 │   │   ├── language-selection/
 │   │   │   └── index.jsx        # Step 1: Choose language
 │   │   ├── connect-repo/
@@ -307,14 +313,17 @@ The application will be available at `http://localhost:5173`
 
 The launcher guides users through these steps:
 
-1. **Overview** ✅ - Introduction and requirements
-2. **Language Selection** ✅ - Choose programming language template (Python, Go, Rust, TypeScript)
-3. **Repository Connection** ✅ - Fork template and connect GitHub repository
-4. **Chain Configuration** ✅ - Set chain name, token details, halving schedule, and block time
-5. **Branding & Media** ✅ - Add logo, brand color, description, and gallery (images/videos)
-6. **Links & Documentation** ✅ - Add social links and whitepapers (files or URLs)
-7. **Launch Settings** ✅ - Configure graduation threshold and optional initial purchase
-8. **Review & Payment** ✅ - Final review, summary, and payment (using placeholder data)
+**Pre-Launch:**
+1. **Overview Dialog** ✅ - Modal showing 5 key requirements (Choose language, Connect repo, Configure chain, Customize brand, Review & launch)
+
+**Launch Flow:**
+1. **Language Selection** ✅ - Choose programming language template (Python, Go, Rust, TypeScript)
+2. **Repository Connection** ✅ - Fork template and connect GitHub repository
+3. **Chain Configuration** ✅ - Set chain name, token details, halving schedule, and block time
+4. **Branding & Media** ✅ - Add logo, brand color, description, and gallery (images/videos)
+5. **Links & Documentation** ✅ - Add social links and whitepapers (files or URLs)
+6. **Launch Settings** ✅ - Configure graduation threshold and optional initial purchase
+7. **Review & Payment** ✅ - Final review, summary, and payment (using placeholder data)
 
 ## 🧪 Scripts
 

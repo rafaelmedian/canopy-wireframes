@@ -11,6 +11,7 @@ import OverviewTab from '../launch-page/components/overview-tab'
 import CodeTab from '../launch-page/components/code-tab'
 import HoldersTab from '../launch-page/components/holders-tab'
 import BlockExplorerTab from '../launch-page/components/block-explorer-tab'
+import MilestonesTab from '../launch-page/components/milestones-tab'
 import TradingPanel from '../launch-page/components/trading-panel'
 import ReportProblemButton from '../launch-page/components/report-problem-button'
 import LaunchSuccessBanner from './components/launch-success-banner'
@@ -203,6 +204,7 @@ export default function LaunchPageOwner() {
                 <TabsList className="w-full justify-start">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="holders">Holders (1)</TabsTrigger>
+                  <TabsTrigger value="milestones">Milestones</TabsTrigger>
                   <TabsTrigger value="code">Code</TabsTrigger>
                   <TabsTrigger value="block-explorer">Block Explorer</TabsTrigger>
                 </TabsList>
@@ -222,6 +224,10 @@ export default function LaunchPageOwner() {
                     ticker={newChainData.ticker}
                     totalHolders={newChainData.holderCount}
                   />
+                </TabsContent>
+
+                <TabsContent value="milestones">
+                  <MilestonesTab chainData={newChainData} isOwner={true} />
                 </TabsContent>
 
                 <TabsContent value="code">

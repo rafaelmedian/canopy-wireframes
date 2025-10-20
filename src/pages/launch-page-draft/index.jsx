@@ -30,6 +30,7 @@ import { Globe, Github, MoreVertical, Trash2 } from 'lucide-react'
 import DraftHoldersTab from './components/draft-holders-tab'
 import DraftBlockExplorerTab from './components/draft-block-explorer-tab'
 import DraftProgressPanel from './components/draft-progress-panel'
+import MilestonesTab from '../launch-page/components/milestones-tab'
 import { toast } from 'sonner'
 
 // Mock data for draft chain (still in configuration)
@@ -169,6 +170,7 @@ export default function LaunchPageDraft() {
                 <TabsList className="w-full justify-start">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="holders">Holders</TabsTrigger>
+                  <TabsTrigger value="milestones">Milestones</TabsTrigger>
                   <TabsTrigger value="code">Code</TabsTrigger>
                   <TabsTrigger value="block-explorer">Block Explorer</TabsTrigger>
                 </TabsList>
@@ -185,6 +187,10 @@ export default function LaunchPageDraft() {
 
                 <TabsContent value="holders">
                   <DraftHoldersTab chainData={draftChainData} />
+                </TabsContent>
+
+                <TabsContent value="milestones">
+                  <MilestonesTab chainData={draftChainData} isOwner={true} />
                 </TabsContent>
 
                 <TabsContent value="code">
