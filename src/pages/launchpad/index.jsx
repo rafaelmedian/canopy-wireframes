@@ -19,7 +19,7 @@ const MOCK_TOP_CHAINS = [
     goal: 50000,
     change24h: 15.3,
     currentPrice: 0.0068,
-    holderCount: 287,
+    holderCount: 287, // Achieves: 10, 50, 100 holders + 1k, 5k, 10k, 25k mcap = 7 milestones
     volume: 12400,
     age: '3d',
     url: '/chain/onchain-bnb'
@@ -36,7 +36,7 @@ const MOCK_TOP_CHAINS = [
     goal: 50000,
     change24h: 22.7,
     currentPrice: 0.0095,
-    holderCount: 512,
+    holderCount: 512, // Achieves: 10, 50, 100, 500 holders + 1k, 5k, 10k, 25k mcap = 8 milestones
     volume: 18900,
     age: '5d',
     url: '/chain/defi-masters'
@@ -53,7 +53,7 @@ const MOCK_TOP_CHAINS = [
     goal: 50000,
     change24h: 8.4,
     currentPrice: 0.0057,
-    holderCount: 423,
+    holderCount: 123, // Achieves: 10, 50, 100 holders + 1k, 5k, 10k, 25k mcap = 7 milestones
     volume: 15200,
     age: '1d',
     url: '/chain/nft-galaxy'
@@ -70,7 +70,7 @@ const MOCK_TOP_CHAINS = [
     goal: 50000,
     change24h: 18.9,
     currentPrice: 0.0083,
-    holderCount: 658,
+    holderCount: 658, // Achieves: 10, 50, 100, 500 holders + 1k, 5k, 10k, 25k mcap = 8 milestones
     volume: 21700,
     age: '6d',
     url: '/chain/green-energy'
@@ -89,7 +89,7 @@ const MOCK_CHAINS = [
     goal: 50000,
     change24h: 11.8,
     currentPrice: 0.0049,
-    holderCount: 318,
+    holderCount: 318, // Achieves: 10, 50, 100 holders + 1k, 5k, 10k mcap = 6 milestones
     volume: 8900,
     age: '2d',
     url: '/chain/metaverse-protocol'
@@ -105,7 +105,7 @@ const MOCK_CHAINS = [
     goal: 50000,
     change24h: 7.2,
     currentPrice: 0.0062,
-    holderCount: 445,
+    holderCount: 67, // Achieves: 10, 50 holders + 1k, 5k, 10k, 25k mcap = 6 milestones
     volume: 13600,
     age: '4d',
     url: '/chain/gamefi-chain'
@@ -117,12 +117,12 @@ const MOCK_CHAINS = [
     logo: null,
     brandColor: '#06b6d4',
     description: 'Decentralized social network where creators own their content and earn from engagement.',
-    marketCap: 19700,
+    marketCap: 4200,
     goal: 50000,
     change24h: 5.6,
     currentPrice: 0.0039,
-    holderCount: 892,
-    volume: 6800,
+    holderCount: 28, // Achieves: 10 holders + 1k mcap = 2 milestones only
+    volume: 1800, // Lower volume for smaller market cap
     age: '7d',
     url: '/chain/social-connect'
   },
@@ -137,7 +137,7 @@ const MOCK_CHAINS = [
     goal: 50000,
     change24h: 19.4,
     currentPrice: 0.0087,
-    holderCount: 234,
+    holderCount: 234, // Achieves: 10, 50, 100 holders + 1k, 5k, 10k, 25k mcap = 7 milestones
     volume: 24100,
     age: '3d',
     url: '/chain/ai-trading'
@@ -149,12 +149,12 @@ const MOCK_CHAINS = [
     logo: null,
     brandColor: '#14b8a6',
     description: 'Instant cross-chain asset transfers with minimal fees and maximum security.',
-    marketCap: 36800,
+    marketCap: 8900,
     goal: 50000,
     change24h: 13.2,
     currentPrice: 0.0074,
-    holderCount: 567,
-    volume: 19200,
+    holderCount: 156, // Achieves: 10, 50, 100 holders + 1k, 5k mcap = 5 milestones
+    volume: 4200, // Proportional to market cap
     age: '5d',
     url: '/chain/cross-chain'
   },
@@ -165,12 +165,12 @@ const MOCK_CHAINS = [
     logo: null,
     brandColor: '#6366f1',
     description: 'Zero-knowledge proof transactions ensuring complete anonymity and data privacy.',
-    marketCap: 27400,
+    marketCap: 2100,
     goal: 50000,
     change24h: 9.1,
     currentPrice: 0.0055,
-    holderCount: 189,
-    volume: 11300,
+    holderCount: 45, // Achieves: 10 holders + 1k mcap = 2 milestones only
+    volume: 950, // Small volume for small market cap
     age: '1d',
     url: '/chain/privacy-shield'
   },
@@ -181,12 +181,12 @@ const MOCK_CHAINS = [
     logo: null,
     brandColor: '#84cc16',
     description: 'Tokenized property investments starting from $100. Earn rental income daily.',
-    marketCap: 38900,
+    marketCap: 14800,
     goal: 50000,
     change24h: 14.7,
     currentPrice: 0.0078,
-    holderCount: 421,
-    volume: 16500,
+    holderCount: 89, // Achieves: 10, 50 holders + 1k, 5k, 10k mcap = 5 milestones
+    volume: 6700, // Proportional to market cap
     age: '6d',
     url: '/chain/real-estate-dao'
   },
@@ -197,12 +197,12 @@ const MOCK_CHAINS = [
     logo: null,
     brandColor: '#f43f5e',
     description: 'Direct artist-to-fan music platform with instant royalty payments and NFT albums.',
-    marketCap: 22100,
+    marketCap: 780,
     goal: 50000,
     change24h: 6.3,
     currentPrice: 0.0044,
-    holderCount: 734,
-    volume: 9400,
+    holderCount: 34, // Achieves: 10 holders only = 1 milestone
+    volume: 320, // Very small volume for very small market cap
     age: '8d',
     url: '/chain/music-rights'
   }
@@ -246,10 +246,10 @@ export default function Launchpad() {
     <div className="flex min-h-screen bg-background">
       <MainSidebar />
 
-      <div className="flex-1 p-8 space-y-8">
+      <div className="flex-1 p-8 pt-4 space-y-8">
         {/* Top Chains Carousel */}
         <div>
-          <h1 className="text-2xl font-bold mb-6">Top Chains</h1>
+          <h1 className="text-[16px] font-bold mb-6">Top Chains</h1>
           <TopChainCarousel chains={MOCK_TOP_CHAINS} />
         </div>
 
