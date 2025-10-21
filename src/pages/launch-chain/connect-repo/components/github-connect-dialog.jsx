@@ -8,9 +8,9 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Github, Search, Check } from 'lucide-react'
+import { Github, Search, Check, User, Unlink } from 'lucide-react'
 
-export default function GitHubConnectDialog({ open, onOpenChange, onConnect, language }) {
+export default function GitHubConnectDialog({ open, onOpenChange, onConnect, language, onDisconnect }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedRepo, setSelectedRepo] = useState(null)
 
@@ -41,12 +41,24 @@ export default function GitHubConnectDialog({ open, onOpenChange, onConnect, lan
             <Github className="w-5 h-5" />
             Connect GitHub Repository
           </DialogTitle>
-          <DialogDescription>
-            Select the repository you forked from the {language} template
+          <DialogDescription className="flex items-center justify-between">
+            <span>Select the repository you forked from the {language} template</span>
+            <button
+              onClick={() => {
+                onDisconnect?.()
+                onOpenChange(false)
+              }}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 hover:bg-muted text-xs font-medium transition-colors group"
+            >
+              <User className="w-3 h-3" />
+              <span>eliezerpujols</span>
+              <Unlink className="w-3 h-3 text-muted-foreground group-hover:text-destructive transition-colors" />
+            </button>
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 pt-4">
+
           {/* Search Input */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

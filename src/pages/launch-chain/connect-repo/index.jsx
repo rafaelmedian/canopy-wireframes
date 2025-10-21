@@ -253,6 +253,7 @@ export default function ConnectRepo() {
         open={showGitHubDialog}
         onOpenChange={setShowGitHubDialog}
         onConnect={handleConnectRepo}
+        onDisconnect={handleDisconnect}
         language={selectedLanguage}
       />
     </div>
