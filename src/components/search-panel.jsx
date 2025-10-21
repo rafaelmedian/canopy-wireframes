@@ -13,7 +13,7 @@ export default function SearchPanel({ chains, searchQuery, onClose }) {
   if (!searchQuery) return null
 
   return (
-    <Card className="w-80 h-screen sticky top-0 border-l-0 border-t-0 rounded-none shadow-lg overflow-hidden flex flex-col">
+    <Card className="fixed left-60 top-0 w-80 h-screen border-l-0 border-t-0 rounded-none shadow-lg overflow-hidden flex flex-col z-40">
       {/* Header - Only show if there are results */}
       {chains.length > 0 && (
         <div className="px-4 py-[22px] border-b">

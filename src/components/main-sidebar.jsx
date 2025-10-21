@@ -136,8 +136,7 @@ export default function MainSidebar({ variant = 'default' }) {
   // Default variant
   return (
     <>
-      <div className="flex">
-        <div className="w-60 border-r border-zinc-800 bg-card flex flex-col justify-between pb-7 h-screen sticky top-0">
+      <div className="w-60 border-r border-zinc-800 bg-card flex flex-col justify-between pb-7 h-screen sticky top-0">
           <div className="space-y-4">
             {/* Logo */}
             <div className="px-8 pt-6 pb-2">
@@ -204,24 +203,23 @@ export default function MainSidebar({ variant = 'default' }) {
             </nav>
           </div>
 
-          {/* Bottom Section */}
-          <div className="px-4 space-y-3">
-            {/* Connect Wallet */}
-            <button className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80">
-              Connect wallet
-            </button>
-          </div>
+        {/* Bottom Section */}
+        <div className="px-4 space-y-3">
+          {/* Connect Wallet */}
+          <button className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80">
+            Connect wallet
+          </button>
         </div>
-
-        {/* Search Panel */}
-        {searchQuery && (
-          <SearchPanel
-            chains={filteredChains}
-            searchQuery={searchQuery}
-            onClose={handleCloseSearch}
-          />
-        )}
       </div>
+
+      {/* Search Panel - Fixed positioning */}
+      {searchQuery && (
+        <SearchPanel
+          chains={filteredChains}
+          searchQuery={searchQuery}
+          onClose={handleCloseSearch}
+        />
+      )}
 
       <LaunchOverviewDialog
         open={showDialog}
