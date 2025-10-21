@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import { AVATAR_COLORS } from '@/data/mock-config'
 
 export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolders }) {
   // Safety check
@@ -17,18 +18,8 @@ export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolde
 
   // Generate a deterministic color based on the address
   const getAvatarColor = (address) => {
-    const colors = [
-      'bg-blue-500',
-      'bg-green-500',
-      'bg-purple-500',
-      'bg-yellow-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-red-500',
-      'bg-teal-500',
-    ]
     const hash = address.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    return colors[hash % colors.length]
+    return AVATAR_COLORS[hash % AVATAR_COLORS.length]
   }
 
   // Get initials from address (first 2 chars after 0x)

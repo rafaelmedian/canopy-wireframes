@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
-import { useNavigate, useSearchParams } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import ChainHeader from '../launch-page/components/chain-header'
 import PriceChart from '../launch-page/components/price-chart'
@@ -14,35 +13,66 @@ import BlockExplorerTab from '../launch-page/components/block-explorer-tab'
 import MilestonesTab from '../launch-page/components/milestones-tab'
 import TradingPanel from '../launch-page/components/trading-panel'
 import ReportProblemButton from '../launch-page/components/report-problem-button'
-import LaunchSuccessBanner from './components/launch-success-banner'
-import { Globe, Github } from 'lucide-react'
-import { getChainDetails } from "@/data/db"
+import { getChainDetailsBySlug } from '@/data/db'
 
-// Get chain data from database (ID 2 = MyGameChain - Owner view, newly launched)
-const newChainData = getChainDetails(2)
-
-export default function LaunchPageOwner() {
+export default function ChainDetail() {
+  const { slug } = useParams()
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0)
   const [activeTab, setActiveTab] = useState('overview')
-  const [showSuccessBanner, setShowSuccessBanner] = useState(false)
 
-  // Check if coming from successful payment
-  useEffect(() => {
-    if (searchParams.get('success') === 'true') {
-      setShowSuccessBanner(true)
-      // Remove the success param from URL
-      searchParams.delete('success')
-      setSearchParams(searchParams, { replace: true })
-      // Scroll to top
-      window.scrollTo(0, 0)
-    }
-  }, [searchParams, setSearchParams])
+  // Get chain data from database using slug
+  const chainData = getChainDetailsBySlug(slug)
 
-  const handleDismissBanner = () => {
-    setShowSuccessBanner(false)
+  // If chain not found, show 404
+  if (!chainData) {
+    return (
+      <div className="flex min-h-screen bg-background">
+        <MainSidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">404</h1>
+            <p className="text-muted-foreground mb-6">Chain not found</p>
+            <button
+              onClick={() => navigate('/')}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Back to Launchpad
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
+
+  // Determine chain status badge
+  const getStatusBadge = () => {
+    if (chainData.isGraduated) {
+      return (
+        <Badge variant="outline" className="border-green-500/50 text-green-500 ml-2">
+          Graduated
+        </Badge>
+      )
+    }
+    if (chainData.isDraft) {
+      return (
+        <Badge variant="outline" className="border-gray-500/50 text-gray-500 ml-2">
+          Draft
+        </Badge>
+      )
+    }
+    if (chainData.isVirtual) {
+      return (
+        <Badge variant="outline" className="border-purple-500/50 text-purple-500 ml-2">
+          Virtual
+        </Badge>
+      )
+    }
+    return null
+  }
+
+  // Check if current user is the owner (simplified - in real app would check wallet)
+  const isOwner = chainData.owner === '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199'
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -58,35 +88,25 @@ export default function LaunchPageOwner() {
               Launchpad
             </button>
             <span>/</span>
-            <span className="text-foreground">MyGameChain</span>
-            <Badge variant="outline" className="border-purple-500/50 text-purple-500 ml-2">
-              Virtual
-            </Badge>
+            <span className="text-foreground">{chainData.name}</span>
+            {getStatusBadge()}
           </div>
         </div>
-
-        {/* Success Banner */}
-        {showSuccessBanner && (
-          <div className="px-6 pt-2">
-            <LaunchSuccessBanner
-                chainName={newChainData.name}
-                onDismiss={handleDismissBanner}
-            />
-          </div>
-        )}
 
         <div className="max-w-7xl mx-auto px-6 py-6 pt-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
-              <ChainHeader chainData={newChainData} />
-              <PriceChart chainData={newChainData} />
+              <ChainHeader chainData={chainData} isOwner={isOwner} />
+              <PriceChart chainData={chainData} />
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="w-full justify-start">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="holders">Holders (1)</TabsTrigger>
+                  <TabsTrigger value="holders">
+                    Holders ({chainData.holderCount})
+                  </TabsTrigger>
                   <TabsTrigger value="milestones">Milestones</TabsTrigger>
                   <TabsTrigger value="code">Code</TabsTrigger>
                   <TabsTrigger value="block-explorer">Block Explorer</TabsTrigger>
@@ -94,41 +114,42 @@ export default function LaunchPageOwner() {
 
                 <TabsContent value="overview">
                   <OverviewTab
-                    chainData={newChainData}
+                    chainData={chainData}
                     currentGalleryIndex={currentGalleryIndex}
                     setCurrentGalleryIndex={setCurrentGalleryIndex}
                     onNavigateToTab={setActiveTab}
+                    isOwner={isOwner}
                   />
                 </TabsContent>
 
                 <TabsContent value="holders">
                   <HoldersTab
-                    holders={newChainData.holders}
-                    ticker={newChainData.ticker}
-                    totalHolders={newChainData.holderCount}
+                    holders={chainData.holders}
+                    ticker={chainData.ticker}
+                    totalHolders={chainData.holderCount}
                   />
                 </TabsContent>
 
                 <TabsContent value="milestones">
-                  <MilestonesTab chainData={newChainData} isOwner={true} />
+                  <MilestonesTab chainData={chainData} isOwner={isOwner} />
                 </TabsContent>
 
                 <TabsContent value="code">
-                  <CodeTab chainData={newChainData} />
+                  <CodeTab chainData={chainData} />
                 </TabsContent>
 
                 <TabsContent value="block-explorer">
-                  <BlockExplorerTab chainData={newChainData} />
+                  <BlockExplorerTab chainData={chainData} />
                 </TabsContent>
               </Tabs>
 
               {/* Report a Problem Button */}
-              <ReportProblemButton chainData={newChainData} />
+              <ReportProblemButton chainData={chainData} />
             </div>
 
             {/* Right Sidebar */}
             <div className="space-y-6">
-              <TradingPanel chainData={newChainData} />
+              <TradingPanel chainData={chainData} isOwner={isOwner} />
             </div>
           </div>
         </div>

@@ -32,75 +32,10 @@ import DraftBlockExplorerTab from './components/draft-block-explorer-tab'
 import DraftProgressPanel from './components/draft-progress-panel'
 import MilestonesTab from '../launch-page/components/milestones-tab'
 import { toast } from 'sonner'
+import { getChainDetails } from "@/data/db"
 
-// Mock data for draft chain (still in configuration)
-const draftChainData = {
-  name: 'DeFi Protocol',
-  ticker: 'DEFI',
-  creator: 'johndoe',
-  title: 'DeFi Protocol: Decentralized Finance for Everyone',
-  description: 'A next-generation decentralized finance protocol built to provide seamless access to lending, borrowing, and yield farming opportunities. Our platform combines security, transparency, and user-friendly interfaces to democratize access to financial services on the blockchain.',
-  logo: null,
-  brandColor: '#3b82f6',
-  language: 'Go',
-  repositoryName: 'johndoe/defi-protocol',
-  isVirtual: false, // Draft chains are not virtual yet
-  isDraft: true, // Flag to show draft badge
-
-  // Market data - all zeros for draft
-  currentPrice: 0,
-  marketCap: 0,
-  mcap: 0,
-  volume: 0,
-  virtualLiq: 0,
-  holderCount: 0,
-  priceChange24h: 0,
-
-  // Launch settings
-  graduationThreshold: 50000,
-  remainingToGraduation: 50000, // Full amount remaining
-
-  // Gallery
-  gallery: [null, null, null],
-
-  // Social links
-  socialLinks: [
-    { platform: 'website', label: 'Website', url: 'https://defiprotocol.io', icon: Globe },
-    { platform: 'twitter', label: 'Twitter/X', url: '@defiprotocol', icon: null },
-    { platform: 'discord', label: 'Discord', url: 'https://discord.gg/defiprotocol', icon: null },
-    { platform: 'github', label: 'GitHub', url: 'https://github.com/johndoe/defi-protocol', icon: Github }
-  ],
-
-  // Whitepapers - empty for draft
-  whitepapers: [],
-
-  // Tokenomics
-  tokenomics: {
-    totalSupply: '1000000000',
-    blockTime: 10,
-    halvingDays: 365,
-    yearOneEmission: 137442250
-  },
-
-  // Holders - empty for draft
-  holders: [],
-
-  // Chart data - no data for draft
-  priceHistory: [],
-
-  // Block Explorer data - no activity for draft
-  explorer: {
-    currentBlock: 0,
-    totalTransactions: 0,
-    recentBlocks: [],
-    recentTransactions: []
-  },
-
-  // Draft progress
-  currentStep: 4,
-  totalSteps: 7,
-  completedSteps: ['Language', 'Repository', 'Configuration', 'Branding']
-}
+// Get chain data from database (ID 4 = DeFi Protocol - Draft, not yet deployed)
+const draftChainData = getChainDetails(4)
 
 export default function LaunchPageDraft() {
   const navigate = useNavigate()

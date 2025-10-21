@@ -13,6 +13,8 @@ export default function PriceChart({ chainData }) {
     ? 100
     : (chainData.marketCap / chainData.graduationThreshold) * 100
 
+  const remainingToGraduation = chainData.graduationThreshold - chainData.marketCap
+
   // Generate chart data based on selected period
   const getChartData = () => {
     const basePrice = chainData.currentPrice
@@ -28,10 +30,12 @@ export default function PriceChart({ chainData }) {
 
       case '1D':
         // Daily data - every 2 hours
-        return chainData.priceHistory || Array.from({ length: 12 }, (_, i) => ({
-          time: `${i * 2}:00`,
-          price: basePrice + (Math.random() - 0.5) * variation
-        }))
+        return (chainData.priceHistory && chainData.priceHistory.length > 0)
+          ? chainData.priceHistory
+          : Array.from({ length: 12 }, (_, i) => ({
+              time: `${i * 2}:00`,
+              price: basePrice + (Math.random() - 0.5) * variation
+            }))
 
       case '1W':
         // Weekly data - daily
@@ -95,7 +99,7 @@ export default function PriceChart({ chainData }) {
                     <p className="text-xs text-muted-foreground text-right">
                       {chainData.isGraduated
                         ? `$${(chainData.graduationThreshold / 1000).toFixed(0)}k graduated`
-                        : `$${(chainData.remainingToGraduation / 1000).toFixed(2)}k until graduation`
+                        : `$${(remainingToGraduation / 1000).toFixed(1)}k until graduation`
                       }
                     </p>
                     <HelpCircle className="w-3 h-3 text-muted-foreground" />
@@ -215,7 +219,7 @@ export default function PriceChart({ chainData }) {
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xs text-muted-foreground">MCap</span>
-                <span className="font-medium">${chainData.mcap}</span>
+                <span className="font-medium">${(chainData.marketCap / 1000).toFixed(1)}k</span>
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xs text-muted-foreground">

@@ -1,120 +1,28 @@
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import {
-  Users,
-  TrendingUp,
-  Zap,
-  Award,
-  Target,
-  Rocket,
-  Crown,
-  Star,
-  Sparkles,
-  Trophy
-} from 'lucide-react'
+import { Users, TrendingUp, ArrowRightLeft, Trophy } from 'lucide-react'
+
+// Icon mapping for milestone types
+const MILESTONE_ICONS = {
+  holders: Users,
+  transactions: ArrowRightLeft,
+  marketcap: TrendingUp
+}
 
 export default function MilestonesTab({ chainData, isOwner = false }) {
-  // Define all milestones with their requirements
-  const milestones = [
-    {
-      id: 1,
-      icon: Users,
-      title: 'First 10 holders',
-      description: 'Reach 10 unique token holders',
-      requirement: 10,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 2,
-      icon: TrendingUp,
-      title: '$1k market cap',
-      description: 'Achieve $1,000 in market capitalization',
-      requirement: 1000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 3,
-      icon: Users,
-      title: '50 holders milestone',
-      description: 'Build a community of 50 token holders',
-      requirement: 50,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 4,
-      icon: Zap,
-      title: '1,000 transactions',
-      description: 'Process 1,000 total transactions',
-      requirement: 1000,
-      current: chainData.explorer?.totalTransactions || 0,
-      type: 'transactions'
-    },
-    {
-      id: 5,
-      icon: TrendingUp,
-      title: '$5k market cap',
-      description: 'Reach $5,000 market capitalization',
-      requirement: 5000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 6,
-      icon: Users,
-      title: '100 holders club',
-      description: 'Join the 100 holders club',
-      requirement: 100,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 7,
-      icon: Target,
-      title: '$10k market cap',
-      description: 'Hit $10,000 in market cap',
-      requirement: 10000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 8,
-      icon: Sparkles,
-      title: '500 holders strong',
-      description: 'Grow to 500 token holders',
-      requirement: 500,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 9,
-      icon: Crown,
-      title: '$25k market cap',
-      description: 'Achieve $25,000 market cap',
-      requirement: 25000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 10,
-      icon: Trophy,
-      title: 'Graduation ready',
-      description: 'Reach $50,000 and graduate to mainnet',
-      requirement: 50000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    }
-  ]
+  // Get milestones from chainData (comes from database with current values already calculated)
+  const milestones = (chainData.milestones || []).map(milestone => ({
+    ...milestone,
+    icon: MILESTONE_ICONS[milestone.type] || Trophy
+  }))
 
   // Calculate progress for each milestone
   const getMilestoneStatus = (milestone) => {
     const progress = Math.min((milestone.current / milestone.requirement) * 100, 100)
-    const isCompleted = progress >= 100
-    // Only lock milestones for owner chains
-    const isLocked = isOwner && milestone.id > 1 && milestones[milestone.id - 2].current < milestones[milestone.id - 2].requirement
+    const isCompleted = milestone.completed || progress >= 100
+    // Only lock milestones for owner chains (simplified - you can enhance this logic)
+    const isLocked = false
 
     return { progress, isCompleted, isLocked }
   }

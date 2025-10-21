@@ -11,14 +11,7 @@ import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { useAutoSave } from '@/hooks/use-auto-save.js'
-
-const blockTimeOptions = [
-  { value: '5', label: '5 seconds' },
-  { value: '10', label: '10 seconds' },
-  { value: '30', label: '30 seconds' },
-  { value: '60', label: '1 minute' },
-  { value: '300', label: '5 minutes' },
-]
+import { BLOCK_TIME_OPTIONS } from '@/data/mock-config'
 
 export default function ConfigureChain() {
   const navigate = useNavigate()
@@ -368,7 +361,7 @@ export default function ConfigureChain() {
                       <SelectValue placeholder="Select block time" />
                     </SelectTrigger>
                     <SelectContent>
-                      {blockTimeOptions.map((option) => (
+                      {BLOCK_TIME_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -393,7 +386,7 @@ export default function ConfigureChain() {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Block Time:</span>
                       <span className="font-medium">
-                        {blockTimeOptions.find(opt => opt.value === blockTime)?.label || '-'}
+                        {BLOCK_TIME_OPTIONS.find(opt => opt.value === blockTime)?.label || '-'}
                       </span>
                     </div>
                     <div className="flex justify-between">

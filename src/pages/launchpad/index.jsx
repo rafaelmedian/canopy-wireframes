@@ -4,12 +4,20 @@ import TopChainCarousel from './components/top-chain-carousel'
 import FilterBar from './components/filter-bar'
 import ChainCard from './components/chain-card'
 import ChainListItem from './components/chain-list-item'
-import { MOCK_CHAINS, MOCK_TOP_CHAINS } from '@/data/mock-chains'
+import { getAllChains } from '@/data/db'
 
 export default function Launchpad() {
+  // Get all chains from database
+  const ALL_CHAINS = getAllChains()
+
+  // Top chains are the ones with highest market cap (top 5)
+  const TOP_CHAINS = [...ALL_CHAINS]
+    .sort((a, b) => b.marketCap - a.marketCap)
+    .slice(0, 5)
+
   const [activeFilter, setActiveFilter] = useState('all')
   const [viewMode, setViewMode] = useState('grid')
-  const [filteredChains, setFilteredChains] = useState(MOCK_CHAINS)
+  const [filteredChains, setFilteredChains] = useState(ALL_CHAINS)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -17,20 +25,20 @@ export default function Launchpad() {
 
   useEffect(() => {
     // Filter chains based on active filter
-    let filtered = [...MOCK_CHAINS]
+    let filtered = [...ALL_CHAINS]
 
     switch (activeFilter) {
       case 'trending':
-        filtered = filtered.filter(chain => chain.change24h > 5)
+        filtered = filtered.filter(chain => chain.priceChange24h > 5)
         break
       case 'new':
         filtered = filtered.sort((a, b) => b.id - a.id).slice(0, 4)
         break
       case 'graduated':
-        filtered = filtered.filter(chain => chain.marketCap >= chain.goal)
+        filtered = filtered.filter(chain => chain.isGraduated === true)
         break
       case 'scheduled':
-        filtered = [] // No scheduled chains in mock data
+        filtered = filtered.filter(chain => chain.isDraft === true)
         break
       default:
         // 'all' - show all chains
@@ -48,7 +56,7 @@ export default function Launchpad() {
         {/* Top Chains Carousel */}
         <div>
           <h1 className="text-[16px] font-bold mb-6">Top Chains</h1>
-          <TopChainCarousel chains={MOCK_TOP_CHAINS} />
+          <TopChainCarousel chains={TOP_CHAINS} />
         </div>
 
         {/* Filter Bar */}

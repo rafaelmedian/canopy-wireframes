@@ -167,7 +167,7 @@ export default function TopChainCard({ chain }) {
           </div>
 
           {/* Stats Row */}
-          <div className="flex items-center gap-6 pt-2 border-t border-border/50">
+          <div className="flex items-center gap-6 pt-2 border-t border-border/50 pb-4">
             {/* Holder Avatars */}
             <div className="flex items-center">
               <div className="flex -space-x-2">

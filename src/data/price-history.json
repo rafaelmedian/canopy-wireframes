@@ -1,0 +1,200 @@
+[
+  {
+    "id": 1,
+    "chainId": 1,
+    "time": "00:00",
+    "price": 0.0098
+  },
+  {
+    "id": 2,
+    "chainId": 1,
+    "time": "02:00",
+    "price": 0.0102
+  },
+  {
+    "id": 3,
+    "chainId": 1,
+    "time": "04:00",
+    "price": 0.0105
+  },
+  {
+    "id": 4,
+    "chainId": 1,
+    "time": "06:00",
+    "price": 0.011
+  },
+  {
+    "id": 5,
+    "chainId": 1,
+    "time": "08:00",
+    "price": 0.0113
+  },
+  {
+    "id": 6,
+    "chainId": 1,
+    "time": "10:00",
+    "price": 0.0108
+  },
+  {
+    "id": 7,
+    "chainId": 1,
+    "time": "12:00",
+    "price": 0.0115
+  },
+  {
+    "id": 8,
+    "chainId": 1,
+    "time": "14:00",
+    "price": 0.0112
+  },
+  {
+    "id": 9,
+    "chainId": 1,
+    "time": "16:00",
+    "price": 0.0118
+  },
+  {
+    "id": 10,
+    "chainId": 1,
+    "time": "18:00",
+    "price": 0.0116
+  },
+  {
+    "id": 11,
+    "chainId": 1,
+    "time": "20:00",
+    "price": 0.011647
+  },
+  {
+    "id": 12,
+    "chainId": 2,
+    "time": "00:00",
+    "price": 0.005
+  },
+  {
+    "id": 13,
+    "chainId": 2,
+    "time": "02:00",
+    "price": 0.005
+  },
+  {
+    "id": 14,
+    "chainId": 2,
+    "time": "04:00",
+    "price": 0.005
+  },
+  {
+    "id": 15,
+    "chainId": 2,
+    "time": "06:00",
+    "price": 0.005
+  },
+  {
+    "id": 16,
+    "chainId": 2,
+    "time": "08:00",
+    "price": 0.005
+  },
+  {
+    "id": 17,
+    "chainId": 2,
+    "time": "10:00",
+    "price": 0.005
+  },
+  {
+    "id": 18,
+    "chainId": 2,
+    "time": "12:00",
+    "price": 0.005
+  },
+  {
+    "id": 19,
+    "chainId": 2,
+    "time": "14:00",
+    "price": 0.005
+  },
+  {
+    "id": 20,
+    "chainId": 2,
+    "time": "16:00",
+    "price": 0.005
+  },
+  {
+    "id": 21,
+    "chainId": 2,
+    "time": "18:00",
+    "price": 0.005
+  },
+  {
+    "id": 22,
+    "chainId": 2,
+    "time": "20:00",
+    "price": 0.005
+  },
+  {
+    "id": 23,
+    "chainId": 3,
+    "time": "00:00",
+    "price": 0.0098
+  },
+  {
+    "id": 24,
+    "chainId": 3,
+    "time": "02:00",
+    "price": 0.0102
+  },
+  {
+    "id": 25,
+    "chainId": 3,
+    "time": "04:00",
+    "price": 0.0105
+  },
+  {
+    "id": 26,
+    "chainId": 3,
+    "time": "06:00",
+    "price": 0.011
+  },
+  {
+    "id": 27,
+    "chainId": 3,
+    "time": "08:00",
+    "price": 0.0113
+  },
+  {
+    "id": 28,
+    "chainId": 3,
+    "time": "10:00",
+    "price": 0.0108
+  },
+  {
+    "id": 29,
+    "chainId": 3,
+    "time": "12:00",
+    "price": 0.0115
+  },
+  {
+    "id": 30,
+    "chainId": 3,
+    "time": "14:00",
+    "price": 0.0112
+  },
+  {
+    "id": 31,
+    "chainId": 3,
+    "time": "16:00",
+    "price": 0.0118
+  },
+  {
+    "id": 32,
+    "chainId": 3,
+    "time": "18:00",
+    "price": 0.0116
+  },
+  {
+    "id": 33,
+    "chainId": 3,
+    "time": "20:00",
+    "price": 0.011647
+  }
+]

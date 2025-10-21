@@ -7,10 +7,7 @@ import Branding from '@/pages/launch-chain/branding'
 import Links from '@/pages/launch-chain/links'
 import LaunchSettings from '@/pages/launch-chain/launch-settings'
 import Review from '@/pages/launch-chain/review'
-import LaunchPage from '@/pages/launch-page'
-import LaunchPageOwner from '@/pages/launch-page-owner'
-import LaunchPageDraft from '@/pages/launch-page-draft'
-import LaunchPageGraduated from '@/pages/launch-page-graduated'
+import ChainDetail from '@/pages/chain-detail'
 import { Toaster } from '@/components/ui/sonner'
 
 function App() {
@@ -18,10 +15,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Launchpad />} />
-        <Route path="/chain/someone-else-chain" element={<LaunchPage />} />
-        <Route path="/chain/my-chain" element={<LaunchPageOwner />} />
-        <Route path="/chain/draft-chain" element={<LaunchPageDraft />} />
-        <Route path="/chain/graduated-chain" element={<LaunchPageGraduated />} />
+        {/* Dynamic chain detail route - handles all chains from database */}
+        <Route path="/chain/:slug" element={<ChainDetail />} />
         <Route path="/launchpad/language" element={<LanguageSelection />} />
         <Route path="/launchpad/repository" element={<ConnectRepo />} />
         <Route path="/launchpad/configure" element={<ConfigureChain />} />

@@ -4,7 +4,7 @@ import { Search, Plus, Zap, BarChart3, Activity, TrendingUp, User, Home, PieChar
 import { useNavigate } from 'react-router-dom'
 import LaunchOverviewDialog from './launch-overview-dialog'
 import SearchPanel from './search-panel'
-import { MOCK_CHAINS, MOCK_TOP_CHAINS } from '@/data/mock-chains'
+import { getAllChains } from '@/data/db'
 
 export default function MainSidebar({ variant = 'default' }) {
   const navigate = useNavigate()
@@ -25,7 +25,7 @@ export default function MainSidebar({ variant = 'default' }) {
     }
 
     const timer = setTimeout(() => {
-      const allChains = [...MOCK_TOP_CHAINS, ...MOCK_CHAINS]
+      const allChains = getAllChains()
       const query = searchQuery.toLowerCase()
       const results = allChains.filter(
         (chain) =>
