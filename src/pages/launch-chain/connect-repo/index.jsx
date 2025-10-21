@@ -8,11 +8,13 @@ import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import GitHubConnectDialog from './components/github-connect-dialog'
+import GitHubAuthDialog from './components/github-auth-dialog'
 
 export default function ConnectRepo() {
   const navigate = useNavigate()
   const location = useLocation()
   const [connectedRepo, setConnectedRepo] = useState(null)
+  const [showAuthDialog, setShowAuthDialog] = useState(false)
   const [showGitHubDialog, setShowGitHubDialog] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState(null)
@@ -59,6 +61,12 @@ export default function ConnectRepo() {
 
   const handleDisconnect = () => {
     setConnectedRepo(null)
+  }
+
+  const handleAuthorize = () => {
+    // Close auth dialog and open repository select dialog
+    setShowAuthDialog(false)
+    setShowGitHubDialog(true)
   }
 
   return (
@@ -178,8 +186,8 @@ export default function ConnectRepo() {
                           You can always update your code later.
                         </p>
                       </div>
-                      <Button 
-                        onClick={() => setShowGitHubDialog(true)}
+                      <Button
+                        onClick={() => setShowAuthDialog(true)}
                         variant="outline"
                         className="gap-2"
                       >
@@ -232,6 +240,13 @@ export default function ConnectRepo() {
           </div>
         </div>
       </div>
+
+      {/* GitHub Auth Dialog */}
+      <GitHubAuthDialog
+        open={showAuthDialog}
+        onOpenChange={setShowAuthDialog}
+        onAuthorize={handleAuthorize}
+      />
 
       {/* GitHub Connect Dialog */}
       <GitHubConnectDialog
