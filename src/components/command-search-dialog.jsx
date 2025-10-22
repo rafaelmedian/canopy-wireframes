@@ -10,7 +10,9 @@ import {
   CommandSeparator,
 } from '@/components/ui/command'
 import { Search, Clock, Link as LinkChain, Activity, Box } from 'lucide-react'
-import { getAllChains } from '@/data/db'
+import { getAllChains, getChainById } from '@/data/db'
+import transactionsData from '@/data/transactions.json'
+import blocksData from '@/data/blocks.json'
 
 const RECENT_SEARCHES_KEY = 'canopy_recent_searches'
 const MAX_RECENT_SEARCHES = 5
@@ -21,6 +23,8 @@ export default function CommandSearchDialog({ open, onOpenChange }) {
   const [recentSearches, setRecentSearches] = useState([])
   const [allChains, setAllChains] = useState([])
   const [filteredChains, setFilteredChains] = useState([])
+  const [filteredTransactions, setFilteredTransactions] = useState([])
+  const [filteredBlocks, setFilteredBlocks] = useState([])
 
   // Load chains and recent searches on mount
   useEffect(() => {
@@ -66,25 +70,41 @@ export default function CommandSearchDialog({ open, onOpenChange }) {
     }
   }, [])
 
-  // Filter chains based on search query
+  // Filter chains, transactions, and blocks based on search query
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredChains([])
+      setFilteredTransactions([])
+      setFilteredBlocks([])
       return
     }
 
     const query = searchQuery.toLowerCase()
-    const results = allChains.filter(
+
+    // Filter chains
+    const chainResults = allChains.filter(
       (chain) =>
         !chain.isDraft && (
           chain.name.toLowerCase().includes(query) ||
           chain.ticker.toLowerCase().includes(query)
         )
-    ).slice(0, 8) // Limit to top 8 results
+    ).slice(0, 5) // Limit to top 5 results
 
-    console.log('Search query:', query)
-    console.log('Filtered results:', results.length)
-    setFilteredChains(results)
+    // Filter transactions by hash
+    const txResults = transactionsData.filter(
+      (tx) => tx.hash.toLowerCase().includes(query)
+    ).slice(0, 5)
+
+    // Filter blocks by number or hash
+    const blockResults = blocksData.filter(
+      (block) =>
+        block.number.toString().includes(query) ||
+        block.hash.toLowerCase().includes(query)
+    ).slice(0, 5)
+
+    setFilteredChains(chainResults)
+    setFilteredTransactions(txResults)
+    setFilteredBlocks(blockResults)
   }, [searchQuery, allChains])
 
   const loadRecentSearches = () => {
@@ -138,11 +158,59 @@ export default function CommandSearchDialog({ open, onOpenChange }) {
     setSearchQuery('')
   }
 
+  const handleTransactionSelect = (tx) => {
+    // Navigate to the chain page for this transaction
+    const chain = getChainById(tx.chainId)
+    if (chain) {
+      saveToRecentSearches({
+        type: 'transaction',
+        id: tx.hash,
+        name: tx.hash,
+        chainId: tx.chainId,
+        chainName: chain.name,
+      })
+      navigate(chain.url)
+      onOpenChange(false)
+      setSearchQuery('')
+    }
+  }
+
+  const handleBlockSelect = (block) => {
+    // Navigate to the chain page for this block
+    const chain = getChainById(block.chainId)
+    if (chain) {
+      saveToRecentSearches({
+        type: 'block',
+        id: block.hash,
+        name: `Block #${block.number}`,
+        chainId: block.chainId,
+        chainName: chain.name,
+      })
+      navigate(chain.url)
+      onOpenChange(false)
+      setSearchQuery('')
+    }
+  }
+
   const handleRecentSelect = (recent) => {
     if (recent.type === 'chain') {
       navigate(recent.url)
       onOpenChange(false)
       setSearchQuery('')
+    } else if (recent.type === 'transaction') {
+      const chain = getChainById(recent.chainId)
+      if (chain) {
+        navigate(chain.url)
+        onOpenChange(false)
+        setSearchQuery('')
+      }
+    } else if (recent.type === 'block') {
+      const chain = getChainById(recent.chainId)
+      if (chain) {
+        navigate(chain.url)
+        onOpenChange(false)
+        setSearchQuery('')
+      }
     }
   }
 
@@ -167,7 +235,9 @@ export default function CommandSearchDialog({ open, onOpenChange }) {
         onValueChange={setSearchQuery}
       />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        {searchQuery && filteredChains.length === 0 && filteredTransactions.length === 0 && filteredBlocks.length === 0 && (
+          <CommandEmpty>No results found.</CommandEmpty>
+        )}
 
         {/* Recent Searches */}
         {!searchQuery && recentSearches.length > 0 && (
@@ -194,9 +264,14 @@ export default function CommandSearchDialog({ open, onOpenChange }) {
                     )}
                     {recent.type !== 'chain' && <IconComponent className="w-4 h-4" />}
                     <div className="flex-1">
-                      <p className="text-sm font-medium">{recent.name}</p>
+                      <p className="text-sm font-medium truncate">
+                        {recent.type === 'transaction' ? recent.name.slice(0, 10) + '...' : recent.name}
+                      </p>
                       {recent.ticker && (
                         <p className="text-xs text-muted-foreground">${recent.ticker}</p>
+                      )}
+                      {recent.chainName && (
+                        <p className="text-xs text-muted-foreground">{recent.chainName}</p>
                       )}
                     </div>
                   </CommandItem>
@@ -257,21 +332,57 @@ export default function CommandSearchDialog({ open, onOpenChange }) {
           </CommandGroup>
         )}
 
-        {/* Placeholder for Transactions and Blocks */}
-        {searchQuery && filteredChains.length === 0 && (
-          <CommandGroup heading="Suggestions">
-            <CommandItem disabled>
-              <Activity className="w-4 h-4 mr-2" />
-              <span className="text-muted-foreground">
-                Transaction search coming soon
-              </span>
-            </CommandItem>
-            <CommandItem disabled>
-              <Box className="w-4 h-4 mr-2" />
-              <span className="text-muted-foreground">
-                Block search coming soon
-              </span>
-            </CommandItem>
+        {/* Transaction Results */}
+        {searchQuery && filteredTransactions.length > 0 && (
+          <CommandGroup heading="Transactions">
+            {filteredTransactions.map((tx) => (
+              <CommandItem
+                key={tx.hash}
+                onSelect={() => handleTransactionSelect(tx)}
+                className="flex items-center gap-3"
+              >
+                <Activity className="w-4 h-4 text-muted-foreground" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-mono truncate">{tx.hash}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {tx.amount.toLocaleString()} {tx.ticker || 'tokens'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">•</span>
+                    <span className="text-xs text-muted-foreground">
+                      Block #{tx.blockNumber}
+                    </span>
+                  </div>
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+
+        {/* Block Results */}
+        {searchQuery && filteredBlocks.length > 0 && (
+          <CommandGroup heading="Blocks">
+            {filteredBlocks.map((block) => (
+              <CommandItem
+                key={block.hash}
+                onSelect={() => handleBlockSelect(block)}
+                className="flex items-center gap-3"
+              >
+                <Box className="w-4 h-4 text-muted-foreground" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">Block #{block.number.toLocaleString()}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {block.transactions} transactions
+                    </span>
+                    <span className="text-xs text-muted-foreground">•</span>
+                    <span className="text-xs text-muted-foreground font-mono truncate">
+                      {block.hash.slice(0, 10)}...
+                    </span>
+                  </div>
+                </div>
+              </CommandItem>
+            ))}
           </CommandGroup>
         )}
       </CommandList>
