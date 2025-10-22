@@ -1,9 +1,10 @@
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
 import { AVATAR_COLORS } from '@/data/mock-config'
 
-export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolders, currentPrice = 0.001 }) {
+export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolders, currentPrice = 0.001, creatorAddress }) {
   // Safety check
   if (!Array.isArray(holders)) {
     console.error('HoldersTab: holders is not an array', holders)
@@ -79,9 +80,16 @@ export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolde
 
               {/* Address */}
               <div className="flex-1 min-w-0">
-                <p className="font-mono text-sm font-medium">
-                  {truncateAddress(holder.address)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="font-mono text-sm font-medium">
+                    {truncateAddress(holder.address)}
+                  </p>
+                  {creatorAddress && holder.address.toLowerCase() === creatorAddress.toLowerCase() && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-green-500/10 text-green-500 border-green-500/20">
+                      Creator
+                    </Badge>
+                  )}
+                </div>
               </div>
 
               {/* Balance Info */}
