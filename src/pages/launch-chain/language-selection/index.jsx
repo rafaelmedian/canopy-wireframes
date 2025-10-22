@@ -101,16 +101,7 @@ export default function LanguageSelection() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between pt-8">
-              <Button
-                variant="ghost"
-                onClick={handleBack}
-                className="gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back
-              </Button>
-
+            <div className="flex justify-end pt-8">
               <Button
                 onClick={handleContinue}
                 disabled={!selectedLanguage}
