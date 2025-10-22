@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { AVATAR_COLORS } from '@/data/mock-config'
 
-export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolders }) {
+export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolders, currentPrice = 0.001 }) {
   // Safety check
   if (!Array.isArray(holders)) {
     console.error('HoldersTab: holders is not an array', holders)
@@ -39,6 +39,16 @@ export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolde
     return ((balance / totalTokens) * 100).toFixed(2)
   }
 
+  // Calculate USD value
+  const getUSDValue = (balance) => {
+    return (balance * currentPrice).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  }
+
   const showOthersCount = totalHolders && totalHolders > holders.length
 
   return (
@@ -72,17 +82,16 @@ export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolde
                 <p className="font-mono text-sm font-medium">
                   {truncateAddress(holder.address)}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {getPercentage(holder.balance)}% of supply
-                </p>
               </div>
 
-              {/* Balance */}
+              {/* Balance Info */}
               <div className="text-right">
-                <p className="font-semibold">
-                  {holder.balance.toLocaleString()}
+                <p className="font-semibold text-sm">
+                  {getUSDValue(holder.balance)}
                 </p>
-                <p className="text-xs text-muted-foreground">{ticker}</p>
+                <p className="text-xs text-muted-foreground">
+                  {getPercentage(holder.balance)}% • {holder.balance.toLocaleString()} {ticker}
+                </p>
               </div>
             </div>
           ))}

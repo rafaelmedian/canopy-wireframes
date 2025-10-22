@@ -216,6 +216,7 @@ export default function ChainDetail() {
                       holders={chainData.holders}
                       ticker={chainData.ticker}
                       totalHolders={chainData.holderCount}
+                      currentPrice={chainData.currentPrice}
                     />
                   )}
                 </TabsContent>
