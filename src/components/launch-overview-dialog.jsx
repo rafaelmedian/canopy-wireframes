@@ -5,7 +5,7 @@ import { ArrowRight, Github, Palette, Sparkles } from 'lucide-react'
 export default function LaunchOverviewDialog({ open, onClose, onStart }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg" noAnimation>
         <DialogHeader className="space-y-4 text-center pb-2">
           <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
             <Sparkles className="w-8 h-8 text-primary" />
@@ -27,10 +27,10 @@ export default function LaunchOverviewDialog({ open, onClose, onStart }) {
             </div>
             <div className="flex-1 pt-1">
               <h3 className="font-semibold text-base mb-1.5">
-                Fork & Connect Your Repo
+                Choose a Template
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                We'll help you fork a starter template and connect it to your GitHub account
+                Select from pre-built templates ready to fork and connect
               </p>
             </div>
           </div>
