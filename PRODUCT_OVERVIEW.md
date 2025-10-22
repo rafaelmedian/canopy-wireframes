@@ -108,11 +108,11 @@ The launchpad serves as the main landing page where users discover and explore L
 - Also accessible via "+" icon in compact sidebar mode
 - Opens launch overview dialog
 
-![Launchpad grid view with milestone badges](/imgs/launchpad-grid-view.png)
+![Launchpad grid view with milestone badges](public/imgs/launchpad-grid-view.png)
 
-![Launchpad list view with all columns](/imgs/launchpad-list-view.png)
+![Launchpad list view with all columns](public/imgs/launchpad-list-view.png)
 
-![Filter and sort controls](/imgs/filter-and-sort-controls.png)
+![Filter and sort controls](public/imgs/filter-and-sort-controls.png)
 
 ---
 
@@ -157,11 +157,11 @@ Command-style search accessible throughout the application via `⌘K` (Mac) or `
 - Shows helpful message: "No results found. Try searching for chain names, transaction hashes, or block numbers."
 - Only displays when actively searching (not on empty state)
 
-![Search dialog with recent searches](/imgs/search-dialog-recent-searches.png)
+![Search dialog with recent searches](public/imgs/search-dialog-recent-searches.png)
 
-![Search results showing chains](/imgs/search-results-chains.png)
+![Search results showing chains](public/imgs/search-results-chains.png)
 
-![Search results showing transactions and blocks](/imgs/search-results-transactions-blocks.png)
+![Search results showing transactions and blocks](public/imgs/search-results-transactions-blocks.png)
 
 ---
 
@@ -187,7 +187,7 @@ Multi-step wizard for creating a new L1 blockchain. The flow guides users throug
 - "Start" button begins flow
 - Can be dismissed with "Cancel"
 
-![Launch overview dialog](/imgs/launch-overview-dialog.png)
+![Launch overview dialog](public/imgs/launch-overview-dialog.png)
 
 ---
 
@@ -212,7 +212,7 @@ Select the programming language/framework for the blockchain.
 **Validation:**
 - Must select one language to proceed
 
-![Language selection screen](/imgs/language-selection-screen.png)
+![Language selection screen](public/imgs/language-selection-screen.png)
 
 ---
 
@@ -274,13 +274,13 @@ Connect to the GitHub repository containing the blockchain code.
 - Canopy GitHub App needs to be created
 - OAuth authentication flow required
 
-![Repository connection screen - Initial state](/imgs/repository-connection-initial.png)
+![Repository connection screen - Initial state](public/imgs/repository-connection-initial.png)
 
-![GitHub authentication flow](/imgs/github-authentication-flow.png)
+![GitHub authentication flow](public/imgs/github-authentication-flow.png)
 
-![Repository selection list](/imgs/repository-selection-list.png)
+![Repository selection list](public/imgs/repository-selection-list.png)
 
-![Connected repository state](/imgs/connected-repository-state.png)
+![Connected repository state](public/imgs/connected-repository-state.png)
 
 ---
 
@@ -401,7 +401,7 @@ Core blockchain parameters and technical configuration.
 **Scroll Behavior:**
 - Automatically scrolls to top when page loads
 
-![Configuration form - basic info section](/imgs/configuration-form-basic-info.png)
+![Configuration form - basic info section](public/imgs/configuration-form-basic-info.png)
 
 ---
 
@@ -478,9 +478,9 @@ Visual identity for the chain.
 **Scroll Behavior:**
 - Automatically scrolls to top when page loads
 
-![Branding screen with logo upload](/imgs/branding-screen-logo-upload.png)
+![Branding screen with logo upload](public/imgs/branding-screen-logo-upload.png)
 
-![Gallery upload with optional badge](/imgs/gallery-upload-optional-badge.png)
+![Gallery upload with optional badge](public/imgs/gallery-upload-optional-badge.png)
 
 ---
 
@@ -576,7 +576,7 @@ Social presence and external links.
 **Scroll Behavior:**
 - Automatically scrolls to top when page loads
 
-![Social links with platform selector](/imgs/social-links-platform-selector.png)
+![Social links with platform selector](public/imgs/social-links-platform-selector.png)
 
 ---
 
@@ -644,7 +644,7 @@ Economic model and launch settings.
 **Scroll Behavior:**
 - Automatically scrolls to top when page loads
 
-![Graduation threshold card](/imgs/graduation-threshold-card.png)
+![Graduation threshold card](public/imgs/graduation-threshold-card.png)
 
 ---
 
@@ -765,7 +765,7 @@ Final review of all configuration before publishing or saving changes.
 **Scroll Behavior:**
 - Automatically scrolls to top when page loads
 
-![Review screen - Language & Repository card](/imgs/review-screen-language-repository.png)
+![Review screen - Language & Repository card](public/imgs/review-screen-language-repository.png)
 
 ---
 
@@ -828,7 +828,7 @@ When chain is saved as draft and only visible to the creator.
 - Cancel or Delete buttons
 - On delete: Shows success toast and returns to launchpad
 
-![Draft chain header with breadcrumb and more menu](/imgs/draft-chain-header-breadcrumb.png)
+![Draft chain header with breadcrumb and more menu](public/imgs/draft-chain-header-breadcrumb.png)
 
 ---
 
@@ -908,7 +908,7 @@ Active chain in bonding curve phase, visible to all users.
 - Shown at bottom of main content area
 - Hidden for draft chains
 
-![Virtual chain with price chart and metrics](/imgs/virtual-chain-price-chart-metrics.png)
+![Virtual chain with price chart and metrics](public/imgs/virtual-chain-price-chart-metrics.png)
 
 ---
 
@@ -939,7 +939,7 @@ After user completes payment, a 30-second review period begins before chain is p
 - Chain becomes publicly visible
 - State changes to Virtual
 
-![Review countdown panel with circular timer](/imgs/review-countdown-panel-timer.png)
+![Review countdown panel with circular timer](public/imgs/review-countdown-panel-timer.png)
 
 ---
 
@@ -974,7 +974,7 @@ Chain that successfully reached $50k market cap and graduated to mainnet.
 - No graduation progress bar
 - "Liquidity" instead of "Virtual Liq" in stats bar
 
-![Graduated chain with metric selector](/imgs/graduated-chain-metric-selector.png)
+![Graduated chain with metric selector](public/imgs/graduated-chain-metric-selector.png)
 
 ---
 
@@ -1107,7 +1107,7 @@ Full-page view accessible via direct URL: `/transaction/[hash]`
 - "Transaction not found" message
 - Back to launchpad button
 
-![Transaction detail page](/imgs/transaction-detail-page.png)
+![Transaction detail page](public/imgs/transaction-detail-page.png)
 
 ---
 
@@ -1146,7 +1146,7 @@ Full-page view accessible via direct URL: `/block/[hash]`
 - "Block not found" message
 - Back to launchpad button
 
-![Block detail page - Overview](/imgs/block-detail-page-overview.png)
+![Block detail page - Overview](public/imgs/block-detail-page-overview.png)
 
 ---
 
@@ -1225,7 +1225,7 @@ Feature for users to report chains that violate platform policies.
 - Dialog closes
 - Form resets
 
-![Report dialog with category selection](/imgs/report-dialog-category-selection.png)
+![Report dialog with category selection](public/imgs/report-dialog-category-selection.png)
 
 ---
 
