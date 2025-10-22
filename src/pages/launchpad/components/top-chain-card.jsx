@@ -3,8 +3,10 @@ import { Progress } from '@/components/ui/progress'
 import { LineChart, Line, ResponsiveContainer } from 'recharts'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Users, TrendingUp, Zap, Target, Sparkles, Crown, Trophy } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function TopChainCard({ chain }) {
+  const navigate = useNavigate()
   const progress = (chain.marketCap / chain.goal) * 100
 
   // Define milestones
@@ -51,7 +53,10 @@ export default function TopChainCard({ chain }) {
   })
 
   return (
-    <Card className="p-6 pb-0 bg-gradient-to-br from-card to-muted/20">
+    <Card
+      className="p-6 pb-0 bg-gradient-to-br from-card to-muted/20 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all"
+      onClick={() => navigate(chain.url)}
+    >
       <div className="grid grid-cols-[1fr_400px] gap-8">
         {/* Left Side: Info */}
         <div className="space-y-6">

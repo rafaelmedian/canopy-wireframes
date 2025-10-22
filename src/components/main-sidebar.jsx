@@ -55,7 +55,10 @@ export default function MainSidebar({ variant = 'default' }) {
         <div className="w-[73px] border-r border-zinc-800 bg-card flex flex-col justify-between pb-7 h-screen sticky top-0">
           <div className="space-y-4">
             {/* Logo */}
-            <div className="flex items-center justify-center pt-6 pb-2">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center justify-center pt-6 pb-2 w-full hover:opacity-80 transition-opacity cursor-pointer"
+            >
               <svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.7649 0.880227C12.658 0.827134 12.5342 0.905351 12.5342 1.02378V3.04351C12.5342 3.18794 12.7104 3.26027 12.8135 3.15814L14.069 1.91394C14.1383 1.84534 14.1317 1.73215 14.0535 1.67368C13.6439 1.36708 13.2123 1.10259 12.7649 0.880227Z" fill="white"/>
                 <path d="M10.4705 0.127791C10.5477 0.141319 10.6032 0.208239 10.6032 0.285896V5.28157C10.6032 5.32456 10.586 5.36579 10.5553 5.3962L8.90769 7.02887C8.80463 7.13099 8.62842 7.05867 8.62842 6.91423V0.163239C8.62842 0.0764816 8.69735 0.00493239 8.78487 0.00272091C9.34863 -0.0115243 9.91358 0.0301658 10.4705 0.127791Z" fill="white"/>
@@ -66,7 +69,7 @@ export default function MainSidebar({ variant = 'default' }) {
                 <path d="M8.13428 10.5684C8.09089 10.5684 8.04928 10.5854 8.0186 10.6158L6.33926 12.28C6.2362 12.3821 6.30919 12.5567 6.45493 12.5567H16.1382C16.196 12.5567 16.2496 12.5265 16.2784 12.4769C16.5952 11.933 16.8447 11.3612 17.027 10.7733C17.0588 10.6707 16.9803 10.5684 16.8721 10.5684H8.13428Z" fill="white"/>
                 <path d="M3.91045 14.9412C3.83293 14.8825 3.82636 14.7696 3.89534 14.7013L4.08101 14.5173C4.11169 14.4868 4.1533 14.4697 4.19669 14.4697H14.2374C14.3867 14.4697 14.4559 14.6496 14.3406 14.7438C11.33 17.208 6.99201 17.2737 3.91045 14.9412Z" fill="white"/>
               </svg>
-            </div>
+            </button>
 
             {/* Divider */}
             <Separator className="bg-zinc-800" />
@@ -139,13 +142,16 @@ export default function MainSidebar({ variant = 'default' }) {
       <div className="w-60 border-r border-zinc-800 bg-card flex flex-col justify-between pb-7 h-screen sticky top-0">
           <div className="space-y-4">
             {/* Logo */}
-            <div className="px-8 pt-6 pb-2">
+            <button
+              onClick={() => navigate('/')}
+              className="px-8 pt-6 pb-2 w-full text-left hover:opacity-80 transition-opacity"
+            >
               <img
                 src="/svg/logo.svg"
                 alt="Canopy"
                 className="h-4 invert"
               />
-            </div>
+            </button>
 
             {/* Divider */}
             <Separator className="bg-zinc-800" />

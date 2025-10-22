@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -46,6 +46,10 @@ export default function ChainDetail() {
 
   // Get chain data from database using slug
   const chainData = getChainDetailsBySlug(slug)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   // If chain not found, show 404
   if (!chainData) {
