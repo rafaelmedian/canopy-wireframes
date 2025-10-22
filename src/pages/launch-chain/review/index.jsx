@@ -37,6 +37,9 @@ export default function Review() {
   // Check if repo is connected
   const repoConnected = location.state?.launchSettings || location.state?.links ? true : false
 
+  // Check if coming from review countdown (edit mode)
+  const isEditMode = location.state?.fromReviewCountdown === true
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -93,9 +96,14 @@ export default function Review() {
   }
 
   const handlePayment = () => {
-    // In production, this would connect wallet and process payment
-    // For now, navigate to the owner chain page with success banner
-    navigate('/chain/my-chain?success=true')
+    if (isEditMode) {
+      // Save changes and return to chain detail
+      navigate('/chain/my-chain?success=true')
+    } else {
+      // In production, this would connect wallet and process payment
+      // For now, navigate to the owner chain page with success banner
+      navigate('/chain/my-chain?success=true')
+    }
   }
 
   return (
@@ -389,7 +397,7 @@ export default function Review() {
                 className="w-full"
                 onClick={handlePayment}
               >
-                Connect Wallet & Pay
+                {isEditMode ? 'Save Changes' : 'Connect Wallet & Pay'}
               </Button>
               <Button
                 variant="outline"

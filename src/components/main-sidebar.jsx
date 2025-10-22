@@ -144,7 +144,7 @@ export default function MainSidebar({ variant = 'default' }) {
             {/* Logo */}
             <button
               onClick={() => navigate('/')}
-              className="px-8 pt-6 pb-2 w-full text-left hover:opacity-80 transition-opacity"
+              className="px-8 pt-6 pb-2 w-full text-left hover:opacity-80 transition-opacity cursor-pointer"
             >
               <img
                 src="/svg/logo.svg"

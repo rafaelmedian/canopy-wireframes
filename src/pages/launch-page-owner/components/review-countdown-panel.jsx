@@ -24,8 +24,8 @@ export default function ReviewCountdownPanel({ chainData, onCountdownComplete })
   }, [timeRemaining, onCountdownComplete])
 
   const handleEdit = () => {
-    // Navigate back to review page to edit
-    navigate('/launchpad/review')
+    // Navigate back to review page to edit with state flag
+    navigate('/launchpad/review', { state: { fromReviewCountdown: true } })
   }
 
   const formatTime = (seconds) => {
