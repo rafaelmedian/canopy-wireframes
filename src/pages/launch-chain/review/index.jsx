@@ -64,7 +64,7 @@ export default function Review() {
       { platform: 'twitter', label: 'Twitter/X', url: '@mygamechain' },
       { platform: 'discord', label: 'Discord', url: 'https://discord.gg/mygamechain' }
     ],
-    whitepapers: [
+    resources: [
       { type: 'file', name: 'Technical Whitepaper.pdf' },
       { type: 'url', name: 'Tokenomics Overview', url: 'https://mygamechain.org/tokenomics' }
     ],
@@ -296,11 +296,11 @@ export default function Review() {
                       })}
                     </div>
                   </div>
-                  {chainData.whitepapers.length > 0 && (
+                  {chainData.resources.length > 0 && (
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">Whitepapers</p>
+                      <p className="text-sm text-muted-foreground mb-2">Resources</p>
                       <div className="space-y-2">
-                        {chainData.whitepapers.map((paper, index) => (
+                        {chainData.resources.map((paper, index) => (
                           <div key={index} className="flex items-center gap-2 text-sm">
                             {paper.type === 'file' ? (
                               <FileText className="w-4 h-4 text-muted-foreground" />

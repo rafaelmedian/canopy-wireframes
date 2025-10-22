@@ -6,6 +6,7 @@ export const BLOCK_TIME_OPTIONS = [
   { value: '30', label: '30 seconds' },
   { value: '60', label: '1 minute' },
   { value: '300', label: '5 minutes' },
+  { value: '600', label: '10 minutes' },
 ]
 
 export const AVATAR_COLORS = [

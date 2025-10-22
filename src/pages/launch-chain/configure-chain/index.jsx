@@ -115,7 +115,7 @@ export default function ConfigureChain() {
         setIsGeneratingTicker(false)
         setTickerSuggested(true)
         setErrors(prev => ({ ...prev, ticker: validateTicker(generatedTicker) }))
-      }, 2000)
+      }, 800)
     }
   }
 
@@ -443,9 +443,6 @@ export default function ConfigureChain() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-sm text-muted-foreground">
-                    Can be updated later to optimize network performance
-                  </p>
                 </div>
               </div>
 

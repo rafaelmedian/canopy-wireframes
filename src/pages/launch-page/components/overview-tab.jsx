@@ -474,15 +474,15 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
         </Card>
       )}
 
-      {/* Whitepapers Section */}
-      {chainData.whitepapers && chainData.whitepapers.length > 0 && (
+      {/* Resources Section */}
+      {chainData.resources && chainData.resources.length > 0 && (
         <Card className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <BookOpen className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold">Whitepapers & Documentation</h3>
+            <h3 className="text-lg font-semibold">Resources & Documentation</h3>
           </div>
           <div className="space-y-3">
-            {chainData.whitepapers.map((item, idx) => (
+            {chainData.resources.map((item, idx) => (
               <a
                 key={idx}
                 href={item.type === 'url' ? item.url : '#'}

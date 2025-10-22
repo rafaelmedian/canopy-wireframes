@@ -55,7 +55,7 @@
       "yearOneEmission": 137442250
     },
     "gallery": [null, null, null],
-    "whitepapers": [
+    "resources": [
       {
         "id": 1,
         "type": "file",
@@ -127,7 +127,7 @@
       "yearOneEmission": 137442250
     },
     "gallery": [null, null, null],
-    "whitepapers": [
+    "resources": [
       {
         "id": 1,
         "type": "file",
@@ -193,7 +193,7 @@
       "yearOneEmission": 137442250
     },
     "gallery": [null, null, null],
-    "whitepapers": [
+    "resources": [
       {
         "id": 1,
         "type": "file",
@@ -258,7 +258,7 @@
       "yearOneEmission": 137442250
     },
     "gallery": [null, null, null],
-    "whitepapers": [],
+    "resources": [],
     "currentStep": 4,
     "totalSteps": 7,
     "completedSteps": ["Language", "Repository", "Configuration", "Branding"]
@@ -297,7 +297,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 6,
@@ -333,7 +333,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 7,
@@ -369,7 +369,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 8,
@@ -405,7 +405,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 9,
@@ -441,7 +441,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 10,
@@ -477,7 +477,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 11,
@@ -513,7 +513,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 12,
@@ -549,7 +549,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 13,
@@ -585,7 +585,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 14,
@@ -622,7 +622,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 15,
@@ -659,7 +659,7 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   },
   {
     "id": 16,
@@ -696,6 +696,6 @@
     ],
     "tokenomics": {"totalSupply": "1000000000", "blockTime": 10, "halvingDays": 365, "yearOneEmission": 137442250},
     "gallery": [null, null, null],
-    "whitepapers": []
+    "resources": []
   }
 ]

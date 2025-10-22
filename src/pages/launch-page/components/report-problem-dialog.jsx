@@ -45,7 +45,7 @@ const reportReasons = {
     options: [
       'False claims or promises',
       'Fake team/advisors',
-      'Plagiarized whitepaper',
+      'Plagiarized documentation',
       'Fake partnerships'
     ]
   },

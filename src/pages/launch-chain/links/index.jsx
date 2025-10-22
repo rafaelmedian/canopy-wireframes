@@ -65,8 +65,8 @@ export default function Links() {
     { id: 1, platform: 'website', url: '' }
   ])
   const [selectedPlatform, setSelectedPlatform] = useState('')
-  const [whitepaperTab, setWhitepaperTab] = useState('upload')
-  const [whitepapers, setWhitepapers] = useState([]) // Unified list for files and URLs
+  const [resourceTab, setResourceTab] = useState('upload')
+  const [resources, setResources] = useState([]) // Unified list for files and URLs
   const [urlInput, setUrlInput] = useState('')
   const [isLoadingMetadata, setIsLoadingMetadata] = useState(false)
   const [errors, setErrors] = useState({})
@@ -76,7 +76,7 @@ export default function Links() {
 
   // Auto-save hook
   const { isSaving, lastSaved } = useAutoSave(
-    [socialLinks, whitepapers],
+    [socialLinks, resources],
     repoConnected
   )
 
@@ -134,7 +134,7 @@ export default function Links() {
       size: file.size
     }))
 
-    setWhitepapers(prev => [...prev, ...newFiles])
+    setResources(prev => [...prev, ...newFiles])
 
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
@@ -171,16 +171,16 @@ export default function Links() {
     }
   }
 
-  const addWhitepaperUrl = async () => {
+  const addResourceUrl = async () => {
     if (!urlInput.trim()) return
 
     const metadata = await fetchUrlMetadata(urlInput)
-    setWhitepapers(prev => [...prev, metadata])
+    setResources(prev => [...prev, metadata])
     setUrlInput('')
   }
 
-  const removeWhitepaper = (id) => {
-    setWhitepapers(prev => prev.filter(item => item.id !== id))
+  const removeResource = (id) => {
+    setResources(prev => prev.filter(item => item.id !== id))
   }
 
   const handleBack = () => {
@@ -194,7 +194,7 @@ export default function Links() {
           ...location.state,
           links: {
             social: socialLinks,
-            whitepapers
+            resources
           }
         }
       })
@@ -322,19 +322,19 @@ export default function Links() {
               {/* Divider */}
               <div className="border-t border-border" />
 
-              {/* Whitepapers Section */}
+              {/* Resources Section */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Label className="block text-sm font-medium">
-                    Whitepapers
+                    Resources
                   </Label>
                   <Badge variant="secondary" className="text-xs">Optional</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Share technical documentation, whitepapers, or other resources that help users understand your blockchain
+                  Share additional resources, pitch decks, whitepapers, or documentation that help users understand your blockchain
                 </p>
 
-                <Tabs value={whitepaperTab} onValueChange={setWhitepaperTab}>
+                <Tabs value={resourceTab} onValueChange={setResourceTab}>
                   <TabsList>
                     <TabsTrigger value="upload">Upload</TabsTrigger>
                     <TabsTrigger value="url">URL</TabsTrigger>
@@ -368,16 +368,16 @@ export default function Links() {
                       <Input
                         value={urlInput}
                         onChange={(e) => setUrlInput(e.target.value)}
-                        placeholder="https://yourchain.org/whitepaper.pdf"
+                        placeholder="https://yourchain.org/resources"
                         className="flex-1"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
-                            addWhitepaperUrl()
+                            addResourceUrl()
                           }
                         }}
                       />
                       <Button
-                        onClick={addWhitepaperUrl}
+                        onClick={addResourceUrl}
                         disabled={!urlInput.trim() || isLoadingMetadata}
                       >
                         {isLoadingMetadata ? 'Adding...' : 'Add'}
@@ -386,13 +386,13 @@ export default function Links() {
                   </TabsContent>
                 </Tabs>
 
-                {/* Unified Whitepapers List */}
-                {whitepapers.length > 0 && (
+                {/* Unified Resources List */}
+                {resources.length > 0 && (
                   <div className="space-y-2">
                     <Label className="block text-sm font-medium">
-                      Added whitepapers
+                      Added resources
                     </Label>
-                    {whitepapers.map(item => (
+                    {resources.map(item => (
                       <Card key={item.id} className="p-3">
                         <div className="flex items-start gap-3">
                           <div className="mt-1">
@@ -414,7 +414,7 @@ export default function Links() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => removeWhitepaper(item.id)}
+                            onClick={() => removeResource(item.id)}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
