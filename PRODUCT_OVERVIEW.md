@@ -29,6 +29,8 @@ This document describes the design and user flows for key pages of the Canopy La
 
 ## 1. Launchpad (Home)
 
+**Live Example:** https://canopy-wireframes.vercel.app/
+
 The launchpad serves as the main landing page where users discover and explore L1 blockchain chains.
 
 ### Key Features
@@ -107,6 +109,9 @@ The launchpad serves as the main landing page where users discover and explore L
 - Prominent "Create L1 chain" button in sidebar
 - Also accessible via "+" icon in compact sidebar mode
 - Opens launch overview dialog
+
+**Example Public Chain:**
+- https://canopy-wireframes.vercel.app/chain/onchain-ens
 
 ![Launchpad grid view with milestone badges](public/imgs/launchpad-grid-view.png)
 
@@ -193,6 +198,8 @@ Multi-step wizard for creating a new L1 blockchain. The flow guides users throug
 
 ### Step 1: Language Selection
 
+**Live Example:** https://canopy-wireframes.vercel.app/launchpad/language
+
 Select the programming language/framework for the blockchain.
 
 **Available Languages:**
@@ -217,6 +224,8 @@ Select the programming language/framework for the blockchain.
 ---
 
 ### Step 2: Repository Connection
+
+**Live Example:** https://canopy-wireframes.vercel.app/launchpad/repository
 
 Connect to the GitHub repository containing the blockchain code.
 
@@ -285,6 +294,8 @@ Connect to the GitHub repository containing the blockchain code.
 ---
 
 ### Step 3: Chain Configuration
+
+**Live Example:** https://canopy-wireframes.vercel.app/launchpad/configure
 
 Core blockchain parameters and technical configuration.
 
@@ -407,6 +418,8 @@ Core blockchain parameters and technical configuration.
 
 ### Step 4: Branding
 
+**Live Example:** https://canopy-wireframes.vercel.app/launchpad/branding
+
 Visual identity for the chain.
 
 **Branding Elements:**
@@ -485,6 +498,8 @@ Visual identity for the chain.
 ---
 
 ### Step 5: Links & Social Media
+
+**Live Example:** https://canopy-wireframes.vercel.app/launchpad/links
 
 Social presence and external links.
 
@@ -582,6 +597,8 @@ Social presence and external links.
 
 ### Step 6: Settings & Tokenomics
 
+**Live Example:** https://canopy-wireframes.vercel.app/launchpad/settings
+
 Economic model and launch settings.
 
 **Graduation Threshold (Fixed, Not Configurable):**
@@ -649,6 +666,8 @@ Economic model and launch settings.
 ---
 
 ### Step 7: Review & Launch
+
+**Live Example:** https://canopy-wireframes.vercel.app/launchpad/review
 
 Final review of all configuration before publishing or saving changes.
 
@@ -786,6 +805,8 @@ Chains can be in one of four states:
 
 ### State 1: Draft Chain (Owner View Only)
 
+**Live Example:** https://canopy-wireframes.vercel.app/chain/draft-chain
+
 When chain is saved as draft and only visible to the creator.
 
 **Header:**
@@ -833,6 +854,8 @@ When chain is saved as draft and only visible to the creator.
 ---
 
 ### State 2: Virtual Chain (Public View)
+
+**Live Example:** https://canopy-wireframes.vercel.app/chain/my-chain
 
 Active chain in bonding curve phase, visible to all users.
 
@@ -944,6 +967,8 @@ After user completes payment, a 30-second review period begins before chain is p
 ---
 
 ### State 4: Graduated Chain (Mainnet)
+
+**Live Example:** https://canopy-wireframes.vercel.app/chain/graduated-chain
 
 Chain that successfully reached $50k market cap and graduated to mainnet.
 
@@ -1076,6 +1101,8 @@ Standalone pages for transactions and blocks, separate from the side sheets show
 
 ### Transaction Detail Page
 
+**Live Example:** https://canopy-wireframes.vercel.app/transaction/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1a9d2f4e6c8a0b2d4e6c8a0b2
+
 Full-page view accessible via direct URL: `/transaction/[hash]`
 
 **Layout:**
@@ -1112,6 +1139,8 @@ Full-page view accessible via direct URL: `/transaction/[hash]`
 ---
 
 ### Block Detail Page
+
+**Live Example:** https://canopy-wireframes.vercel.app/block/0x8f5c7d9a2b1e4f3c6a8d9e2f1b4c7a5d9e2f1b4c7a5d9e2f1b4c
 
 Full-page view accessible via direct URL: `/block/[hash]`
 
