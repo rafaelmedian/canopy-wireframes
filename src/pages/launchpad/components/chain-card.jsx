@@ -3,28 +3,15 @@ import { Progress } from '@/components/ui/progress'
 import { LineChart, Line, ResponsiveContainer } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Users, TrendingUp, Zap, Target, Sparkles, Crown, Trophy } from 'lucide-react'
+import { getCompletedMilestones } from '@/utils/milestones'
 
 export default function ChainCard({ chain }) {
   const navigate = useNavigate()
 
   const progress = (chain.marketCap / chain.goal) * 100
 
-  // Define milestones
-  const milestones = [
-    { id: 1, icon: Users, title: 'First 10 holders', requirement: 10, current: chain.holderCount || 0 },
-    { id: 2, icon: TrendingUp, title: '$1k market cap', requirement: 1000, current: chain.marketCap || 0 },
-    { id: 3, icon: Users, title: '50 holders milestone', requirement: 50, current: chain.holderCount || 0 },
-    { id: 4, icon: Zap, title: '1,000 transactions', requirement: 1000, current: 0 },
-    { id: 5, icon: TrendingUp, title: '$5k market cap', requirement: 5000, current: chain.marketCap || 0 },
-    { id: 6, icon: Users, title: '100 holders club', requirement: 100, current: chain.holderCount || 0 },
-    { id: 7, icon: Target, title: '$10k market cap', requirement: 10000, current: chain.marketCap || 0 },
-    { id: 8, icon: Sparkles, title: '500 holders strong', requirement: 500, current: chain.holderCount || 0 },
-    { id: 9, icon: Crown, title: '$25k market cap', requirement: 25000, current: chain.marketCap || 0 },
-    { id: 10, icon: Trophy, title: 'Graduation ready', requirement: 50000, current: chain.marketCap || 0 }
-  ]
-
-  const completedMilestones = milestones.filter(m => m.current >= m.requirement)
+  // Get completed milestones from chain data with icons
+  const completedMilestones = getCompletedMilestones(chain.milestones || [])
   const displayedMilestones = completedMilestones.slice(0, 4) // Show fewer in grid view
   const remainingCount = completedMilestones.length - 4
 

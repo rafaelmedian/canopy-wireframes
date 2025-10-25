@@ -1,27 +1,37 @@
-import { Card } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
-import { Users, TrendingUp, ArrowRightLeft, Trophy } from 'lucide-react'
-
-// Icon mapping for milestone types
-const MILESTONE_ICONS = {
-  holders: Users,
-  transactions: ArrowRightLeft,
-  marketcap: TrendingUp
-}
+import { Card } from '@/components/ui/card.jsx'
+import { Progress } from '@/components/ui/progress.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
+import { enrichMilestonesWithIcons } from '@/utils/milestones'
+import milestoneTypes from '@/data/milestones.json'
 
 export default function MilestonesTab({ chainData, isOwner = false }) {
-  // Get milestones from chainData (comes from database with current values already calculated)
-  const milestones = (chainData.milestones || []).map(milestone => ({
-    ...milestone,
-    icon: MILESTONE_ICONS[milestone.type] || Trophy
-  }))
+  // In preview mode or when no milestones exist, show all milestone types as locked with 0 progress
+  const isPreview = chainData.isPreview || chainData.isDraft
+
+  let milestones
+  if (isPreview || !chainData.milestones || chainData.milestones.length === 0) {
+    // Create locked milestones from milestone types for preview mode
+    milestones = enrichMilestonesWithIcons(
+      milestoneTypes.map(type => ({
+        ...type,
+        current: 0,
+        completed: false
+      }))
+    )
+  } else {
+    // Get milestones from chainData with proper icons
+    milestones = enrichMilestonesWithIcons(chainData.milestones)
+  }
 
   // Calculate progress for each milestone
   const getMilestoneStatus = (milestone) => {
+    // In preview mode, all milestones are locked with 0 progress
+    if (isPreview) {
+      return { progress: 0, isCompleted: false, isLocked: true }
+    }
+
     const progress = Math.min((milestone.current / milestone.requirement) * 100, 100)
     const isCompleted = milestone.completed || progress >= 100
-    // Only lock milestones for owner chains (simplified - you can enhance this logic)
     const isLocked = false
 
     return { progress, isCompleted, isLocked }
@@ -110,7 +120,7 @@ export default function MilestonesTab({ chainData, isOwner = false }) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">
-                    {formatValue(milestone.current, milestone.type)} of {formatValue(milestone.requirement, milestone.type)}
+                    {formatValue(isPreview ? 0 : milestone.current, milestone.type)} of {formatValue(milestone.requirement, milestone.type)}
                   </span>
                   <span className="font-medium">{progress.toFixed(0)}%</span>
                 </div>

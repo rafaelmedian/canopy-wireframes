@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button.jsx'
+import { Card } from '@/components/ui/card.jsx'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { Upload, Star, Users, TrendingUp, Zap, Target, Sparkles, Crown, Trophy } from 'lucide-react'
+} from '@/components/ui/tooltip.jsx'
+import { Upload, Star } from 'lucide-react'
 import { toast } from 'sonner'
+import { getCompletedMilestones } from '@/utils/milestones'
 
 export default function ChainHeader({ chainData }) {
   const [isFavorited, setIsFavorited] = useState(false)
@@ -19,92 +20,8 @@ export default function ChainHeader({ chainData }) {
     toast.success('Chain link copied to clipboard!')
   }
 
-  // Define all milestones with their requirements
-  const milestones = [
-    {
-      id: 1,
-      icon: Users,
-      title: 'First 10 holders',
-      requirement: 10,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 2,
-      icon: TrendingUp,
-      title: '$1k market cap',
-      requirement: 1000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 3,
-      icon: Users,
-      title: '50 holders milestone',
-      requirement: 50,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 4,
-      icon: Zap,
-      title: '1,000 transactions',
-      requirement: 1000,
-      current: chainData.explorer?.totalTransactions || 0,
-      type: 'transactions'
-    },
-    {
-      id: 5,
-      icon: TrendingUp,
-      title: '$5k market cap',
-      requirement: 5000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 6,
-      icon: Users,
-      title: '100 holders club',
-      requirement: 100,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 7,
-      icon: Target,
-      title: '$10k market cap',
-      requirement: 10000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 8,
-      icon: Sparkles,
-      title: '500 holders strong',
-      requirement: 500,
-      current: chainData.holderCount || 0,
-      type: 'holders'
-    },
-    {
-      id: 9,
-      icon: Crown,
-      title: '$25k market cap',
-      requirement: 25000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    },
-    {
-      id: 10,
-      icon: Trophy,
-      title: 'Graduation ready',
-      requirement: 50000,
-      current: chainData.marketCap || 0,
-      type: 'marketcap'
-    }
-  ]
-
-  // Get completed milestones
-  const completedMilestones = milestones.filter(m => m.current >= m.requirement)
+  // Get completed milestones from chainData with icons
+  const completedMilestones = getCompletedMilestones(chainData.milestones || [])
   const displayedMilestones = completedMilestones.slice(0, 6)
   const remainingCount = completedMilestones.length - 6
 

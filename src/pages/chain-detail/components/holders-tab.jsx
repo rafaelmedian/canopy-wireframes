@@ -1,8 +1,8 @@
-import { Card } from '@/components/ui/card'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
-import { AVATAR_COLORS } from '@/data/mock-config'
+import { Card } from '@/components/ui/card.jsx'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar.jsx'
+import { Separator } from '@/components/ui/separator.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
+import { AVATAR_COLORS } from '@/data/mock-config.js'
 
 export default function HoldersTab({ holders = [], ticker = 'tokens', totalHolders, currentPrice = 0.001, creatorAddress }) {
   // Safety check

@@ -1,10 +1,38 @@
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button.jsx'
+import { Card } from '@/components/ui/card.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.jsx'
 import { Github, Star, GitFork, ExternalLink, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function CodeTab({ chainData }) {
+  // Debug: Check what we're receiving
+  console.log('=== CodeTab Debug ===');
+  console.log('Full chainData:', chainData);
+  console.log('chainData.language:', chainData.language);
+  console.log('typeof chainData.language:', typeof chainData.language);
+
+  // Check all properties that might be objects
+  Object.keys(chainData).forEach(key => {
+    if (typeof chainData[key] === 'object' && chainData[key] !== null && !Array.isArray(chainData[key])) {
+      console.log(`chainData.${key} is an object:`, chainData[key]);
+    }
+  });
+
+  // Ensure language is always a string
+  const languageName = typeof chainData.language === 'string'
+    ? chainData.language
+    : (chainData.language?.name || 'TypeScript');
+
+  // Ensure name is always a string
+  const chainName = typeof chainData.name === 'string'
+    ? chainData.name
+    : (chainData.name?.name || 'Chain');
+
+  // Ensure repositoryName is always a string
+  const repoName = typeof chainData.repositoryName === 'string'
+    ? chainData.repositoryName
+    : (chainData.repositoryName?.name || 'repository');
+
   return (
     <Card className="p-6 mt-4">
       <div className="space-y-6">
@@ -17,7 +45,7 @@ export default function CodeTab({ chainData }) {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="text-xl font-semibold">
-                  {chainData.repositoryName}
+                  {repoName}
                 </h3>
                 {/* Deployment Status Badge */}
                 <TooltipProvider>
@@ -64,10 +92,16 @@ export default function CodeTab({ chainData }) {
               </div>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="gap-2">
-            <ExternalLink className="w-4 h-4" />
-            View on GitHub
-          </Button>
+          <a
+            href={`https://github.com/${repoName}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline" size="sm" className="gap-2">
+              <ExternalLink className="w-4 h-4" />
+              View on GitHub
+            </Button>
+          </a>
         </div>
 
         <div className="h-px bg-border" />
@@ -78,7 +112,9 @@ export default function CodeTab({ chainData }) {
             <p className="text-sm font-medium text-muted-foreground">Primary Language</p>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <p className="text-lg font-semibold">{chainData.language}</p>
+              <p className="text-lg font-semibold">
+                {languageName}
+              </p>
             </div>
           </div>
           <div className="space-y-2">
@@ -93,8 +129,8 @@ export default function CodeTab({ chainData }) {
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">About</p>
           <p className="text-sm leading-relaxed">
-            This repository contains the core blockchain implementation for {chainData.name}.
-            Built with {chainData.language}, it provides a robust foundation for decentralized
+            This repository contains the core blockchain implementation for {chainName}.
+            Built with {languageName}, it provides a robust foundation for decentralized
             applications and smart contract execution.
           </p>
         </div>
@@ -107,7 +143,7 @@ export default function CodeTab({ chainData }) {
               blockchain
             </span>
             <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-              {chainData.language.toLowerCase()}
+              {languageName.toLowerCase()}
             </span>
             <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
               smart-contracts

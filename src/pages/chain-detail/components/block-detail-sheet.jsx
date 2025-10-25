@@ -1,10 +1,10 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet.jsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
+import { Button } from '@/components/ui/button.jsx'
 import { Copy, CheckCircle2, ArrowRightLeft, Clock, XCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { getTransactionsByBlockNumber } from '@/data/db'
+import { getTransactionsByBlockNumber } from '@/data/db.js'
 
 export default function BlockDetailSheet({ block, chainData, open, onOpenChange, onTransactionClick }) {
   const [copiedHash, setCopiedHash] = useState(false)

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button.jsx'
 import { AlertCircle } from 'lucide-react'
-import ReportProblemDialog from './report-problem-dialog'
+import ReportProblemDialog from './report-problem-dialog.jsx'
 
 export default function ReportProblemButton({ chainData }) {
   const [dialogOpen, setDialogOpen] = useState(false)

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { ArrowLeft, ArrowRight, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, X, Eye } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
@@ -13,6 +13,7 @@ import GalleryCarousel from './components/gallery-carousel'
 import {Badge} from "@/components/ui/badge.jsx";
 import { useAutoSave } from '@/hooks/use-auto-save.js'
 import { useLaunchFlow } from '@/contexts/launch-flow-context'
+import PreviewSideSheet from '../components/preview-side-sheet'
 
 export default function Branding() {
   const navigate = useNavigate()
@@ -29,6 +30,7 @@ export default function Branding() {
     title: '',
     description: ''
   })
+  const [showPreview, setShowPreview] = useState(false)
 
   const logoInputRef = useRef(null)
   const galleryInputRef = useRef(null)
@@ -257,18 +259,56 @@ export default function Branding() {
                 Back
               </Button>
 
-              <Button
-                onClick={handleContinue}
-                disabled={!isFormValid}
-                className="gap-2"
-              >
-                Continue
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)}
+                  className="gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  Preview
+                </Button>
+                <Button
+                  onClick={handleContinue}
+                  disabled={!isFormValid}
+                  className="gap-2"
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Preview Side Sheet */}
+      <PreviewSideSheet
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        formData={{
+          // From previous steps (context) - be specific about fields
+          language: getFlowData('language')?.name,
+          repository: getFlowData('repository'),
+          name: getFlowData('chainConfig')?.chainName,
+          ticker: getFlowData('chainConfig')?.ticker,
+          tokenName: getFlowData('chainConfig')?.tokenName,
+          totalSupply: parseInt(getFlowData('chainConfig')?.tokenSupply || 1000000000),
+          blockTime: parseInt(getFlowData('chainConfig')?.blockTime || 10),
+          halvingDays: parseInt(getFlowData('chainConfig')?.halvingDays || 365),
+          social: getFlowData('links')?.social,
+          resources: getFlowData('links')?.resources,
+          graduationThreshold: getFlowData('launchSettings')?.graduationThreshold,
+          initialPurchase: getFlowData('launchSettings')?.initialPurchase,
+          // From current step - these override any conflicts
+          logo: logo,
+          brandColor: brandColor,
+          title: title,
+          description: description,
+          gallery: galleryItems,
+          bannerImage: galleryItems?.[0]?.preview || null
+        }}
+      />
     </div>
   )
 }

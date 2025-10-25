@@ -32,39 +32,127 @@ Canopy Launcher provides a streamlined, user-friendly interface for deploying bl
 src/
 ├── components/              # Shared/reusable components
 │   ├── ui/                 # shadcn/ui components
-│   ├── command-search-dialog.jsx
-│   ├── launchpad-sidebar.jsx
-│   └── main-sidebar.jsx
+│   │   ├── alert-dialog.jsx
+│   │   ├── avatar.jsx
+│   │   ├── badge.jsx
+│   │   ├── button.jsx
+│   │   ├── card.jsx
+│   │   ├── command.jsx
+│   │   ├── dialog.jsx
+│   │   ├── dropdown-menu.jsx
+│   │   ├── input.jsx
+│   │   ├── label.jsx
+│   │   ├── progress.jsx
+│   │   ├── radio-group.jsx
+│   │   ├── select.jsx
+│   │   ├── separator.jsx
+│   │   ├── sheet.jsx
+│   │   ├── sidebar.jsx
+│   │   ├── skeleton.jsx
+│   │   ├── sonner.jsx      # Toast notifications
+│   │   ├── tabs.jsx
+│   │   ├── textarea.jsx
+│   │   └── tooltip.jsx
+│   ├── command-search-dialog.jsx  # Global search (Cmd+K)
+│   ├── launch-overview-dialog.jsx # Launch flow overview
+│   ├── launchpad-sidebar.jsx      # Launchpad filtering sidebar
+│   ├── main-sidebar.jsx           # Main navigation sidebar
+│   └── search-panel.jsx           # Search functionality
 │
 ├── data/                   # Mock data and database
-│   ├── db.js
-│   ├── chains.json
-│   ├── transactions.json
-│   └── blocks.json
+│   ├── db.js              # Database query functions
+│   ├── chains.json        # Chain definitions (16 chains)
+│   ├── holders.json       # Token holders by chainId
+│   ├── transactions.json  # Transaction records by chainId
+│   ├── blocks.json        # Block data by chainId
+│   ├── price-history.json # Price history by chainId
+│   ├── milestones.json    # Milestone type definitions (9 types)
+│   ├── milestone-logs.json # Milestone progress tracking by chainId
+│   └── mock-config.js     # Configuration constants
 │
 ├── hooks/                  # Custom React hooks
-│   └── use-auto-save.js
+│   ├── use-auto-save.js   # Auto-save form data
+│   └── use-mobile.js      # Mobile detection hook
 │
-├── pages/                  # Page components
-│   ├── home/              # Launchpad home page
-│   ├── launch-chain/      # 7-step launch flow
-│   │   ├── language-selection/
-│   │   ├── repository/
-│   │   ├── configure-chain/
-│   │   ├── branding/
-│   │   ├── links/
-│   │   ├── settings/
-│   │   └── review/
-│   ├── chain-page/        # Chain detail pages
-│   ├── transaction-page/
-│   └── block-page/
+├── pages/
+│   ├── launchpad/         # Main marketplace/discovery page
+│   │   ├── index.jsx
+│   │   └── components/
+│   │       ├── chain-card.jsx        # Grid view card
+│   │       ├── chain-list-item.jsx   # List view item
+│   │       ├── filter-bar.jsx        # Sorting/filtering controls
+│   │       ├── top-chain-card.jsx    # Featured chain card
+│   │       └── top-chain-carousel.jsx # Featured chains carousel
+│   │
+│   ├── launch-chain/      # 7-step chain creation flow
+│   │   ├── language-selection/       # Step 1: Choose language
+│   │   │   └── index.jsx
+│   │   ├── connect-repo/             # Step 2: Connect GitHub
+│   │   │   ├── index.jsx
+│   │   │   └── components/
+│   │   │       ├── github-auth-dialog.jsx
+│   │   │       └── github-connect-dialog.jsx
+│   │   ├── configure-chain/          # Step 3: Chain settings
+│   │   │   └── index.jsx
+│   │   ├── branding/                 # Step 4: Visual identity
+│   │   │   ├── index.jsx
+│   │   │   └── components/
+│   │   │       ├── gallery-carousel.jsx
+│   │   │       └── logo-upload.jsx
+│   │   ├── links/                    # Step 5: Social links
+│   │   │   └── index.jsx
+│   │   ├── launch-settings/          # Step 6: Launch config
+│   │   │   └── index.jsx
+│   │   └── review/                   # Step 7: Review & launch
+│   │       └── index.jsx
+│   │
+│   ├── chain-detail/      # Public chain view (virtual/graduated)
+│   │   ├── index.jsx
+│   │   └── components/
+│   │       ├── chain-header.jsx           # Chain info header
+│   │       ├── overview-tab.jsx           # Stats overview
+│   │       ├── milestones-tab.jsx         # Achievement tracking
+│   │       ├── holders-tab.jsx            # Token holders list
+│   │       ├── code-tab.jsx               # Source code viewer
+│   │       ├── block-explorer-tab.jsx     # Blocks & transactions
+│   │       ├── price-chart.jsx            # Price history chart
+│   │       ├── trading-panel.jsx          # Buy/sell interface
+│   │       ├── report-problem-button.jsx  # Report chain button
+│   │       ├── report-problem-dialog.jsx  # Report form
+│   │       ├── transaction-detail-sheet.jsx # Transaction details
+│   │       └── block-detail-sheet.jsx     # Block details
+│   │
+│   ├── chain-detail-draft/ # Draft chain view (pre-launch)
+│   │   ├── index.jsx
+│   │   └── components/
+│   │       ├── draft-block-explorer-tab.jsx # Empty state
+│   │       ├── draft-holders-tab.jsx        # Empty holders
+│   │       └── draft-progress-panel.jsx     # Launch progress
+│   │
+│   ├── chain-detail-owner/ # Owner view (your chains)
+│   │   ├── index.jsx
+│   │   └── components/
+│   │       ├── launch-success-banner.jsx    # Post-launch banner
+│   │       └── review-countdown-panel.jsx   # Review timer
+│   │
+│   ├── chain-detail-graduated/ # Graduated chain view
+│   │   └── index.jsx       # Uses chain-detail components
+│   │
+│   ├── transaction-page/   # Transaction detail page
+│   │   └── index.jsx
+│   │
+│   └── block-page/         # Block detail page
+│       └── index.jsx
+│
+├── utils/
+│   └── milestones.js      # Milestone icon mapping
 │
 ├── lib/
-│   └── utils.js
+│   └── utils.js           # General utilities (cn, etc)
 │
-├── App.jsx
-├── main.jsx
-└── index.css
+├── App.jsx                # Main app component & routing
+├── main.jsx               # App entry point
+└── index.css              # Global styles & Tailwind
 ```
 
 ## 🚦 Getting Started

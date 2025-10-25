@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { ArrowLeft, ArrowRight, X, Target, Coins, Info, HelpCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, X, Target, Coins, Info, HelpCircle, Eye } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
@@ -12,6 +12,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import {Badge} from "@/components/ui/badge.jsx";
 import { useAutoSave } from '@/hooks/use-auto-save.js'
 import { useLaunchFlow } from '@/contexts/launch-flow-context'
+import PreviewSideSheet from '../components/preview-side-sheet'
 
 export default function LaunchSettings() {
   const navigate = useNavigate()
@@ -23,6 +24,7 @@ export default function LaunchSettings() {
     savedSettings?.initialPurchase?.toString() || ''
   )
   const [showWhyBuy, setShowWhyBuy] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   // Check if repo is connected (from context)
   const repoConnected = getFlowData('links') ? true : false
@@ -252,18 +254,58 @@ export default function LaunchSettings() {
                 Back
               </Button>
 
-              <Button
-                onClick={handleContinue}
-                className="gap-2"
-              >
-                Continue
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)}
+                  className="gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  Preview
+                </Button>
+                <Button
+                  onClick={handleContinue}
+                  className="gap-2"
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    {/* Preview Side Sheet */}
+    <PreviewSideSheet
+      open={showPreview}
+      onOpenChange={setShowPreview}
+      formData={{
+        // From previous steps (context) - be specific about fields
+        language: getFlowData('language')?.name,
+        repository: getFlowData('repository'),
+        name: getFlowData('chainConfig')?.chainName,
+        ticker: getFlowData('chainConfig')?.ticker,
+        tokenName: getFlowData('chainConfig')?.tokenName,
+        totalSupply: parseInt(getFlowData('chainConfig')?.tokenSupply || 1000000000),
+        blockTime: parseInt(getFlowData('chainConfig')?.blockTime || 10),
+        halvingDays: parseInt(getFlowData('chainConfig')?.halvingDays || 365),
+        logo: getFlowData('branding')?.logo,
+        brandColor: getFlowData('branding')?.brandColor,
+        title: getFlowData('branding')?.title,
+        description: getFlowData('branding')?.description,
+        gallery: getFlowData('branding')?.gallery,
+        bannerImage: getFlowData('branding')?.gallery?.[0]?.preview,
+        social: getFlowData('links')?.social,
+        resources: getFlowData('links')?.resources,
+        // From current step - these override any conflicts
+        launchType: 'fair',
+        initialPrice: initialPurchase ? parseFloat(initialPurchase) / 1000000 : 0.01,
+        initialPurchase: initialPurchase ? parseFloat(initialPurchase) : 0,
+        graduationThreshold: graduationThreshold
+      }}
+    />
     </TooltipProvider>
   )
 }

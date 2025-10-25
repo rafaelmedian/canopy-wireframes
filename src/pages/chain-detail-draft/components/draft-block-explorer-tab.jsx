@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card'
 import { Activity } from 'lucide-react'
 
-export default function DraftBlockExplorerTab({ chainData }) {
+export default function DraftBlockExplorerTab() {
   return (
     <div className="space-y-6 mt-4">
       {/* Empty State */}
@@ -13,7 +13,7 @@ export default function DraftBlockExplorerTab({ chainData }) {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Blockchain not active yet</h3>
             <p className="text-sm text-muted-foreground max-w-md">
-              Your blockchain will start producing blocks once you complete the launch process. Finish the remaining configuration steps and make your initial purchase to activate the network.
+              Once your chain graduates, it will start producing blocks and people will be able to search blocks and transactions.
             </p>
           </div>
         </div>

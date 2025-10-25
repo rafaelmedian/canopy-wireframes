@@ -1,6 +1,6 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
+import { Button } from '@/components/ui/button.jsx'
 import { CheckCircle2, Clock, XCircle, Copy, ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 

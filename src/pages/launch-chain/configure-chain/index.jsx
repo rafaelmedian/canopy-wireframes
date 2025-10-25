@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { ArrowLeft, ArrowRight, X, Info, HelpCircle, Check, Loader2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, X, Info, HelpCircle, Check, Loader2, Eye } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
@@ -13,6 +13,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { useAutoSave } from '@/hooks/use-auto-save.js'
 import { BLOCK_TIME_OPTIONS } from '@/data/mock-config'
 import { useLaunchFlow } from '@/contexts/launch-flow-context'
+import PreviewSideSheet from '../components/preview-side-sheet'
 
 export default function ConfigureChain() {
   const navigate = useNavigate()
@@ -29,6 +30,7 @@ export default function ConfigureChain() {
   const [tickerManuallyEdited, setTickerManuallyEdited] = useState(false)
   const [tickerSuggested, setTickerSuggested] = useState(false)
   const [isGeneratingTicker, setIsGeneratingTicker] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const tickerTimeoutRef = useRef(null)
 
   // Validation errors
@@ -495,20 +497,53 @@ export default function ConfigureChain() {
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </Button>
-              
-              <Button
-                onClick={handleContinue}
-                disabled={!isFormValid}
-                className="gap-2"
-              >
-                Continue
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)}
+                  className="gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  Preview
+                </Button>
+                <Button
+                  onClick={handleContinue}
+                  disabled={!isFormValid}
+                  className="gap-2"
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    {/* Preview Side Sheet */}
+    <PreviewSideSheet
+      open={showPreview}
+      onOpenChange={setShowPreview}
+      formData={{
+        // From previous steps (context) - be specific about fields
+        language: getFlowData('language')?.name,
+        repository: getFlowData('repository'),
+        ...getFlowData('branding'),
+        ...getFlowData('links'),
+        ...getFlowData('launchSettings'),
+        // From current step - these override any conflicts
+        name: chainName || 'Untitled Chain',
+        ticker: ticker || 'UNTD',
+        tokenName: tokenName,
+        totalSupply: parseInt(tokenSupply),
+        consensus: 'Proof of Stake',
+        blockTime: parseInt(blockTime),
+        maxValidators: 100,
+        halvingDays: parseInt(halvingDays)
+      }}
+    />
     </TooltipProvider>
   )
 }

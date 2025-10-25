@@ -4,21 +4,22 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
-import ChainHeader from './components/chain-header'
-import PriceChart from './components/price-chart'
-import OverviewTab from './components/overview-tab'
-import CodeTab from './components/code-tab'
-import HoldersTab from './components/holders-tab'
-import BlockExplorerTab from './components/block-explorer-tab'
-import MilestonesTab from './components/milestones-tab'
-import TradingPanel from './components/trading-panel'
-import ReportProblemButton from './components/report-problem-button'
-import { getChainDetails } from '@/data/db'
+import ChainHeader from '@/pages/chain-detail/components/chain-header'
+import PriceChart from '@/pages/chain-detail/components/price-chart'
+import OverviewTab from '@/pages/chain-detail/components/overview-tab'
+import CodeTab from '@/pages/chain-detail/components/code-tab'
+import HoldersTab from '@/pages/chain-detail/components/holders-tab'
+import BlockExplorerTab from '@/pages/chain-detail/components/block-explorer-tab'
+import MilestonesTab from '@/pages/chain-detail/components/milestones-tab'
+import TradingPanel from '@/pages/chain-detail/components/trading-panel'
+import ReportProblemButton from '@/pages/chain-detail/components/report-problem-button'
+import { Globe, Github } from 'lucide-react'
+import { getChainDetails } from "@/data/db"
 
-// Get chain data from database (ID 1 = Onchain ENS - Virtual chain)
-const mockChainData = getChainDetails(1)
+// Get chain data from database (ID 3 = Social Connect - Graduated chain)
+const graduatedChainData = getChainDetails(3)
 
-export default function LaunchPage() {
+export default function LaunchPageGraduated() {
   const navigate = useNavigate()
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0)
   const [activeTab, setActiveTab] = useState('overview')
@@ -37,9 +38,9 @@ export default function LaunchPage() {
               Launchpad
             </button>
             <span>/</span>
-            <span className="text-foreground">Onchain ENS</span>
-            <Badge variant="outline" className="border-purple-500/50 text-purple-500 ml-2">
-              Virtual
+            <span className="text-foreground">Social Connect</span>
+            <Badge variant="outline" className="border-green-500/50 text-green-500 ml-2">
+              Graduated
             </Badge>
           </div>
         </div>
@@ -48,14 +49,14 @@ export default function LaunchPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content Area */}
             <div className="lg:col-span-2 space-y-6">
-              <ChainHeader chainData={mockChainData} />
-              <PriceChart chainData={mockChainData} />
+              <ChainHeader chainData={graduatedChainData} />
+              <PriceChart chainData={graduatedChainData} />
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="w-full justify-start">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="holders">Holders (21)</TabsTrigger>
+                  <TabsTrigger value="holders">Holders ({graduatedChainData.holderCount.toLocaleString()})</TabsTrigger>
                   <TabsTrigger value="milestones">Milestones</TabsTrigger>
                   <TabsTrigger value="code">Code</TabsTrigger>
                   <TabsTrigger value="block-explorer">Block Explorer</TabsTrigger>
@@ -63,7 +64,7 @@ export default function LaunchPage() {
 
                 <TabsContent value="overview">
                   <OverviewTab
-                    chainData={mockChainData}
+                    chainData={graduatedChainData}
                     currentGalleryIndex={currentGalleryIndex}
                     setCurrentGalleryIndex={setCurrentGalleryIndex}
                     onNavigateToTab={setActiveTab}
@@ -72,32 +73,32 @@ export default function LaunchPage() {
 
                 <TabsContent value="holders">
                   <HoldersTab
-                    holders={mockChainData.holders}
-                    ticker={mockChainData.ticker}
-                    totalHolders={mockChainData.holderCount}
+                    holders={graduatedChainData.holders}
+                    ticker={graduatedChainData.ticker}
+                    totalHolders={graduatedChainData.holderCount}
                   />
                 </TabsContent>
 
                 <TabsContent value="milestones">
-                  <MilestonesTab chainData={mockChainData} />
+                  <MilestonesTab chainData={graduatedChainData} />
                 </TabsContent>
 
                 <TabsContent value="code">
-                  <CodeTab chainData={mockChainData} />
+                  <CodeTab chainData={graduatedChainData} />
                 </TabsContent>
 
                 <TabsContent value="block-explorer">
-                  <BlockExplorerTab chainData={mockChainData} />
+                  <BlockExplorerTab chainData={graduatedChainData} />
                 </TabsContent>
               </Tabs>
 
               {/* Report a Problem Button */}
-              <ReportProblemButton chainData={mockChainData} />
+              <ReportProblemButton chainData={graduatedChainData} />
             </div>
 
             {/* Right Sidebar */}
             <div className="space-y-6">
-              <TradingPanel chainData={mockChainData} />
+              <TradingPanel chainData={graduatedChainData} />
             </div>
           </div>
         </div>

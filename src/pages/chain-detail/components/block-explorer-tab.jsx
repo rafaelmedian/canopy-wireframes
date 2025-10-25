@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card.jsx'
+import { Input } from '@/components/ui/input.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
+import { Button } from '@/components/ui/button.jsx'
 import { Activity, Box, ArrowRightLeft, Search, ExternalLink, CheckCircle2, Clock, XCircle } from 'lucide-react'
-import TransactionDetailSheet from './transaction-detail-sheet'
-import BlockDetailSheet from './block-detail-sheet'
+import TransactionDetailSheet from './transaction-detail-sheet.jsx'
+import BlockDetailSheet from './block-detail-sheet.jsx'
 
 export default function BlockExplorerTab({ chainData }) {
   const [selectedTransaction, setSelectedTransaction] = useState(null)

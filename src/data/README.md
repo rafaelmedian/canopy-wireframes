@@ -1,59 +1,61 @@
-# Mock Data - Estructura de Base de Datos
+# Mock Data - Database Structure
 
-Toda la data mock está organizada como una base de datos relacional con archivos JSON separados que se relacionan por IDs.
+All mock data is organized as a relational database with separate JSON files related by IDs.
 
-## Archivos
+## Files
 
-### Datos (JSON - como tablas de DB)
-- **chains.json** - Tabla principal de chains (4 chains)
-- **holders.json** - Holders relacionados por `chainId`
-- **transactions.json** - Transacciones relacionadas por `chainId`
-- **blocks.json** - Bloques relacionados por `chainId`
-- **price-history.json** - Historial de precios por `chainId`
-- **milestones.json** - Logros/milestones por `chainId`
+### Data Files (JSON - like DB tables)
+- **chains.json** - Main chains table (16 chains)
+- **holders.json** - Token holders related by `chainId`
+- **transactions.json** - Transactions related by `chainId`
+- **blocks.json** - Blocks related by `chainId`
+- **price-history.json** - Price history by `chainId`
+- **milestones.json** - Milestone type definitions (9 types)
+- **milestone-logs.json** - Milestone progress by `chainId`
 
-### Queries (JS - como un ORM)
-- **db.js** - Funciones helper para hacer queries relacionales
-- **mock-chains.js** - Data para el launchpad (usa db.js)
-- **mock-config.js** - Constantes de configuración (hardcoded, OK así)
+### Query Files (JS - like an ORM)
+- **db.js** - Helper functions for relational queries
+- **mock-chains.js** - Launchpad data (uses db.js)
+- **mock-config.js** - Configuration constants
 
-### Documentación
-- **DATABASE.md** - Documentación completa del schema y queries
+### Documentation
+- **DATABASE.md** - Complete schema and query documentation
 
-## Uso Básico
+## Basic Usage
 
 ```javascript
 import { getChainDetails } from '@/data/db'
 
-// Obtener chain con TODOS sus datos relacionados
+// Get chain with ALL related data
 const chain = getChainDetails(1)
 
-// Acceder a datos relacionados
-console.log(chain.holders)        // Array de holders
-console.log(chain.transactions)   // En chain.explorer.recentTransactions
-console.log(chain.milestones)     // Array de milestones
-console.log(chain.priceHistory)   // Array de precios
+// Access related data
+console.log(chain.holders)        // Array of holders
+console.log(chain.transactions)   // In chain.explorer.recentTransactions
+console.log(chain.milestones)     // Array of milestones
+console.log(chain.priceHistory)   // Array of price history
 ```
 
-## IDs de los Chains
+## Main Chain IDs
 
-- **ID 1**: Onchain ENS (Virtual, público, 21 holders)
+- **ID 1**: Onchain ENS (Virtual, public, 21 holders)
 - **ID 2**: MyGameChain (Virtual, owner, 1 holder)
 - **ID 3**: Social Connect (Graduated, 5k+ holders)
-- **ID 4**: DeFi Protocol (Draft, no desplegado)
+- **ID 4**: DeFi Protocol (Draft, not deployed)
+- **IDs 5-16**: Other chains with various states and progress
 
-## Queries Disponibles
+## Available Queries
 
-Ver `DATABASE.md` para lista completa de queries y ejemplos de uso.
+See `DATABASE.md` for complete list of queries and usage examples.
 
-Ejemplos:
-- `getChainById(1)` - Obtener un chain
-- `getHoldersByChainId(1)` - Obtener holders de un chain
-- `getRecentTransactions(1, 10)` - Últimas 10 transacciones
-- `getMilestonesByChainId(1)` - Milestones de un chain
-- `getChainsByCreator('0x...')` - Chains de un creator
+Examples:
+- `getChainById(1)` - Get a chain
+- `getHoldersByChainId(1)` - Get holders for a chain
+- `getRecentTransactions(1, 10)` - Last 10 transactions
+- `getMilestonesByChainId(1)` - Milestones for a chain
+- `getChainsByCreator('0x...')` - Chains by creator
 
-## Estructura como DB Real
+## Structure as Real DB
 
 ```
 chains (id)
@@ -61,7 +63,16 @@ chains (id)
   ├── transactions (chainId → chains.id)
   ├── blocks (chainId → chains.id)
   ├── price-history (chainId → chains.id)
-  └── milestones (chainId → chains.id)
+  └── milestone-logs (chainId → chains.id)
+      └── milestones (type, requirement → milestone-logs)
 ```
 
-Cada archivo JSON es una tabla, y se relacionan por foreign keys (chainId).
+Each JSON file is a table, related by foreign keys (chainId).
+
+### Milestone System
+
+The milestone system uses two tables:
+- **milestones.json**: Defines the 9 milestone types (templates)
+- **milestone-logs.json**: Tracks progress for each chain
+
+Milestone logs are enriched with definition data (icons, rewards) through the `getMilestonesByChainId()` function in db.js.

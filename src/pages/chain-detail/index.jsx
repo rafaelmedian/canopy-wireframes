@@ -21,20 +21,20 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import MainSidebar from '@/components/main-sidebar'
-import ChainHeader from '../launch-page/components/chain-header'
-import PriceChart from '../launch-page/components/price-chart'
-import OverviewTab from '../launch-page/components/overview-tab'
-import CodeTab from '../launch-page/components/code-tab'
-import HoldersTab from '../launch-page/components/holders-tab'
-import BlockExplorerTab from '../launch-page/components/block-explorer-tab'
-import MilestonesTab from '../launch-page/components/milestones-tab'
-import TradingPanel from '../launch-page/components/trading-panel'
-import ReportProblemButton from '../launch-page/components/report-problem-button'
-import DraftHoldersTab from '../launch-page-draft/components/draft-holders-tab'
-import DraftBlockExplorerTab from '../launch-page-draft/components/draft-block-explorer-tab'
-import DraftProgressPanel from '../launch-page-draft/components/draft-progress-panel'
-import ReviewCountdownPanel from '../launch-page-owner/components/review-countdown-panel'
-import LaunchSuccessBanner from '../launch-page-owner/components/launch-success-banner'
+import ChainHeader from '@/pages/chain-detail/components/chain-header'
+import PriceChart from '@/pages/chain-detail/components/price-chart'
+import OverviewTab from '@/pages/chain-detail/components/overview-tab'
+import CodeTab from '@/pages/chain-detail/components/code-tab'
+import HoldersTab from '@/pages/chain-detail/components/holders-tab'
+import BlockExplorerTab from '@/pages/chain-detail/components/block-explorer-tab'
+import MilestonesTab from '@/pages/chain-detail/components/milestones-tab'
+import TradingPanel from '@/pages/chain-detail/components/trading-panel'
+import ReportProblemButton from '@/pages/chain-detail/components/report-problem-button'
+import DraftHoldersTab from '@/pages/chain-detail-draft/components/draft-holders-tab'
+import DraftBlockExplorerTab from '@/pages/chain-detail-draft/components/draft-block-explorer-tab'
+import DraftProgressPanel from '@/pages/chain-detail-draft/components/draft-progress-panel'
+import ReviewCountdownPanel from '@/pages/chain-detail-owner/components/review-countdown-panel'
+import LaunchSuccessBanner from '@/pages/chain-detail-owner/components/launch-success-banner'
 import { getChainDetailsBySlug } from '@/data/db'
 import { MoreVertical, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -205,6 +205,7 @@ export default function ChainDetail() {
                     onNavigateToTab={setActiveTab}
                     isOwner={isOwner}
                     isDraft={chainData.isDraft}
+                    isVirtual={chainData.isVirtual}
                   />
                 </TabsContent>
 
@@ -231,7 +232,7 @@ export default function ChainDetail() {
                 </TabsContent>
 
                 <TabsContent value="block-explorer">
-                  {chainData.isDraft ? (
+                  {chainData.isDraft || chainData.isVirtual ? (
                     <DraftBlockExplorerTab chainData={chainData} />
                   ) : (
                     <BlockExplorerTab chainData={chainData} />

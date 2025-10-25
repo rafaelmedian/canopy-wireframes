@@ -7,6 +7,7 @@ import transactionsData from './transactions.json'
 import blocksData from './blocks.json'
 import priceHistoryData from './price-history.json'
 import milestonesData from './milestones.json'
+import milestoneLogsData from './milestone-logs.json'
 import { Globe, Github } from 'lucide-react'
 
 // ============ HELPER FUNCTIONS ============
@@ -19,14 +20,15 @@ function generateSlug(name) {
 }
 
 /**
- * Add computed fields to chain object (url, goal, change24h)
+ * Add computed fields to chain object (url, goal, change24h, milestones)
  */
 function enrichChain(chain) {
   return {
     ...chain,
     url: `/chain/${generateSlug(chain.name)}`,
     goal: chain.graduationThreshold || 50000,
-    change24h: chain.priceChange24h || 0
+    change24h: chain.priceChange24h || 0,
+    milestones: getMilestonesByChainId(chain.id)
   }
 }
 
@@ -162,26 +164,45 @@ export function getLatestPrice(chainId) {
 
 // ============ MILESTONES ============
 
+/**
+ * Combine milestone definitions with milestone logs for a specific chain
+ * Enriches milestone logs with icon and other metadata from definitions
+ */
 export function getMilestonesByChainId(chainId) {
-  return milestonesData.filter(milestone => milestone.chainId === chainId)
+  const logs = milestoneLogsData.filter(log => log.chainId === chainId)
+
+  // Map each log to include the milestone definition data
+  return logs.map(log => {
+    // Find matching milestone definition by type and requirement
+    const definition = milestonesData.find(
+      m => m.type === log.type && m.requirement === log.requirement
+    )
+
+    // Combine log with definition, keeping log data as primary
+    return {
+      ...log,
+      icon: definition?.icon || 'Target', // Use definition icon or default
+      reward: definition?.reward,
+      // Override title and description if definition exists
+      title: definition?.title || log.title,
+      description: definition?.description || log.description
+    }
+  })
 }
 
 export function getCompletedMilestones(chainId) {
-  return milestonesData.filter(
-    milestone => milestone.chainId === chainId && milestone.completed === true
-  )
+  const milestones = getMilestonesByChainId(chainId)
+  return milestones.filter(milestone => milestone.completed === true)
 }
 
 export function getPendingMilestones(chainId) {
-  return milestonesData.filter(
-    milestone => milestone.chainId === chainId && milestone.completed === false
-  )
+  const milestones = getMilestonesByChainId(chainId)
+  return milestones.filter(milestone => milestone.completed === false)
 }
 
 export function getMilestonesByType(chainId, type) {
-  return milestonesData.filter(
-    milestone => milestone.chainId === chainId && milestone.type === type
-  )
+  const milestones = getMilestonesByChainId(chainId)
+  return milestones.filter(milestone => milestone.type === type)
 }
 
 // ============ COMPLEX QUERIES (JOINS) ============
