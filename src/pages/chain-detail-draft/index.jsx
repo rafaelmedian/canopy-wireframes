@@ -30,18 +30,19 @@ import { Globe, Github, MoreVertical, Trash2 } from 'lucide-react'
 import DraftHoldersTab from './components/draft-holders-tab'
 import DraftBlockExplorerTab from './components/draft-block-explorer-tab'
 import DraftProgressPanel from './components/draft-progress-panel'
+import TradingPanel from '@/pages/chain-detail/components/trading-panel'
 import MilestonesTab from '@/pages/chain-detail/components/milestones-tab'
 import { toast } from 'sonner'
 import { getChainDetails } from "@/data/db"
 
-// Get chain data from database (ID 4 = DeFi Protocol - Draft, not yet deployed)
-const draftChainData = getChainDetails(4)
-
-export default function LaunchPageDraft() {
+export default function LaunchPageDraft({ chainData, isPreview = false }) {
   const navigate = useNavigate()
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0)
   const [activeTab, setActiveTab] = useState('overview')
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
+  // Use provided chainData or fetch from database
+  const draftChainData = chainData || getChainDetails(4)
 
   const handleDeleteDraft = () => {
     toast.success('Draft chain deleted successfully')
@@ -53,45 +54,47 @@ export default function LaunchPageDraft() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <MainSidebar />
+    <div className={isPreview ? "bg-background" : "flex min-h-screen bg-background"}>
+      {/* Sidebar - hide in preview mode */}
+      {!isPreview && <MainSidebar />}
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        {/* Top Bar */}
-        <div className="px-6 py-3 pt-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <button onClick={() => navigate('/')} className="hover:text-foreground">
-                Launchpad
-              </button>
-              <span>/</span>
-              <span className="text-foreground">DeFi Protocol</span>
-              <Badge variant="outline" className="border-orange-500/50 text-orange-500 ml-2">
-                Draft
-              </Badge>
-            </div>
+        {/* Top Bar - hide in preview mode */}
+        {!isPreview && (
+          <div className="px-6 py-3 pt-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <button onClick={() => navigate('/')} className="hover:text-foreground">
+                  Launchpad
+                </button>
+                <span>/</span>
+                <span className="text-foreground">{draftChainData.name}</span>
+                <Badge variant="outline" className="border-orange-500/50 text-orange-500 ml-2">
+                  Draft
+                </Badge>
+              </div>
 
-            {/* More Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive cursor-pointer"
-                  onClick={() => setShowDeleteDialog(true)}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete draft chain
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              {/* More Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive cursor-pointer"
+                    onClick={() => setShowDeleteDialog(true)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete draft chain
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="max-w-7xl mx-auto px-6 py-6 pt-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -138,9 +141,13 @@ export default function LaunchPageDraft() {
               </Tabs>
             </div>
 
-            {/* Right Sidebar - Progress Panel instead of Trading */}
+            {/* Right Sidebar - Trading Panel in preview mode, Progress Panel otherwise */}
             <div className="space-y-6">
-              <DraftProgressPanel chainData={draftChainData} />
+              {isPreview ? (
+                <TradingPanel chainData={draftChainData} isPreview={true} />
+              ) : (
+                <DraftProgressPanel chainData={draftChainData} />
+              )}
             </div>
           </div>
         </div>

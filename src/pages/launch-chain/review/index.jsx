@@ -3,13 +3,15 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, X, Edit, AlertCircle, Github, Globe, FileText, Link as LinkIcon } from 'lucide-react'
+import { ArrowLeft, X, Edit, AlertCircle, Github, Globe, FileText, Link as LinkIcon, Eye } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { useLaunchFlow } from '@/contexts/launch-flow-context'
 import { BLOCK_TIME_OPTIONS } from '@/data/mock-config'
+import PreviewSideSheet from '../components/preview-side-sheet'
+import { useState } from 'react'
 
 // Social platform icons mapping (same as step 5)
 const PLATFORM_ICONS = {
@@ -36,6 +38,7 @@ export default function Review() {
   const navigate = useNavigate()
   const location = useLocation()
   const { getFlowData } = useLaunchFlow()
+  const [showPreview, setShowPreview] = useState(false)
 
   // Get all data from context
   const language = getFlowData('language')
@@ -142,13 +145,23 @@ export default function Review() {
         <div className="p-6">
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Title */}
-            <div className="space-y-2">
-              <h1 className="text-3xl font-bold">
-                Review your configuration
-              </h1>
-              <p className="text-muted-foreground">
-                Review all details before launching your chain
-              </p>
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold">
+                  Review your configuration
+                </h1>
+                <p className="text-muted-foreground">
+                  Review all details before launching your chain
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setShowPreview(true)}
+                className="gap-2"
+              >
+                <Eye className="w-4 h-4" />
+                Preview
+              </Button>
             </div>
 
             {/* Review Sections */}
@@ -424,6 +437,31 @@ export default function Review() {
           </div>
         </div>
       </div>
+
+      {/* Preview Side Sheet */}
+      <PreviewSideSheet
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        formData={{
+          // Build from all context data
+          name: chainConfig?.chainName || 'Untitled Chain',
+          ticker: chainConfig?.ticker || 'UNTD',
+          description: branding?.description || '',
+          tokenName: chainConfig?.tokenName || 'Token',
+          totalSupply: parseInt(chainConfig?.tokenSupply || 1000000000),
+          consensus: 'Proof of Stake',
+          blockTime: parseInt(chainConfig?.blockTime || 10),
+          maxValidators: 100,
+          halvingDays: parseInt(chainConfig?.halvingDays || 365),
+          brandColor: branding?.brandColor || '#10b981',
+          logo: branding?.logo || null,
+          bannerImage: branding?.gallery?.[0]?.preview || null,
+          links: links?.social || [],
+          launchType: 'fair',
+          initialPrice: launchSettings?.initialPurchase ? parseFloat(launchSettings.initialPurchase) / 1000000 : 0.01,
+          repository: repository
+        }}
+      />
     </div>
   )
 }

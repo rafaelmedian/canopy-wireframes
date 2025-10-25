@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { ArrowUpRight, ArrowDownRight, RotateCcw, ArrowDown, Zap, Plus, ChevronRight } from 'lucide-react'
 
-export default function TradingPanel({ chainData, isOwner }) {
+export default function TradingPanel({ chainData, isOwner, isPreview = false }) {
   const [activeTab, setActiveTab] = useState('buy') // 'buy', 'sell', 'convert'
   const [amount, setAmount] = useState('')
 
@@ -155,8 +155,8 @@ export default function TradingPanel({ chainData, isOwner }) {
 
             {/* Create Canopy Wallet Button */}
             <div className="px-4 pb-3">
-              <Button className="w-full h-11 relative" size="lg">
-                Create Canopy wallet
+              <Button className="w-full h-11 relative" size="lg" disabled={isPreview}>
+                {isPreview ? 'Preview Mode' : 'Create Canopy wallet'}
               </Button>
             </div>
           </>
@@ -346,8 +346,8 @@ export default function TradingPanel({ chainData, isOwner }) {
 
             {/* Connect Wallet Button */}
             <div className="px-4 pb-3">
-              <Button className="w-full h-11" size="lg">
-                Connect Wallet
+              <Button className="w-full h-11" size="lg" disabled={isPreview}>
+                {isPreview ? 'Preview Mode' : 'Connect Wallet'}
               </Button>
             </div>
 

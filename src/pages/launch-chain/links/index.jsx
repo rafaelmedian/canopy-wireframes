@@ -6,13 +6,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { ArrowLeft, ArrowRight, X, Upload, Trash2, Globe, Github, Linkedin, Link as LinkIcon, FileText } from 'lucide-react'
+import { ArrowLeft, ArrowRight, X, Upload, Trash2, Globe, Github, Linkedin, Link as LinkIcon, FileText, Eye } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import LaunchpadSidebar from '@/components/launchpad-sidebar'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { useAutoSave } from '@/hooks/use-auto-save.js'
 import { useLaunchFlow } from '@/contexts/launch-flow-context'
+import PreviewSideSheet from '../components/preview-side-sheet'
 
 // Social platform icons mapping
 const PLATFORM_ICONS = {
@@ -73,6 +74,7 @@ export default function Links() {
   const [urlInput, setUrlInput] = useState('')
   const [isLoadingMetadata, setIsLoadingMetadata] = useState(false)
   const [errors, setErrors] = useState({})
+  const [showPreview, setShowPreview] = useState(false)
 
   // Check if repo is connected (from context)
   const repoConnected = getFlowData('branding') ? true : false
@@ -436,18 +438,43 @@ export default function Links() {
                 Back
               </Button>
 
-              <Button
-                onClick={handleContinue}
-                disabled={!isFormValid}
-                className="gap-2"
-              >
-                Continue
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)}
+                  className="gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  Preview
+                </Button>
+                <Button
+                  onClick={handleContinue}
+                  disabled={!isFormValid}
+                  className="gap-2"
+                >
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Preview Side Sheet */}
+      <PreviewSideSheet
+        open={showPreview}
+        onOpenChange={setShowPreview}
+        formData={{
+          // From current step
+          links: socialLinks,
+          // From context
+          ...getFlowData('chainConfig'),
+          ...getFlowData('branding'),
+          ...getFlowData('launchSettings'),
+          repository: getFlowData('repository')
+        }}
+      />
     </div>
   )
 }
