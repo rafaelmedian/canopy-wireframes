@@ -186,5 +186,159 @@
       "timestamp": "3 days ago",
       "status": "completed"
     }
+  ],
+  "earningsHistory": [
+    {
+      "date": "Today",
+      "transactions": [
+        {
+          "id": "earn-1",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.15,
+          "amountUSD": 0.34
+        },
+        {
+          "id": "earn-2",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.08,
+          "amountUSD": 0.55
+        }
+      ]
+    },
+    {
+      "date": "Yesterday",
+      "transactions": [
+        {
+          "id": "earn-3",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.14,
+          "amountUSD": 0.31
+        },
+        {
+          "id": "earn-4",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.09,
+          "amountUSD": 0.62
+        }
+      ]
+    },
+    {
+      "date": "Dec 28, 2024",
+      "transactions": [
+        {
+          "id": "earn-5",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.16,
+          "amountUSD": 0.36
+        },
+        {
+          "id": "earn-6",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.10,
+          "amountUSD": 0.69
+        }
+      ]
+    },
+    {
+      "date": "Dec 27, 2024",
+      "transactions": [
+        {
+          "id": "earn-7",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.15,
+          "amountUSD": 0.34
+        },
+        {
+          "id": "earn-8",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.08,
+          "amountUSD": 0.55
+        }
+      ]
+    },
+    {
+      "date": "Dec 26, 2024",
+      "transactions": [
+        {
+          "id": "earn-9",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.17,
+          "amountUSD": 0.38
+        },
+        {
+          "id": "earn-10",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.09,
+          "amountUSD": 0.62
+        }
+      ]
+    },
+    {
+      "date": "Dec 25, 2024",
+      "transactions": [
+        {
+          "id": "earn-11",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.14,
+          "amountUSD": 0.31
+        },
+        {
+          "id": "earn-12",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.08,
+          "amountUSD": 0.55
+        }
+      ]
+    },
+    {
+      "date": "Dec 24, 2024",
+      "transactions": [
+        {
+          "id": "earn-13",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.16,
+          "amountUSD": 0.36
+        },
+        {
+          "id": "earn-14",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.10,
+          "amountUSD": 0.69
+        }
+      ]
+    },
+    {
+      "date": "Dec 23, 2024",
+      "transactions": [
+        {
+          "id": "earn-15",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.15,
+          "amountUSD": 0.34
+        },
+        {
+          "id": "earn-16",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.09,
+          "amountUSD": 0.62
+        }
+      ]
+    }
   ]
 }

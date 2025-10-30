@@ -11,13 +11,15 @@ import ClaimDialog from './claim-dialog'
 import UnstakeDialog from './unstake-dialog'
 import UnstakingDetailSheet from './unstaking-detail-sheet'
 import CancelUnstakeDialog from './cancel-unstake-dialog'
+import EarningsHistorySheet from './earnings-history-sheet'
 
-export default function StakingTab({ stakes, assets, unstaking, totalInterestEarned = 20.00 }) {
+export default function StakingTab({ stakes, assets, unstaking, earningsHistory = [] }) {
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
   const [claimDialogOpen, setClaimDialogOpen] = useState(false)
   const [unstakeDialogOpen, setUnstakeDialogOpen] = useState(false)
   const [unstakingDetailOpen, setUnstakingDetailOpen] = useState(false)
   const [cancelUnstakeDialogOpen, setCancelUnstakeDialogOpen] = useState(false)
+  const [earningsHistoryOpen, setEarningsHistoryOpen] = useState(false)
   const [selectedStake, setSelectedStake] = useState(null)
   const [selectedUnstaking, setSelectedUnstaking] = useState(null)
   const [sortBy, setSortBy] = useState('apy')
@@ -27,6 +29,11 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
   const [unstakedChainIds, setUnstakedChainIds] = useState([])
   const [newUnstakingItems, setNewUnstakingItems] = useState([])
   const [stakeAdjustments, setStakeAdjustments] = useState({})
+
+  // Calculate total earnings from earningsHistory
+  const totalInterestEarned = earningsHistory.reduce((sum, day) => {
+    return sum + day.transactions.reduce((daySum, tx) => daySum + tx.amountUSD, 0)
+  }, 0)
 
   const handleSort = (column) => {
     if (sortBy === column) {
@@ -183,7 +190,7 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
                 </Tooltip>
               </div>
             </div>
-            <Button variant="outline" className="h-10">
+            <Button variant="outline" className="h-10" onClick={() => setEarningsHistoryOpen(true)}>
               View Earn Balances
             </Button>
           </div>
@@ -511,6 +518,14 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
       onOpenChange={setCancelUnstakeDialogOpen}
       unstakingItem={selectedUnstaking}
       onConfirm={handleConfirmCancelUnstake}
+    />
+
+    {/* Earnings History Sheet */}
+    <EarningsHistorySheet
+      open={earningsHistoryOpen}
+      onOpenChange={setEarningsHistoryOpen}
+      stakes={stakes}
+      earningsHistory={earningsHistory}
     />
     </TooltipProvider>
   )

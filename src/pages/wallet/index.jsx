@@ -74,6 +74,7 @@ export default function Wallet() {
                   stakes={walletData.stakes}
                   assets={walletData.assets}
                   unstaking={walletData.unstaking}
+                  earningsHistory={walletData.earningsHistory}
                 />
               </TabsContent>
 
