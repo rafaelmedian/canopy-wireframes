@@ -8,11 +8,13 @@ import { useWallet } from '@/contexts/wallet-context.jsx'
 import { toast } from 'sonner'
 import walletData from '@/data/wallet.json'
 import ActivityTab from '@/pages/wallet/components/activity-tab.jsx'
+import StakeDialog from '@/pages/wallet/components/stake-dialog.jsx'
 
 export default function WalletSheet({ open, onOpenChange }) {
   const navigate = useNavigate()
   const { walletAddress, formatAddress, getTotalBalance, disconnectWallet } = useWallet()
   const [activeTab, setActiveTab] = useState('balances')
+  const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
 
   const copyAddress = () => {
     navigator.clipboard.writeText(walletAddress)
@@ -77,7 +79,11 @@ export default function WalletSheet({ open, onOpenChange }) {
               <Send className="w-5 h-5" />
               <span className="text-xs">Send</span>
             </Button>
-            <Button variant="outline" className="flex flex-col gap-1 h-auto py-3 px-2">
+            <Button
+              variant="outline"
+              className="flex flex-col gap-1 h-auto py-3 px-2"
+              onClick={() => setStakeDialogOpen(true)}
+            >
               <Coins className="w-5 h-5" />
               <span className="text-xs">Stake</span>
             </Button>
@@ -176,6 +182,15 @@ export default function WalletSheet({ open, onOpenChange }) {
           </Button>
         </div>
       </SheetContent>
+
+      {/* Stake Dialog */}
+      <StakeDialog
+        open={stakeDialogOpen}
+        onOpenChange={setStakeDialogOpen}
+        selectedChain={null}
+        availableChains={walletData.stakes}
+        assets={walletData.assets}
+      />
     </Sheet>
   )
 }
