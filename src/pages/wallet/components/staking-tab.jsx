@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Info, ArrowUpDown } from 'lucide-react'
+import { Info, ArrowUpDown, CheckCircle2 } from 'lucide-react'
 import StakeDialog from './stake-dialog'
 import ClaimDialog from './claim-dialog'
 import UnstakeDialog from './unstake-dialog'
@@ -23,6 +23,7 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
   const [sortBy, setSortBy] = useState('apy')
   const [sortOrder, setSortOrder] = useState('desc')
   const [activeStakingTab, setActiveStakingTab] = useState('available')
+  const [canceledUnstakeIds, setCanceledUnstakeIds] = useState([])
 
   const handleSort = (column) => {
     if (sortBy === column) {
@@ -96,10 +97,14 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
   }
 
   const handleConfirmCancelUnstake = (item) => {
-    // TODO: Implement actual cancel unstake logic
-    // This would move the stake back to active staking
+    // Add the item ID to the canceled list (removes it visually)
+    setCanceledUnstakeIds(prev => [...prev, item.id])
+    // TODO: Implement actual API call to cancel unstake
     console.log('Confirmed cancel unstake for:', item)
   }
+
+  // Filter out canceled unstaking items
+  const visibleUnstaking = unstaking?.filter(item => !canceledUnstakeIds.includes(item.id)) || []
   return (
     <TooltipProvider>
       <div className="space-y-6">
@@ -147,7 +152,7 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
           <TabsTrigger value="queue">
             Unstaking Queue
             <Badge variant="secondary" className="ml-2">
-              {unstaking?.length || 0}
+              {visibleUnstaking.length}
             </Badge>
           </TabsTrigger>
         </TabsList>
@@ -341,8 +346,8 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {unstaking && unstaking.length > 0 ? (
-                  unstaking.map((item) => (
+                {visibleUnstaking.length > 0 ? (
+                  visibleUnstaking.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -393,9 +398,14 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
                 ) : (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center py-12">
-                      <div className="flex flex-col items-center">
-                        <p className="text-sm font-medium text-muted-foreground mb-1">No pending unstakes</p>
-                        <p className="text-xs text-muted-foreground">Unstaked funds will appear here</p>
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="p-4 bg-muted rounded-full">
+                          <CheckCircle2 className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium text-muted-foreground">No pending unstakes</p>
+                          <p className="text-xs text-muted-foreground">Unstaked funds will appear here during the unstaking period</p>
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>
