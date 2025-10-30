@@ -92,6 +92,7 @@
       "amount": 500,
       "apy": 12.5,
       "rewards": 2.15,
+      "rewardsUSD": 4.82,
       "color": "#10b981"
     },
     {
@@ -102,7 +103,38 @@
       "amount": 200,
       "apy": 18.2,
       "rewards": 0.82,
+      "rewardsUSD": 5.68,
       "color": "#8b5cf6"
+    },
+    {
+      "id": 3,
+      "chainId": 3,
+      "symbol": "SOCL",
+      "chain": "Social Connect",
+      "amount": 0,
+      "apy": 8.5,
+      "rewards": 0,
+      "color": "#06b6d4"
+    },
+    {
+      "id": 4,
+      "chainId": 5,
+      "symbol": "STRM",
+      "chain": "StreamVault",
+      "amount": 0,
+      "apy": 15.3,
+      "rewards": 0,
+      "color": "#f59e0b"
+    },
+    {
+      "id": 5,
+      "chainId": 6,
+      "symbol": "DFIM",
+      "chain": "DeFi Masters",
+      "amount": 0,
+      "apy": 10.8,
+      "rewards": 0,
+      "color": "#ec4899"
     }
   ],
   "unstaking": [
