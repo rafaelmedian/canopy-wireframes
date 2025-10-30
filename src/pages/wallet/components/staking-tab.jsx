@@ -199,7 +199,7 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
       {/* Staking Tabs */}
       <Tabs value={activeStakingTab} onValueChange={setActiveStakingTab}>
         <TabsList className="w-full justify-start mb-6">
-          <TabsTrigger value="available">Available</TabsTrigger>
+          <TabsTrigger value="available">Rewards</TabsTrigger>
           <TabsTrigger value="active">
             Active Stakes
             <Badge variant="secondary" className="ml-2">

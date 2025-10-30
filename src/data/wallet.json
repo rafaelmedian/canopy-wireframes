@@ -155,7 +155,11 @@
       "symbol": "OENS",
       "chainId": 1,
       "timestamp": "2 hours ago",
-      "status": "completed"
+      "status": "completed",
+      "hash": "0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z",
+      "from": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "to": "0xRecipient1234567890abcdef1234567890abcdef12",
+      "fee": 0.0012
     },
     {
       "id": 2,
@@ -164,7 +168,11 @@
       "symbol": "GAME",
       "chainId": 2,
       "timestamp": "5 hours ago",
-      "status": "completed"
+      "status": "completed",
+      "hash": "0x9z8y7x6w5v4u3t2s1r0q9p8o7n6m5l4k3j2i1h0g9f8e7d6c5b4a",
+      "from": "0xSender1234567890abcdef1234567890abcdef1234",
+      "to": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "fee": 0.0008
     },
     {
       "id": 3,
@@ -175,16 +183,52 @@
       "symbolTo": "SOCL",
       "chainId": 1,
       "timestamp": "Yesterday",
-      "status": "completed"
+      "status": "completed",
+      "hash": "0xaabbccddeeff00112233445566778899aabbccddeeff001122",
+      "from": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "to": "0xSwapContract1234567890abcdef1234567890abcd",
+      "fee": 0.0015
     },
     {
       "id": 4,
       "type": "staked",
-      "amount": 500,
+      "amount": -500,
       "symbol": "OENS",
       "chainId": 1,
       "timestamp": "3 days ago",
-      "status": "completed"
+      "status": "completed",
+      "hash": "0x112233445566778899aabbccddeeff00112233445566778899",
+      "from": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "to": "0xStakingContract1234567890abcdef1234567890ab",
+      "fee": 0.001,
+      "apy": 12.5
+    },
+    {
+      "id": 5,
+      "type": "unstaked",
+      "amount": 100,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "5 days ago",
+      "status": "completed",
+      "hash": "0xffeeddccbbaa99887766554433221100ffeeddccbbaa998877",
+      "from": "0xStakingContract1234567890abcdef1234567890ab",
+      "to": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "fee": 0.001,
+      "rewards": 2.15
+    },
+    {
+      "id": 6,
+      "type": "claimed",
+      "amount": 2.15,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "1 week ago",
+      "status": "completed",
+      "hash": "0x998877665544332211009988776655443322110099887766",
+      "from": "0xStakingContract1234567890abcdef1234567890ab",
+      "to": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "fee": 0.0005
     }
   ],
   "earningsHistory": [

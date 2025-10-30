@@ -8,11 +8,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { ArrowUpRight, ArrowDownLeft, Repeat, TrendingUp, TrendingDown, CheckCircle, ChevronDown } from 'lucide-react'
+import TransactionDetailSheet from './transaction-detail-sheet'
 
 export default function ActivityTab({ transactions }) {
   const [selectedTypes, setSelectedTypes] = useState([])
   const [selectedStatuses, setSelectedStatuses] = useState([])
   const [selectedAssets, setSelectedAssets] = useState([])
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
+  const [detailSheetOpen, setDetailSheetOpen] = useState(false)
 
   // Get unique assets from transactions
   const assets = ['all', ...new Set(transactions.map(tx => tx.symbol || tx.symbolFrom).filter(Boolean))]
@@ -71,19 +74,25 @@ export default function ActivityTab({ transactions }) {
 
   // Format amount display
   const formatAmount = (tx) => {
+    // Get asset to calculate USD value
+    const asset = tx.symbol ?
+      { symbol: tx.symbol, price: 2.24 } : // Default price, should match from assets
+      { symbol: tx.symbolFrom, price: 2.24 }
+
     if (tx.type === 'swap') {
+      const usdValueFrom = Math.abs(tx.amountFrom) * asset.price
       return {
-        primary: `${tx.symbolFrom}$${Math.abs(tx.amountFrom)}`,
-        secondary: `${Math.abs(tx.amountFrom)} ${tx.symbolFrom}`
+        primary: `$${usdValueFrom.toFixed(2)}`,
+        secondary: `${Math.abs(tx.amountFrom)} ${tx.symbolFrom} → ${tx.amountTo} ${tx.symbolTo}`
       }
     }
 
     const sign = tx.amount > 0 ? '+' : '-'
-    const symbol = tx.type === 'sent' ? tx.symbol.substring(0, 1) : tx.symbol.substring(0, 1)
+    const usdValue = Math.abs(tx.amount) * asset.price
 
     return {
-      primary: `${sign}${symbol}$${Math.abs(tx.amount)}`,
-      secondary: `${tx.amount > 0 ? '+' : '-'}${Math.abs(tx.amount)} ${tx.symbol}`
+      primary: `${sign}$${usdValue.toFixed(2)}`,
+      secondary: `${sign}${Math.abs(tx.amount)} ${tx.symbol}`
     }
   }
 
@@ -156,6 +165,11 @@ export default function ActivityTab({ transactions }) {
     if (selectedAssets.length === 0) return 'Asset'
     if (selectedAssets.length === 1) return selectedAssets[0]
     return `Asset (${selectedAssets.length})`
+  }
+
+  const handleTransactionClick = (tx) => {
+    setSelectedTransaction(tx)
+    setDetailSheetOpen(true)
   }
 
   return (
@@ -266,9 +280,10 @@ export default function ActivityTab({ transactions }) {
           filteredTransactions.map((tx) => {
             const amount = formatAmount(tx)
             return (
-              <div
+              <button
                 key={tx.id}
-                className="grid grid-cols-3 gap-4 py-4 border-b border-border last:border-0 items-center hover:bg-muted/30 transition-colors"
+                onClick={() => handleTransactionClick(tx)}
+                className="w-full grid grid-cols-3 gap-4 py-4 border-b border-border last:border-0 items-center hover:bg-muted/30 transition-colors cursor-pointer text-left"
               >
                 {/* Details */}
                 <div className="flex items-center gap-3">
@@ -305,7 +320,7 @@ export default function ActivityTab({ transactions }) {
                 <div className="text-right text-sm">
                   {tx.timestamp}
                 </div>
-              </div>
+              </button>
             )
           })
         ) : (
@@ -317,6 +332,13 @@ export default function ActivityTab({ transactions }) {
           </div>
         )}
       </div>
+
+      {/* Transaction Detail Sheet */}
+      <TransactionDetailSheet
+        transaction={selectedTransaction}
+        open={detailSheetOpen}
+        onOpenChange={setDetailSheetOpen}
+      />
     </Card>
   )
 }
