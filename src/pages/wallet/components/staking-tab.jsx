@@ -25,6 +25,7 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
   const [activeStakingTab, setActiveStakingTab] = useState('available')
   const [canceledUnstakeIds, setCanceledUnstakeIds] = useState([])
   const [unstakedChainIds, setUnstakedChainIds] = useState([])
+  const [newUnstakingItems, setNewUnstakingItems] = useState([])
 
   const handleSort = (column) => {
     if (sortBy === column) {
@@ -92,6 +93,18 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
     if (amountUnstaked >= stake.amount) {
       setUnstakedChainIds(prev => [...prev, stake.chainId])
     }
+
+    // Add the unstaked amount to the unstaking queue
+    const newUnstakingItem = {
+      id: `unstake-${Date.now()}-${stake.chainId}`,
+      chainId: stake.chainId,
+      symbol: stake.symbol,
+      amount: amountUnstaked,
+      daysRemaining: 7,
+      hoursRemaining: 0
+    }
+
+    setNewUnstakingItems(prev => [...prev, newUnstakingItem])
   }
 
   const handleViewUnstakingDetails = (item) => {
@@ -111,8 +124,9 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
     console.log('Confirmed cancel unstake for:', item)
   }
 
-  // Filter out canceled unstaking items
-  const visibleUnstaking = unstaking?.filter(item => !canceledUnstakeIds.includes(item.id)) || []
+  // Combine original unstaking items with new ones, then filter out canceled
+  const allUnstakingItems = [...(unstaking || []), ...newUnstakingItems]
+  const visibleUnstaking = allUnstakingItems.filter(item => !canceledUnstakeIds.includes(item.id))
 
   // Filter out fully unstaked chains from active stakes
   const visibleActiveStakes = sortedStakes.filter(stake =>
@@ -174,94 +188,94 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
         <TabsContent value="available">
           <Card>
             <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Chain</TableHead>
-              <TableHead
-                className="cursor-pointer hover:text-foreground"
-                onClick={() => handleSort('apy')}
-              >
-                <div className="flex items-center gap-2">
-                  Annual yield
-                  <ArrowUpDown className="w-4 h-4" />
-                </div>
-              </TableHead>
-              <TableHead
-                className="cursor-pointer hover:text-foreground"
-                onClick={() => handleSort('earnings')}
-              >
-                <div className="flex items-center gap-2">
-                  Current Earned Balance
-                  <ArrowUpDown className="w-4 h-4" />
-                </div>
-              </TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedStakes.length > 0 ? (
-              sortedStakes.map((stake) => (
-                <TableRow key={stake.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: stake.color }}
-                      >
-                        <span className="text-sm font-bold text-white">
-                          {stake.symbol.slice(0, 2)}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="font-semibold">{stake.chain}</div>
-                        <div className="text-sm text-muted-foreground">{stake.symbol}</div>
-                      </div>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Chain</TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:text-foreground"
+                    onClick={() => handleSort('apy')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Annual yield
+                      <ArrowUpDown className="w-4 h-4" />
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{stake.apy}%</div>
-                  </TableCell>
-                  <TableCell>
-                    {stake.rewards && stake.rewards > 0 ? (
-                      <div>
-                        <div className="font-medium">
-                          {stake.rewards} {stake.symbol}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {stake.rewardsUSD ? `${stake.rewardsUSD.toFixed(2)} USD` : ''}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground">Not yet earning</div>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {stake.rewards > 0 && (
-                        <Button size="sm" variant="outline" className="h-9" onClick={() => handleClaimClick(stake)}>
-                          Claim
-                        </Button>
-                      )}
-                      <Button size="sm" className="h-9" onClick={() => handleStakeClick(stake)}>
-                        Stake
-                      </Button>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:text-foreground"
+                    onClick={() => handleSort('earnings')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Current Earned Balance
+                      <ArrowUpDown className="w-4 h-4" />
                     </div>
-                  </TableCell>
+                  </TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-12">
-                  <div className="flex flex-col items-center">
-                    <p className="text-sm font-medium text-muted-foreground mb-1">No staking positions</p>
-                    <p className="text-xs text-muted-foreground">Start staking to earn rewards</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {sortedStakes.length > 0 ? (
+                  sortedStakes.map((stake) => (
+                    <TableRow key={stake.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: stake.color }}
+                          >
+                            <span className="text-sm font-bold text-white">
+                              {stake.symbol.slice(0, 2)}
+                            </span>
+                          </div>
+                          <div>
+                            <div className="font-semibold">{stake.chain}</div>
+                            <div className="text-sm text-muted-foreground">{stake.symbol}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{stake.apy}%</div>
+                      </TableCell>
+                      <TableCell>
+                        {stake.rewards && stake.rewards > 0 ? (
+                          <div>
+                            <div className="font-medium">
+                              {stake.rewards} {stake.symbol}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {stake.rewardsUSD ? `${stake.rewardsUSD.toFixed(2)} USD` : ''}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-muted-foreground">Not yet earning</div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {stake.rewards > 0 && (
+                            <Button size="sm" variant="outline" className="h-9" onClick={() => handleClaimClick(stake)}>
+                              Claim
+                            </Button>
+                          )}
+                          <Button size="sm" className="h-9" onClick={() => handleStakeClick(stake)}>
+                            Stake
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-12">
+                      <div className="flex flex-col items-center">
+                        <p className="text-sm font-medium text-muted-foreground mb-1">No staking positions</p>
+                        <p className="text-xs text-muted-foreground">Start staking to earn rewards</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Card>
         </TabsContent>
 
         {/* Tab 2: Active Stakes */}
