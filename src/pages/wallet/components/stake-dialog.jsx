@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,26 +7,55 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { X, ArrowLeft, Check, Info, Wallet } from 'lucide-react'
 
-export default function StakeDialog({ open, onOpenChange, selectedChain }) {
+export default function StakeDialog({ open, onOpenChange, selectedChain, availableChains = [], assets = [] }) {
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState('')
   const [source, setSource] = useState('trading')
+  const [internalSelectedChain, setInternalSelectedChain] = useState(null)
 
-  if (!selectedChain) return null
+  // Determine if we need to show chain selection
+  const needsChainSelection = !selectedChain && availableChains.length > 0
+  const activeChain = selectedChain || internalSelectedChain
 
-  // Calculate values
-  const availableBalance = selectedChain.balance || 0
+  // Reset internal state when dialog opens/closes
+  useEffect(() => {
+    if (!open) {
+      setInternalSelectedChain(null)
+      setStep(1)
+      setAmount('')
+      setSource('trading')
+    }
+  }, [open])
+
+  const handleChainSelect = (chainId) => {
+    const chain = availableChains.find(c => c.chainId === chainId)
+    if (chain) {
+      // Enrich with asset data
+      const asset = assets?.find(a => a.chainId === chainId)
+      const enrichedChain = {
+        ...chain,
+        price: asset?.price || 0,
+        balance: asset?.balance || 0
+      }
+      setInternalSelectedChain(enrichedChain)
+    }
+  }
+
+  if (!activeChain && !needsChainSelection) return null
+
+  // Calculate values (only when we have an active chain)
+  const availableBalance = activeChain?.balance || 0
   const amountNum = parseFloat(amount) || 0
-  const amountUSD = amountNum * (selectedChain.price || 0)
-  const projectedYearlyInterest = amountNum * (selectedChain.apy / 100)
-  const projectedYearlyInterestUSD = projectedYearlyInterest * (selectedChain.price || 0)
+  const amountUSD = activeChain ? amountNum * (activeChain.price || 0) : 0
+  const projectedYearlyInterest = activeChain ? amountNum * (activeChain.apy / 100) : 0
+  const projectedYearlyInterestUSD = activeChain ? projectedYearlyInterest * (activeChain.price || 0) : 0
 
   const handleMaxClick = () => {
     setAmount(availableBalance.toString())
   }
 
   const handleContinue = () => {
-    if (step === 1 && amountNum > 0) {
+    if (step === 1 && amountNum > 0 && activeChain) {
       setStep(2)
     } else if (step === 2) {
       setStep(3)
@@ -43,6 +72,7 @@ export default function StakeDialog({ open, onOpenChange, selectedChain }) {
     setStep(1)
     setAmount('')
     setSource('trading')
+    setInternalSelectedChain(null)
     onOpenChange(false)
   }
 
@@ -57,7 +87,8 @@ export default function StakeDialog({ open, onOpenChange, selectedChain }) {
           {/* Step 1: Stake Form */}
           {step === 1 && (
             <>
-              <div className="relative p-6 pb-4">
+              {/* Header */}
+              <div className="relative px-6 py-3  border-b">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -66,131 +97,197 @@ export default function StakeDialog({ open, onOpenChange, selectedChain }) {
                 >
                   <X className="w-5 h-5" />
                 </Button>
+                <div className="space-y-1">
+                  <h2 className="text-xl font-bold">Earn Rewards</h2>
+                </div>
               </div>
 
               <div className="px-6 pb-6 space-y-6">
-                {/* Chain Info */}
-                <div className="flex flex-col items-center space-y-3">
-                  <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: selectedChain.color }}
-                  >
-                    <span className="text-xl font-bold text-white">
-                      {selectedChain.symbol.slice(0, 2)}
-                    </span>
+                {/* Chain Selection or Display */}
+                {needsChainSelection ? (
+                  <div className="space-y-2">
+                    <Label className="block text-sm font-medium">Select Chain</Label>
+                    <Select value={activeChain?.chainId} onValueChange={handleChainSelect}>
+                      <SelectTrigger className="h-auto py-3 [&>span]:line-clamp-none [&>span]:block">
+                        <SelectValue placeholder="Choose a chain to stake">
+                          {activeChain ? (
+                            <div className="flex items-center gap-3">
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ backgroundColor: activeChain.color }}
+                              >
+                                <span className="text-sm font-bold text-white">
+                                  {activeChain.symbol.slice(0, 2)}
+                                </span>
+                              </div>
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium text-sm">{activeChain.chain}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {activeChain.symbol} • {activeChain.apy}% APY
+                                </span>
+                              </div>
+                            </div>
+                          ) : null}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableChains.map((chain) => (
+                          <SelectItem key={chain.chainId} value={chain.chainId} className="h-auto py-3">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ backgroundColor: chain.color }}
+                              >
+                                <span className="text-sm font-bold text-white">
+                                  {chain.symbol.slice(0, 2)}
+                                </span>
+                              </div>
+                              <div className="flex flex-col items-start gap-1">
+                                <span className="font-medium">{chain.chain}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {chain.symbol} • {chain.apy}% APY
+                                </span>
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="text-center">
-                    <h2 className="text-xl font-semibold">{selectedChain.chain}</h2>
-                    <p className="text-sm text-muted-foreground">{selectedChain.symbol}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-4xl font-bold">{selectedChain.apy}%</p>
-                    <p className="text-sm text-muted-foreground">APY</p>
-                  </div>
-                </div>
-
-                {/* Source */}
-                <div className="space-y-2">
-                  <Label>Source</Label>
-                  <Select value={source} onValueChange={setSource}>
-                    <SelectTrigger className="h-auto py-3 [&>span]:line-clamp-none [&>span]:block">
-                      <SelectValue>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
-                            <Wallet className="w-4 h-4" />
-                          </div>
-                          <div className="flex flex-col items-start">
-                            <span className="font-medium text-sm">Wallet balance</span>
-                            <span className="text-xs text-muted-foreground">
-                              {selectedChain.symbol} balance: {availableBalance} {selectedChain.symbol}
-                            </span>
-                          </div>
+                ) : (
+                  /* Chain Display (when chain is pre-selected) */
+                  <div className="p-4 mt-2 bg-muted/30 rounded-lg border">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: activeChain.color }}
+                        >
+                          <span className="text-sm font-bold text-white">
+                            {activeChain.symbol.slice(0, 2)}
+                          </span>
                         </div>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="trading" className="h-auto py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
-                            <Wallet className="w-4 h-4" />
-                          </div>
-                          <div className="flex flex-col items-start gap-1">
-                            <span className="font-medium">Wallet balance</span>
-                            <span className="text-xs text-muted-foreground">
-                              {selectedChain.symbol} balance: {availableBalance} {selectedChain.symbol}
-                            </span>
-                          </div>
+                        <div>
+                          <p className="font-semibold">{activeChain.chain}</p>
+                          <p className="text-sm text-muted-foreground">{activeChain.symbol}</p>
                         </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold">{activeChain.apy}%</p>
+                        <p className="text-xs text-muted-foreground">APY</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-                {/* Amount */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Amount</Label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 text-xs"
-                      onClick={handleMaxClick}
-                    >
-                      Max
-                    </Button>
+                {/* Source - Only show if we have an active chain */}
+                {activeChain && (
+                  <div className="space-y-2">
+                    <Label className="block text-sm font-medium">Source</Label>
+                    <Select value={source} onValueChange={setSource}>
+                      <SelectTrigger className="h-auto py-3 [&>span]:line-clamp-none [&>span]:block">
+                        <SelectValue>
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
+                              <Wallet className="w-4 h-4" />
+                            </div>
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium text-sm">Wallet balance</span>
+                              <span className="text-xs text-muted-foreground">
+                                {activeChain.symbol} balance: {availableBalance} {activeChain.symbol}
+                              </span>
+                            </div>
+                          </div>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="trading" className="h-auto py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
+                              <Wallet className="w-4 h-4" />
+                            </div>
+                            <div className="flex flex-col items-start gap-1">
+                              <span className="font-medium">Wallet balance</span>
+                              <span className="text-xs text-muted-foreground">
+                                {activeChain.symbol} balance: {availableBalance} {activeChain.symbol}
+                              </span>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="relative">
-                    <Input
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={amount}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        // Only allow numbers and decimal point
-                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                          setAmount(value)
-                        }
-                      }}
-                      className="pr-16 text-lg"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      {selectedChain.symbol}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    approx. ${amountUSD.toFixed(2)} USD
-                  </p>
-                </div>
+                )}
 
-                {/* Projected Interest */}
-                <div className="space-y-2 pt-4 border-t">
-                  <div className="flex items-center gap-2">
-                    <Label className="text-sm">Projected 1 year interest</Label>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p>Estimated interest earnings after 1 year based on current APY</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <div className="text-center py-2">
-                    <p className="text-2xl font-bold">
-                      {amountNum > 0 ? projectedYearlyInterest.toFixed(4) : '−'}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      approx. ${projectedYearlyInterestUSD.toFixed(2)} USD
-                    </p>
-                  </div>
-                </div>
+                {/* Amount - Only show if we have an active chain */}
+                {activeChain && (
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="block text-sm font-medium">Amount</Label>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 text-xs"
+                          onClick={handleMaxClick}
+                        >
+                          Max
+                        </Button>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          inputMode="decimal"
+                          placeholder="0"
+                          value={amount}
+                          onChange={(e) => {
+                            const value = e.target.value
+                            // Only allow numbers and decimal point
+                            if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                              setAmount(value)
+                            }
+                          }}
+                          className="pr-16 text-lg"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                          {activeChain.symbol}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        approx. ${amountUSD.toFixed(2)} USD
+                      </p>
+                    </div>
+
+                    {/* Projected Interest */}
+                    <div className="space-y-2 pt-4 border-t">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm">Projected 1 year interest</Label>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p>Estimated interest earnings after 1 year based on current APY</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div className="text-center py-2">
+                        <p className="text-2xl font-bold">
+                          {amountNum > 0 ? projectedYearlyInterest.toFixed(4) : '−'}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          approx. ${projectedYearlyInterestUSD.toFixed(2)} USD
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {/* Continue Button */}
                 <Button
                   className="w-full h-12"
                   onClick={handleContinue}
-                  disabled={!amountNum || amountNum <= 0}
+                  disabled={!activeChain || !amountNum || amountNum <= 0}
                 >
                   Continue
                 </Button>
@@ -239,13 +336,13 @@ export default function StakeDialog({ open, onOpenChange, selectedChain }) {
 
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Annual % yield</span>
-                      <span className="text-sm font-medium">{selectedChain.apy}%</span>
+                      <span className="text-sm font-medium">{activeChain.apy}%</span>
                     </div>
 
                     <div className="flex justify-between pt-2 border-t">
                       <span className="text-sm font-semibold">Total</span>
                       <div className="text-right">
-                        <p className="text-sm font-semibold">{amountNum} {selectedChain.symbol}</p>
+                        <p className="text-sm font-semibold">{amountNum} {activeChain.symbol}</p>
                         <p className="text-xs text-muted-foreground">${amountUSD.toFixed(2)} USD</p>
                       </div>
                     </div>
@@ -307,7 +404,7 @@ export default function StakeDialog({ open, onOpenChange, selectedChain }) {
                   <p className="text-center text-muted-foreground">
                     You will begin earning interest on{' '}
                     <span className="font-semibold text-foreground">
-                      {amountNum} {selectedChain.symbol}
+                      {amountNum} {activeChain.symbol}
                     </span>{' '}
                     after one business day.
                   </p>

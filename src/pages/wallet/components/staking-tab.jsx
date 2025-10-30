@@ -477,6 +477,8 @@ export default function StakingTab({ stakes, assets, unstaking, totalInterestEar
       open={stakeDialogOpen}
       onOpenChange={setStakeDialogOpen}
       selectedChain={selectedStake}
+      availableChains={stakes}
+      assets={assets}
     />
 
     {/* Claim Dialog */}

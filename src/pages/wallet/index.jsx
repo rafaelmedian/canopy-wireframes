@@ -12,10 +12,12 @@ import {
 import AssetsTab from './components/assets-tab'
 import StakingTab from './components/staking-tab'
 import ActivityTab from './components/activity-tab'
+import StakeDialog from './components/stake-dialog'
 import walletData from '@/data/wallet.json'
 
 export default function Wallet() {
   const [activeTab, setActiveTab] = useState('assets')
+  const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -101,7 +103,11 @@ export default function Wallet() {
                   <Repeat className="w-5 h-5" />
                   <span className="text-sm">Swap</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => setStakeDialogOpen(true)}
+                >
                   <Coins className="w-5 h-5" />
                   <span className="text-sm">Stake</span>
                 </Button>
@@ -109,6 +115,15 @@ export default function Wallet() {
             </Card>
           </div>
         </div>
+
+        {/* Stake Dialog for Quick Actions */}
+        <StakeDialog
+          open={stakeDialogOpen}
+          onOpenChange={setStakeDialogOpen}
+          selectedChain={null}
+          availableChains={walletData.stakes}
+          assets={walletData.assets}
+        />
       </div>
     </div>
   )
