@@ -70,6 +70,7 @@ export default function Wallet() {
               <TabsContent value="staking">
                 <StakingTab
                   stakes={walletData.stakes}
+                  assets={walletData.assets}
                   unstaking={walletData.unstaking}
                 />
               </TabsContent>

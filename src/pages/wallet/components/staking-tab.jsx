@@ -1,10 +1,26 @@
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Info } from 'lucide-react'
+import StakeDialog from './stake-dialog'
 
-export default function StakingTab({ stakes, totalInterestEarned = 20.00 }) {
+export default function StakingTab({ stakes, assets, totalInterestEarned = 20.00 }) {
+  const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
+  const [selectedStake, setSelectedStake] = useState(null)
+
+  const handleStakeClick = (stake) => {
+    // Find the corresponding asset to get price and balance
+    const asset = assets?.find(a => a.chainId === stake.chainId)
+    const enrichedStake = {
+      ...stake,
+      price: asset?.price || 0,
+      balance: asset?.balance || 0
+    }
+    setSelectedStake(enrichedStake)
+    setStakeDialogOpen(true)
+  }
   return (
     <TooltipProvider>
       <div className="space-y-6">
@@ -94,7 +110,7 @@ export default function StakingTab({ stakes, totalInterestEarned = 20.00 }) {
                           Claim
                         </Button>
                       )}
-                      <Button size="sm" className="h-9">
+                      <Button size="sm" className="h-9" onClick={() => handleStakeClick(stake)}>
                         Stake
                       </Button>
                     </div>
@@ -115,6 +131,13 @@ export default function StakingTab({ stakes, totalInterestEarned = 20.00 }) {
         </Table>
       </Card>
     </div>
+
+    {/* Stake Dialog */}
+    <StakeDialog
+      open={stakeDialogOpen}
+      onOpenChange={setStakeDialogOpen}
+      selectedChain={selectedStake}
+    />
     </TooltipProvider>
   )
 }
