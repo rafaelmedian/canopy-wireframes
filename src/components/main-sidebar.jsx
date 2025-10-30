@@ -4,7 +4,7 @@ import { Search, Plus, Zap, BarChart3, Activity, TrendingUp, User, Home, PieChar
 import { useNavigate } from 'react-router-dom'
 import LaunchOverviewDialog from './launch-overview-dialog'
 import CommandSearchDialog from './command-search-dialog'
-import WalletSheet from './wallet-sheet'
+import WalletSheet from '../pages/wallet/components/wallet-sheet.jsx'
 import { useWallet } from '@/contexts/wallet-context'
 
 export default function MainSidebar({ variant = 'default' }) {

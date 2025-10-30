@@ -7,7 +7,10 @@ import {
   Send,
   Download,
   Repeat,
-  Coins
+  Coins,
+  Settings,
+  LogOut,
+  Copy
 } from 'lucide-react'
 import AssetsTab from './components/assets-tab'
 import StakingTab from './components/staking-tab'
@@ -15,11 +18,12 @@ import ActivityTab from './components/activity-tab'
 import StakeDialog from './components/stake-dialog'
 import walletData from '@/data/wallet.json'
 import { useWallet } from '@/contexts/wallet-context'
+import { toast } from 'sonner'
 
 export default function Wallet() {
   const [activeTab, setActiveTab] = useState('assets')
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
-  const { isConnected, connectWallet } = useWallet()
+  const { isConnected, connectWallet, walletAddress, formatAddress, disconnectWallet } = useWallet()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -37,6 +41,32 @@ export default function Wallet() {
         <div className="max-w-[1024px] mx-auto flex gap-12">
           {/* Main Content */}
           <div className="flex-1 space-y-6">
+            {/* Wallet Header */}
+            <div className="flex items-center justify-between ">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-[#1dd13a] flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg font-bold text-white">C</span>
+                </div>
+                <div>
+                  <div className="text-base font-semibold text-foreground">{formatAddress(walletAddress)}</div>
+                  <div className="text-sm text-[#1dd13a]">Connected</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-muted">
+                  <Settings className="w-5 h-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-red-500 hover:text-red-500 hover:bg-red-500/10"
+                  onClick={disconnectWallet}
+                >
+                  <LogOut className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
             {/* Tabs at Top */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="h-auto w-full justify-start bg-transparent p-0 border-b rounded-none">
@@ -92,7 +122,7 @@ export default function Wallet() {
           </div>
 
           {/* Quick Actions Card - Right Side */}
-          <div className="w-64 shrink-0 pt-[88px]">
+          <div className="w-64 shrink-0 pt-[158px]">
             <Card className="sticky top-4">
               <CardHeader>
                 <CardTitle className="text-base">Quick Actions</CardTitle>

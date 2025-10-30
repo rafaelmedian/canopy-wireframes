@@ -1,13 +1,13 @@
-import { Sheet, SheetContent } from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Sheet, SheetContent } from '@/components/ui/sheet.jsx'
+import { Button } from '@/components/ui/button.jsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
 import { Copy, Repeat, Send, Download, Coins, LogOut, Settings } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useWallet } from '@/contexts/wallet-context'
+import { useWallet } from '@/contexts/wallet-context.jsx'
 import { toast } from 'sonner'
 import walletData from '@/data/wallet.json'
-import ActivityTab from '@/pages/wallet/components/activity-tab'
+import ActivityTab from '@/pages/wallet/components/activity-tab.jsx'
 
 export default function WalletSheet({ open, onOpenChange }) {
   const navigate = useNavigate()
