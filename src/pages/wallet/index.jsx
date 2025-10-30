@@ -33,6 +33,11 @@ export default function Wallet() {
     }
   }, [isConnected, connectWallet])
 
+  const copyAddress = () => {
+    navigator.clipboard.writeText(walletAddress)
+    toast.success('Address copied to clipboard')
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       <MainSidebar />
@@ -48,18 +53,28 @@ export default function Wallet() {
                   <span className="text-lg font-bold text-white">C</span>
                 </div>
                 <div>
-                  <div className="text-base font-semibold text-foreground">{formatAddress(walletAddress)}</div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-base font-semibold text-foreground">{formatAddress(walletAddress)}</div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 hover:bg-muted"
+                      onClick={copyAddress}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
                   <div className="text-sm text-[#1dd13a]">Connected</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-muted">
+                <Button variant="outline" size="icon" className="h-9 w-9 rounded-full hover:bg-muted">
                   <Settings className="w-5 h-5" />
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="icon"
-                  className="h-9 w-9 text-red-500 hover:text-red-500 hover:bg-red-500/10"
+                  className="h-9 w-9 rounded-full text-red-500 hover:text-red-500 hover:bg-red-500/10"
                   onClick={disconnectWallet}
                 >
                   <LogOut className="w-5 h-5" />

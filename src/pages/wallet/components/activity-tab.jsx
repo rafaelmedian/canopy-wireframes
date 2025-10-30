@@ -176,9 +176,9 @@ export default function ActivityTab({ transactions, compact = false }) {
   const wrapperProps = compact ? {} : { className: "p-6" }
 
   return (
-    <Wrapper {...wrapperProps}>
+    <Wrapper {...wrapperProps} className="p-4">
       {/* Header */}
-      {!compact && <h2 className="text-xl font-semibold mb-6">Activity</h2>}
+      {!compact && <h2 className="text-xl font-semibold mb-5">Activity</h2>}
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
