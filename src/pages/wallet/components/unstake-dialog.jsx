@@ -128,11 +128,24 @@ export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUns
               <div className="flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                 <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-yellow-500">Unstaking Period</p>
-                  <p className="text-xs text-muted-foreground">
-                    Your funds will be available after {unstakingPeriod} days. You will stop earning
-                    rewards immediately.
-                  </p>
+                  {amountNum >= stakedAmount ? (
+                    <>
+                      <p className="text-sm font-medium text-yellow-500">Unstaking Period</p>
+                      <p className="text-xs text-muted-foreground">
+                        Your funds will be available after {unstakingPeriod} days. You will stop earning
+                        rewards immediately.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-yellow-500">Partial Unstake</p>
+                      <p className="text-xs text-muted-foreground">
+                        Your remaining staked amount will continue earning rewards, but your rewards counter
+                        will reset to 0 as this creates a new staking position. Unstaked funds will be
+                        available after {unstakingPeriod} days.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
