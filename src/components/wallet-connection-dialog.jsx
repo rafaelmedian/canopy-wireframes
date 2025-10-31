@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Card } from '@/components/ui/card'
 import {
   X,
   ArrowLeft,
@@ -15,7 +16,8 @@ import {
   CheckCircle,
   ArrowDown,
   Shield,
-  Loader2
+  Loader2,
+  RotateCcw
 } from 'lucide-react'
 import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
@@ -879,7 +881,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
         {step === 5 && (
           <div className="flex flex-col">
             {/* Header */}
-            <div className="relative p-6 pb-4 flex flex-col items-center">
+            <div className="relative px-6 py-12 flex flex-col items-center">
               <Button
                 variant="ghost"
                 size="icon"
@@ -988,7 +990,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
         {step === 6 && (
           <div className="flex flex-col">
             {/* Header */}
-            <div className="relative p-6 pb-4 flex flex-col items-center">
+            <div className="relative px-6 py-12 flex flex-col items-center">
               <Button
                 variant="ghost"
                 size="icon"
@@ -1006,86 +1008,105 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
                 <X className="w-5 h-5" />
               </Button>
 
-              <img
-                src="/svg/logo.svg"
-                alt="Canopy"
-                className="h-6 mb-4 invert"
-              />
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <RotateCcw className="w-8 h-8 text-primary" />
+              </div>
 
               <h2 className="text-2xl font-bold text-center mb-2">Convert to CNPY</h2>
-              <p className="text-sm text-muted-foreground text-center">
+              <p className="text-sm text-muted-foreground text-center max-w-sm">
                 Convert your USDT/USDC to CNPY to start buying into projects
               </p>
             </div>
 
             {/* Content */}
             <div className="px-6 pb-6 space-y-6">
-              <div className="p-6 bg-muted rounded-xl space-y-6">
-                {/* Available Balance */}
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Available Balance</p>
-                  <p className="text-4xl font-bold mb-1">${getTotalBalance().toFixed(2)}</p>
-                  <p className="text-sm text-muted-foreground">7xKX ... gAsU · ${getTotalBalance().toFixed(2)}</p>
+              {/* Amount Input Card */}
+              <Card className="bg-muted/30 p-4 space-y-3">
+                {/* Input */}
+                <div className="flex items-center justify-center">
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={convertAmount}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                        setConvertAmount(value)
+                      }
+                    }}
+                    placeholder="$0"
+                    className="text-5xl font-bold bg-transparent border-0 outline-none p-0 h-auto text-center w-full placeholder:text-muted-foreground"
+                  />
                 </div>
 
-                {/* Amount Input */}
-                <div className="space-y-2">
-                  <Label className="block">Amount to Convert</Label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-muted-foreground">
-                      $
-                    </span>
-                    <Input
-                      type="text"
-                      inputMode="decimal"
-                      value={convertAmount}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                          setConvertAmount(value)
-                        }
-                      }}
-                      className="h-14 pl-8 pr-20 text-lg rounded-xl"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-2 top-1/2 -translate-y-1/2"
-                      onClick={() => setConvertAmount(getTotalBalance().toString())}
-                    >
-                      Max
-                    </Button>
+                {/* Available Balance & Max Button */}
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    <span className="block">Available: ${getTotalBalance().toFixed(2)}</span>
+                    <span className="text-xs">7xKX ... gAsU</span>
                   </div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => setConvertAmount(getTotalBalance().toString())}
+                  >
+                    Use max
+                  </Button>
                 </div>
+              </Card>
 
-                {/* Arrow Indicator */}
-                <div className="flex justify-center">
-                  <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center">
-                    <ArrowDown className="w-5 h-5" />
-                  </div>
-                </div>
-
-                {/* Conversion Result */}
-                <div className="p-4 bg-background rounded-xl">
-                  <p className="text-sm text-muted-foreground mb-2">You will receive</p>
-                  <p className="text-3xl font-bold text-[#1dd13a]">
-                    {parseFloat(convertAmount || '0').toFixed(2)} CNPY
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">1 USD = 1 CNPY</p>
-                </div>
+              {/* Swap Direction Button */}
+              <div className="relative flex justify-center">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full h-8 w-8 bg-background border-2"
+                >
+                  <ArrowDown className="w-4 h-4" />
+                </Button>
               </div>
 
+              {/* Conversion Result Card */}
+              <Card className="bg-muted/30 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {/* CNPY Token Avatar */}
+                    <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <svg width="20" height="20" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.7649 0.880227C12.658 0.827134 12.5342 0.905351 12.5342 1.02378V3.04351C12.5342 3.18794 12.7104 3.26027 12.8135 3.15814L14.069 1.91394C14.1383 1.84534 14.1317 1.73215 14.0535 1.67368C13.6439 1.36708 13.2123 1.10259 12.7649 0.880227Z" fill="white"/>
+                        <path d="M10.4705 0.127791C10.5477 0.141319 10.6032 0.208239 10.6032 0.285896V5.28157C10.6032 5.32456 10.586 5.36579 10.5553 5.3962L8.90769 7.02887C8.80463 7.13099 8.62842 7.05867 8.62842 6.91423V0.163239C8.62842 0.0764816 8.69735 0.00493239 8.78487 0.00272091C9.34863 -0.0115243 9.91358 0.0301658 10.4705 0.127791Z" fill="white"/>
+                        <path d="M6.64953 9.26628C6.68021 9.23588 6.69744 9.19464 6.69744 9.15164V0.531669C6.69744 0.424066 6.59358 0.346317 6.48993 0.37839C5.89636 0.562066 5.31929 0.812546 4.77074 1.12983C4.72107 1.15856 4.69092 1.21149 4.69092 1.26849V10.8158C4.69092 10.9602 4.86713 11.0325 4.97019 10.9304L6.64953 9.26628Z" fill="white"/>
+                        <path d="M2.4827 3.0726C2.57734 2.95748 2.75983 3.02558 2.75983 3.17407L2.75984 13.0535C2.75984 13.0965 2.7426 13.1377 2.71192 13.1681L2.53426 13.3441C2.46504 13.4128 2.35058 13.4059 2.29159 13.3285C-0.0224758 10.292 0.0412298 6.04232 2.4827 3.0726Z" fill="white"/>
+                        <path d="M10.3924 8.65513C10.2467 8.65513 10.1737 8.48052 10.2768 8.37839L11.9244 6.74572C11.9551 6.71532 11.9966 6.69824 12.04 6.69824H17.1031C17.1812 6.69824 17.2486 6.75292 17.2625 6.82908C17.3635 7.38074 17.408 7.94056 17.396 8.49942C17.3942 8.58642 17.3219 8.65513 17.234 8.65513H10.3924Z" fill="white"/>
+                        <path d="M14.1825 4.50709C14.0795 4.60922 14.1525 4.78383 14.2982 4.78383H16.3466C16.4664 4.78383 16.5454 4.66045 16.4911 4.55456C16.2638 4.11067 15.9935 3.68279 15.6806 3.27689C15.6215 3.20007 15.5077 3.19389 15.4388 3.26223L14.1825 4.50709Z" fill="white"/>
+                        <path d="M8.13428 10.5684C8.09089 10.5684 8.04928 10.5854 8.0186 10.6158L6.33926 12.28C6.2362 12.3821 6.30919 12.5567 6.45493 12.5567H16.1382C16.196 12.5567 16.2496 12.5265 16.2784 12.4769C16.5952 11.933 16.8447 11.3612 17.027 10.7733C17.0588 10.6707 16.9803 10.5684 16.8721 10.5684H8.13428Z" fill="white"/>
+                        <path d="M3.91045 14.9412C3.83293 14.8825 3.82636 14.7696 3.89534 14.7013L4.08101 14.5173C4.11169 14.4868 4.1533 14.4697 4.19669 14.4697H14.2374C14.3867 14.4697 14.4559 14.6496 14.3406 14.7438C11.33 17.208 6.99201 17.2737 3.91045 14.9412Z" fill="white"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">CNPY</p>
+                      <p className="text-xs text-muted-foreground">0 CNPY</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">{parseFloat(convertAmount || '0').toFixed(2)}</p>
+                    <p className="text-xs text-muted-foreground">${parseFloat(convertAmount || '0').toFixed(2)}</p>
+                  </div>
+                </div>
+              </Card>
+
               <Button
-                className="w-full h-12 rounded-xl bg-[#1dd13a] hover:bg-[#1dd13a]/90 text-white"
+                className="w-full h-11 rounded-xl bg-[#1dd13a] hover:bg-[#1dd13a]/90 text-white"
                 onClick={handleConvert}
                 disabled={!convertAmount || parseFloat(convertAmount) <= 0}
               >
                 Convert to CNPY
               </Button>
 
-              {/* Progress Dots */}
-              <div className="flex justify-center gap-2 pt-2">
-                {getProgressDots()}
+              {/* Exchange Rate */}
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <span>1 USD = 1 CNPY</span>
               </div>
             </div>
           </div>
