@@ -48,6 +48,8 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
   const [isConverting, setIsConverting] = useState(false)
   const [conversionSuccess, setConversionSuccess] = useState(false)
   const [loginSeedPhrase, setLoginSeedPhrase] = useState(Array(12).fill(''))
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [verifySuccess, setVerifySuccess] = useState(false)
   const { connectWallet: connectWalletContext } = useWallet()
 
   // Reset state when dialog closes
@@ -66,6 +68,8 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
         setIsConverting(false)
         setConversionSuccess(false)
         setLoginSeedPhrase(Array(12).fill(''))
+        setIsVerifying(false)
+        setVerifySuccess(false)
       }, 300)
     }
   }, [open])
@@ -130,12 +134,27 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
 
   const handleVerify = () => {
     const otpCode = otp.join('')
-    if (otpCode === '1111') {
-      setStep(3)
-      setOtpError(false)
-    } else {
-      setOtpError(true)
-    }
+    setIsVerifying(true)
+    setVerifySuccess(false)
+
+    // Simulate verification delay (2 seconds)
+    setTimeout(() => {
+      if (otpCode === '1111') {
+        setIsVerifying(false)
+        setVerifySuccess(true)
+        setOtpError(false)
+
+        // Wait a moment to show "Verified" then navigate
+        setTimeout(() => {
+          setVerifySuccess(false)
+          setStep(3)
+        }, 1500)
+      } else {
+        setIsVerifying(false)
+        setVerifySuccess(false)
+        setOtpError(true)
+      }
+    }, 2000)
   }
 
   const handleResendCode = () => {
@@ -399,9 +418,16 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
                 Continue
               </Button>
 
+              {/* Divider with OR */}
+              <div className="relative flex items-center justify-center">
+                <div className="flex-1 border-t border-border"></div>
+                <span className="px-4 text-xs text-muted-foreground">OR</span>
+                <div className="flex-1 border-t border-border"></div>
+              </div>
+
               <Button
-                variant="outline"
-                className="w-full h-11 rounded-xl"
+                variant="ghost"
+                className="w-full h-11 rounded-xl text-muted-foreground hover:text-foreground hover:bg-transparent -mt-8"
                 onClick={() => setStep(1.5)}
               >
                 Login with Seed Phrase
@@ -560,11 +586,27 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
               </div>
 
               <Button
-                className="w-full h-11 rounded-xl cursor-pointer"
+                className={`w-full h-11 rounded-xl cursor-pointer ${
+                  verifySuccess
+                    ? 'bg-green-600 hover:bg-green-600'
+                    : ''
+                }`}
                 onClick={handleVerify}
-                disabled={otp.some(d => !d)}
+                disabled={otp.some(d => !d) || isVerifying}
               >
-                Continue
+                {isVerifying ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Verifying...
+                  </>
+                ) : verifySuccess ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Verified!
+                  </>
+                ) : (
+                  'Continue'
+                )}
               </Button>
             </div>
           </div>
