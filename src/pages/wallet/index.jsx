@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -21,7 +22,10 @@ import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
 
 export default function Wallet() {
-  const [activeTab, setActiveTab] = useState('assets')
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const tabParam = searchParams.get('tab') || 'assets'
+  const [activeTab, setActiveTab] = useState(tabParam)
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
   const { isConnected, connectWallet, walletAddress, formatAddress, disconnectWallet } = useWallet()
 
@@ -32,6 +36,17 @@ export default function Wallet() {
       connectWallet()
     }
   }, [isConnected, connectWallet])
+
+  // Update active tab when URL changes
+  useEffect(() => {
+    setActiveTab(tabParam)
+  }, [tabParam])
+
+  // Update URL when tab changes
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab)
+    navigate(`/wallet?tab=${newTab}`)
+  }
 
   const copyAddress = () => {
     navigator.clipboard.writeText(walletAddress)
@@ -83,7 +98,7 @@ export default function Wallet() {
             </div>
 
             {/* Tabs at Top */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
               <TabsList className="h-auto w-full justify-start bg-transparent p-0 border-b rounded-none">
                 <TabsTrigger
                   value="assets"

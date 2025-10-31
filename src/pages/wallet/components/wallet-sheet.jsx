@@ -135,7 +135,7 @@ export default function WalletSheet({ open, onOpenChange }) {
                     <h3 className="text-sm font-medium text-muted-foreground">TOP ASSETS</h3>
                     <Button
                       variant="link"
-                      className="text-primary h-auto p-0 text-sm hover:text-primary/80"
+                      className="text-green-400 h-auto p-0 text-sm hover:text-green-400/80"
                       onClick={handleViewAll}
                     >
                       VIEW ALL

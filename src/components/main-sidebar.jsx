@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { Search, Plus, Zap, BarChart3, Activity, TrendingUp, User, Home, PieChart, Repeat, MoreHorizontal, Wallet as WalletIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import LaunchOverviewDialog from './launch-overview-dialog'
 import CommandSearchDialog from './command-search-dialog'
 import WalletSheet from '../pages/wallet/components/wallet-sheet.jsx'
@@ -10,11 +10,15 @@ import { useWallet } from '@/contexts/wallet-context'
 
 export default function MainSidebar({ variant = 'default' }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const [showDialog, setShowDialog] = useState(false)
   const [showCommandSearch, setShowCommandSearch] = useState(false)
   const [showWalletSheet, setShowWalletSheet] = useState(false)
   const [showWalletConnection, setShowWalletConnection] = useState(false)
   const { isConnected, walletAddress, getTotalBalance, formatAddress } = useWallet()
+
+  // Check if we're on the launchpad (home page)
+  const isLaunchpad = location.pathname === '/'
 
   const handleStartLaunch = () => {
     setShowDialog(false)
@@ -84,7 +88,9 @@ export default function MainSidebar({ variant = 'default' }) {
             <nav className="flex flex-col items-center gap-2">
               <button
                 onClick={() => navigate('/')}
-                className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+                className={`w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isLaunchpad ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
               >
                 <Zap className="w-4 h-4" />
                 <span className="text-[10px]">Launchpad</span>
@@ -93,7 +99,10 @@ export default function MainSidebar({ variant = 'default' }) {
                 <BarChart3 className="w-4 h-4" />
                 <span className="text-[10px]">Explorer</span>
               </button>
-              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button
+                onClick={() => navigate('/wallet?tab=staking')}
+                className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+              >
                 <Activity className="w-4 h-4" />
                 <span className="text-[10px]">Staking</span>
               </button>
@@ -203,7 +212,9 @@ export default function MainSidebar({ variant = 'default' }) {
             <nav className="px-4 space-y-2">
               <button
                 onClick={() => navigate('/')}
-                className="w-full h-9 flex items-center gap-3 px-4 rounded-xl bg-white/10 text-sm font-medium text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] transition-colors"
+                className={`w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isLaunchpad ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
               >
                 <Zap className="w-4 h-4" />
                 <span>Launchpad</span>
@@ -212,7 +223,10 @@ export default function MainSidebar({ variant = 'default' }) {
                 <BarChart3 className="w-4 h-4" />
                 <span>Explorer</span>
               </button>
-              <button className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button
+                onClick={() => navigate('/wallet?tab=staking')}
+                className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+              >
                 <Activity className="w-4 h-4" />
                 <span>Staking</span>
               </button>
