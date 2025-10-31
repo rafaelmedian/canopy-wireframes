@@ -17,6 +17,7 @@ import AssetsTab from './components/assets-tab'
 import StakingTab from './components/staking-tab'
 import ActivityTab from './components/activity-tab'
 import StakeDialog from './components/stake-dialog'
+import WalletConnectionDialog from '@/components/wallet-connection-dialog.jsx'
 import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
 
@@ -26,6 +27,7 @@ export default function Wallet() {
   const tabParam = searchParams.get('tab') || 'assets'
   const [activeTab, setActiveTab] = useState(tabParam)
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
+  const [fundDialogOpen, setFundDialogOpen] = useState(false)
   const { isConnected, connectWallet, walletAddress, formatAddress, disconnectWallet, getWalletData } = useWallet()
 
   const walletData = getWalletData()
@@ -171,9 +173,13 @@ export default function Wallet() {
                   <Send className="w-5 h-5" />
                   <span className="text-sm">Send</span>
                 </Button>
-                <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => setFundDialogOpen(true)}
+                >
                   <Download className="w-5 h-5" />
-                  <span className="text-sm">Receive</span>
+                  <span className="text-sm">Buy</span>
                 </Button>
                 <Button variant="outline" className="h-auto py-4 flex-col gap-2">
                   <Repeat className="w-5 h-5" />
@@ -199,6 +205,13 @@ export default function Wallet() {
           selectedChain={null}
           availableChains={walletData.stakes}
           assets={walletData.assets}
+        />
+
+        {/* Fund Wallet Dialog */}
+        <WalletConnectionDialog
+          open={fundDialogOpen}
+          onOpenChange={setFundDialogOpen}
+          initialStep={4}
         />
       </div>
     </div>

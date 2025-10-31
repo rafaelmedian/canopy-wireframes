@@ -23,8 +23,8 @@ import {
 import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
 
-export default function WalletConnectionDialog({ open, onOpenChange }) {
-  const [step, setStep] = useState(1)
+export default function WalletConnectionDialog({ open, onOpenChange, initialStep = 1 }) {
+  const [step, setStep] = useState(initialStep)
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState(['', '', '', ''])
   const [otpError, setOtpError] = useState(false)
@@ -50,16 +50,18 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
   const [loginSeedPhrase, setLoginSeedPhrase] = useState(Array(12).fill(''))
   const [isVerifying, setIsVerifying] = useState(false)
   const [verifySuccess, setVerifySuccess] = useState(false)
-  const { connectWallet: connectWalletContext, getUserByEmail } = useWallet()
+  const [emailError, setEmailError] = useState('')
+  const { connectWallet: connectWalletContext, getUserByEmail, updateWalletData } = useWallet()
 
   // Reset state when dialog closes
   useEffect(() => {
     if (!open) {
       setTimeout(() => {
-        setStep(1)
+        setStep(initialStep)
         setEmail('')
         setOtp(['', '', '', ''])
         setOtpError(false)
+        setEmailError('')
         setConnectedWallets({ solana: null, evm: null, canopy: null })
         setConvertAmount('')
         setSelectedWalletForConversion(null)
@@ -72,7 +74,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
         setVerifySuccess(false)
       }, 300)
     }
-  }, [open])
+  }, [open, initialStep])
 
   // Set the first connected wallet as selected when navigating to step 5
   useEffect(() => {
@@ -113,6 +115,13 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
   // Step 1: Email submission
   const handleEmailContinue = () => {
     if (email && email.includes('@')) {
+      // Validate that email is one of the demo emails
+      const validEmails = ['withfunds@email.com', 'nofunds@email.com']
+      if (!validEmails.includes(email.toLowerCase())) {
+        setEmailError('Please use a valid email for the demo: withfunds@email.com or nofunds@email.com')
+        return
+      }
+      setEmailError('')
       setStep(2)
     }
   }
@@ -343,6 +352,55 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
 
   // Step 7: Complete
   const handleComplete = () => {
+    const convertedAmount = parseFloat(convertAmount || '0')
+    const currentDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+    // Create wallet data object with funded amount
+    const fundedWalletData = {
+      totalValue: convertedAmount,
+      assets: [
+        {
+          id: 1,
+          chainId: 1,
+          symbol: 'CNPY',
+          name: 'Canopy',
+          balance: convertedAmount,
+          price: 1,
+          value: convertedAmount,
+          change24h: 0,
+          color: '#1dd13a'
+        }
+      ],
+      transactions: [
+        {
+          id: 1,
+          type: 'received',
+          symbol: 'CNPY',
+          amount: convertedAmount,
+          timestamp: currentDate,
+          status: 'completed',
+          hash: '0x' + Math.random().toString(16).substr(2, 40)
+        }
+      ],
+      stakes: [
+        {
+          id: 1,
+          chainId: 1,
+          symbol: 'CNPY',
+          chain: 'Canopy',
+          amount: 0,
+          apy: 15.0,
+          rewards: 0,
+          color: '#1dd13a'
+        }
+      ],
+      unstaking: [],
+      earningsHistory: []
+    }
+
+    // Save to localStorage
+    updateWalletData(fundedWalletData)
+
     connectWalletContext(email, walletAddress)
     handleClose()
   }
@@ -418,10 +476,18 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
                   type="email"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setEmailError('')
+                  }}
                   onKeyDown={(e) => e.key === 'Enter' && handleEmailContinue()}
-                  className="h-11 rounded-xl"
+                  className={`h-11 rounded-xl ${emailError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                 />
+                {emailError && (
+                  <p className="text-sm text-red-500">
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               <Button
@@ -1401,7 +1467,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
               <div className="p-4 bg-muted/30 rounded-xl space-y-3">
                 <p className="text-sm text-muted-foreground">Your CNPY Balance</p>
                 <p className="text-4xl font-bold">
-                  {(parseFloat(convertAmount || '0') + 550.50).toFixed(2)}
+                  {parseFloat(convertAmount || '0').toFixed(2)}
                 </p>
                 <p className="text-sm text-muted-foreground">CNPY</p>
 

@@ -8,12 +8,14 @@ export function WalletProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false)
   const [walletAddress, setWalletAddress] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
+  const [fundedWalletData, setFundedWalletData] = useState(null)
 
   // Check localStorage for existing connection
   useEffect(() => {
     const storedAddress = localStorage.getItem('walletAddress')
     const storedIsConnected = localStorage.getItem('isWalletConnected')
     const storedEmail = localStorage.getItem('userEmail')
+    const storedWalletData = localStorage.getItem('walletData')
 
     if (storedAddress && storedIsConnected === 'true') {
       setWalletAddress(storedAddress)
@@ -25,6 +27,11 @@ export function WalletProvider({ children }) {
         if (user) {
           setCurrentUser(user)
         }
+      }
+
+      // Restore funded wallet data
+      if (storedWalletData) {
+        setFundedWalletData(JSON.parse(storedWalletData))
       }
     }
   }, [])
@@ -66,12 +73,24 @@ export function WalletProvider({ children }) {
     setWalletAddress(null)
     setIsConnected(false)
     setCurrentUser(null)
+    setFundedWalletData(null)
     localStorage.removeItem('walletAddress')
     localStorage.removeItem('isWalletConnected')
     localStorage.removeItem('userEmail')
+    localStorage.removeItem('walletData')
+  }
+
+  const updateWalletData = (fundedData) => {
+    setFundedWalletData(fundedData)
+    localStorage.setItem('walletData', JSON.stringify(fundedData))
   }
 
   const getTotalBalance = () => {
+    // If user has funded wallet data in memory/localStorage, use that
+    if (fundedWalletData) {
+      return fundedWalletData.totalValue
+    }
+
     // Return balance based on current user email
     if (currentUser && currentUser.email) {
       const userData = walletDataByUser[currentUser.email]
@@ -82,6 +101,11 @@ export function WalletProvider({ children }) {
   }
 
   const getWalletData = () => {
+    // If user has funded wallet data in memory/localStorage, use that
+    if (fundedWalletData) {
+      return fundedWalletData
+    }
+
     // Return wallet data based on current user email
     if (currentUser && currentUser.email) {
       return walletDataByUser[currentUser.email] || walletDataByUser['nofunds@email.com']
@@ -105,6 +129,7 @@ export function WalletProvider({ children }) {
         disconnectWallet,
         getTotalBalance,
         getWalletData,
+        updateWalletData,
         formatAddress,
         getUserByEmail
       }}
