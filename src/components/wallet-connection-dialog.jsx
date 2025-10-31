@@ -45,6 +45,8 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
   const [selectedWalletForConversion, setSelectedWalletForConversion] = useState(null)
   const [showWalletDropdown, setShowWalletDropdown] = useState(false)
   const [selectedToken, setSelectedToken] = useState(null) // { walletType, token, amount }
+  const [isConverting, setIsConverting] = useState(false)
+  const [conversionSuccess, setConversionSuccess] = useState(false)
   const { connectWallet: connectWalletContext } = useWallet()
 
   // Reset state when dialog closes
@@ -60,6 +62,8 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
         setSelectedWalletForConversion(null)
         setShowWalletDropdown(false)
         setSelectedToken(null)
+        setIsConverting(false)
+        setConversionSuccess(false)
       }, 300)
     }
   }, [open])
@@ -266,29 +270,26 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
 
   // Step 6: Convert to CNPY
   const handleConvert = () => {
-    setStep(7)
+    setIsConverting(true)
+    setConversionSuccess(false)
+
+    // Simulate conversion delay
+    setTimeout(() => {
+      setIsConverting(false)
+      setConversionSuccess(true)
+
+      // Wait a moment to show "Converted" then navigate
+      setTimeout(() => {
+        setConversionSuccess(false)
+        setStep(7)
+      }, 1500)
+    }, 2000)
   }
 
   // Step 7: Complete
   const handleComplete = () => {
     connectWalletContext()
     handleClose()
-  }
-
-  const getProgressDots = () => {
-    const dots = []
-    for (let i = 0; i < 5; i++) {
-      const isActive = i < step || step === 7
-      dots.push(
-        <div
-          key={i}
-          className={`w-2 h-2 rounded-full transition-colors ${
-            isActive ? 'bg-[#1dd13a]' : 'bg-muted'
-          }`}
-        />
-      )
-    }
-    return dots
   }
 
   const getTotalBalance = (walletType = null) => {
@@ -1188,11 +1189,27 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
               </Card>
 
               <Button
-                className="w-full h-11 rounded-xl bg-[#1dd13a] hover:bg-[#1dd13a]/90 text-white"
+                className={`w-full h-11 rounded-xl ${
+                  conversionSuccess
+                    ? 'bg-green-600 hover:bg-green-600'
+                    : 'bg-[#1dd13a] hover:bg-[#1dd13a]/90'
+                } text-white`}
                 onClick={handleConvert}
-                disabled={!convertAmount || parseFloat(convertAmount) <= 0}
+                disabled={!convertAmount || parseFloat(convertAmount) <= 0 || isConverting}
               >
-                Convert to CNPY
+                {isConverting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Converting...
+                  </>
+                ) : conversionSuccess ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Converted!
+                  </>
+                ) : (
+                  'Convert to CNPY'
+                )}
               </Button>
 
               {/* Exchange Rate */}
