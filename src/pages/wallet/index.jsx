@@ -17,7 +17,6 @@ import AssetsTab from './components/assets-tab'
 import StakingTab from './components/staking-tab'
 import ActivityTab from './components/activity-tab'
 import StakeDialog from './components/stake-dialog'
-import walletData from '@/data/wallet.json'
 import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
 
@@ -27,7 +26,9 @@ export default function Wallet() {
   const tabParam = searchParams.get('tab') || 'assets'
   const [activeTab, setActiveTab] = useState(tabParam)
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
-  const { isConnected, connectWallet, walletAddress, formatAddress, disconnectWallet } = useWallet()
+  const { isConnected, connectWallet, walletAddress, formatAddress, disconnectWallet, getWalletData } = useWallet()
+
+  const walletData = getWalletData()
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -51,6 +52,14 @@ export default function Wallet() {
   const copyAddress = () => {
     navigator.clipboard.writeText(walletAddress)
     toast.success('Address copied to clipboard')
+  }
+
+  const handleDisconnect = () => {
+    navigate('/')
+    // Disconnect wallet after navigation
+    setTimeout(() => {
+      disconnectWallet()
+    }, 100)
   }
 
   return (
@@ -90,7 +99,7 @@ export default function Wallet() {
                   variant="outline"
                   size="icon"
                   className="h-9 w-9 rounded-full text-red-500 hover:text-red-500 hover:bg-red-500/10"
-                  onClick={disconnectWallet}
+                  onClick={handleDisconnect}
                 >
                   <LogOut className="w-5 h-5" />
                 </Button>

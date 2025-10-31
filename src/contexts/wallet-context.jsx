@@ -1,41 +1,93 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import walletData from '@/data/wallet.json'
+import walletDataByUser from '@/data/wallet.json'
+import usersData from '@/data/users.json'
 
 const WalletContext = createContext()
 
 export function WalletProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false)
   const [walletAddress, setWalletAddress] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
 
   // Check localStorage for existing connection
   useEffect(() => {
     const storedAddress = localStorage.getItem('walletAddress')
     const storedIsConnected = localStorage.getItem('isWalletConnected')
+    const storedEmail = localStorage.getItem('userEmail')
 
     if (storedAddress && storedIsConnected === 'true') {
       setWalletAddress(storedAddress)
       setIsConnected(true)
+
+      // Restore user from email
+      if (storedEmail) {
+        const user = getUserByEmail(storedEmail)
+        if (user) {
+          setCurrentUser(user)
+        }
+      }
     }
   }, [])
 
-  const connectWallet = () => {
-    // Simulate wallet connection - in real app this would call MetaMask/WalletConnect
-    const mockAddress = '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199'
-    setWalletAddress(mockAddress)
+  const getUserByEmail = (email) => {
+    return usersData.users.find(user => user.email.toLowerCase() === email.toLowerCase())
+  }
+
+  const connectWallet = (email = null, address = null) => {
+    // Get user from email if provided
+    let user = null
+    let walletAddr = address
+
+    if (email) {
+      user = getUserByEmail(email)
+      if (user && user.hasWallet) {
+        walletAddr = user.walletAddress
+      }
+    }
+
+    // Use provided address or default mock address
+    if (!walletAddr) {
+      walletAddr = '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199'
+    }
+
+    setWalletAddress(walletAddr)
     setIsConnected(true)
-    localStorage.setItem('walletAddress', mockAddress)
+    setCurrentUser(user)
+
+    localStorage.setItem('walletAddress', walletAddr)
     localStorage.setItem('isWalletConnected', 'true')
+
+    if (email) {
+      localStorage.setItem('userEmail', email)
+    }
   }
 
   const disconnectWallet = () => {
     setWalletAddress(null)
     setIsConnected(false)
+    setCurrentUser(null)
     localStorage.removeItem('walletAddress')
     localStorage.removeItem('isWalletConnected')
+    localStorage.removeItem('userEmail')
   }
 
   const getTotalBalance = () => {
-    return walletData.totalValue
+    // Return balance based on current user email
+    if (currentUser && currentUser.email) {
+      const userData = walletDataByUser[currentUser.email]
+      return userData ? userData.totalValue : 0
+    }
+    // Default to withfunds user
+    return walletDataByUser['withfunds@email.com'].totalValue
+  }
+
+  const getWalletData = () => {
+    // Return wallet data based on current user email
+    if (currentUser && currentUser.email) {
+      return walletDataByUser[currentUser.email] || walletDataByUser['nofunds@email.com']
+    }
+    // Default to withfunds user
+    return walletDataByUser['withfunds@email.com']
   }
 
   const formatAddress = (address) => {
@@ -48,10 +100,13 @@ export function WalletProvider({ children }) {
       value={{
         isConnected,
         walletAddress,
+        currentUser,
         connectWallet,
         disconnectWallet,
         getTotalBalance,
-        formatAddress
+        getWalletData,
+        formatAddress,
+        getUserByEmail
       }}
     >
       {children}

@@ -50,7 +50,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
   const [loginSeedPhrase, setLoginSeedPhrase] = useState(Array(12).fill(''))
   const [isVerifying, setIsVerifying] = useState(false)
   const [verifySuccess, setVerifySuccess] = useState(false)
-  const { connectWallet: connectWalletContext } = useWallet()
+  const { connectWallet: connectWalletContext, getUserByEmail } = useWallet()
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -144,10 +144,21 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
         setVerifySuccess(true)
         setOtpError(false)
 
+        // Check if user has wallet
+        const user = getUserByEmail(email)
+
         // Wait a moment to show "Verified" then navigate
         setTimeout(() => {
           setVerifySuccess(false)
-          setStep(3)
+
+          if (user && user.hasWallet) {
+            // User has wallet - connect immediately and close dialog
+            connectWalletContext(email, user.walletAddress)
+            handleClose()
+          } else {
+            // User doesn't have wallet - go to Step 3 (create wallet)
+            setStep(3)
+          }
         }, 1500)
       } else {
         setIsVerifying(false)
@@ -192,7 +203,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
       // Show success toast
       toast.success('Wallet restored successfully!')
 
-      // Connect wallet
+      // Connect wallet (seed phrase login doesn't require email)
       connectWalletContext()
 
       // Close dialog
@@ -249,6 +260,9 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
     )
 
     if (allCorrect) {
+      // Connect wallet immediately so sidebar shows it active
+      connectWalletContext(email, walletAddress)
+      // Go to step 3.3 to show funding options
       setStep(3.3)
     } else {
       toast.error('Incorrect words selected. Please try again.')
@@ -261,7 +275,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
   }
 
   const handleDoItLater = () => {
-    connectWalletContext()
+    connectWalletContext(email, walletAddress)
     handleClose()
   }
 
@@ -329,7 +343,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
 
   // Step 7: Complete
   const handleComplete = () => {
-    connectWalletContext()
+    connectWalletContext(email, walletAddress)
     handleClose()
   }
 

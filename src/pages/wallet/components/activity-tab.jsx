@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import {
   DropdownMenu,
@@ -7,10 +8,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { ArrowUpRight, ArrowDownLeft, Repeat, TrendingUp, TrendingDown, CheckCircle, ChevronDown } from 'lucide-react'
+import { ArrowUpRight, ArrowDownLeft, Repeat, TrendingUp, TrendingDown, CheckCircle, ChevronDown, Activity } from 'lucide-react'
 import TransactionDetailSheet from './transaction-detail-sheet'
 
 export default function ActivityTab({ transactions, compact = false }) {
+  const navigate = useNavigate()
   const [selectedTypes, setSelectedTypes] = useState([])
   const [selectedStatuses, setSelectedStatuses] = useState([])
   const [selectedAssets, setSelectedAssets] = useState([])
@@ -174,6 +176,33 @@ export default function ActivityTab({ transactions, compact = false }) {
 
   const Wrapper = compact ? 'div' : Card
   const wrapperProps = compact ? {} : { className: "p-4" }
+
+  // Show empty state if no transactions
+  if (transactions.length === 0) {
+    return (
+      <Wrapper {...wrapperProps}>
+        <Card className="p-12 border-0">
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="p-4 bg-muted rounded-full">
+              <Activity className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">No activity yet</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                Start your blockchain journey by creating or investing in chains on the launchpad.
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate('/')}
+              className="mt-2"
+            >
+              Go to Launchpad
+            </Button>
+          </div>
+        </Card>
+      </Wrapper>
+    )
+  }
 
   return (
     <Wrapper {...wrapperProps}>

@@ -1,7 +1,8 @@
 {
-  "totalValue": 12458.32,
-  "change24h": 5.2,
-  "assets": [
+  "withfunds@email.com": {
+    "totalValue": 12458.32,
+    "change24h": 5.2,
+    "assets": [
     {
       "id": 1,
       "chainId": 1,
@@ -385,4 +386,14 @@
       ]
     }
   ]
+  },
+  "nofunds@email.com": {
+    "totalValue": 0,
+    "change24h": 0,
+    "assets": [],
+    "stakes": [],
+    "unstaking": [],
+    "transactions": [],
+    "earningsHistory": []
+  }
 }

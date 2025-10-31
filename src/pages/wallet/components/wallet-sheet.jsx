@@ -1,20 +1,22 @@
 import { Sheet, SheetContent } from '@/components/ui/sheet.jsx'
 import { Button } from '@/components/ui/button.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
-import { Copy, Repeat, Send, Download, Coins, LogOut, Settings } from 'lucide-react'
+import { Card } from '@/components/ui/card.jsx'
+import { Copy, Repeat, Send, Download, Coins, LogOut, Settings, Wallet, ChevronRight, Activity } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useWallet } from '@/contexts/wallet-context.jsx'
 import { toast } from 'sonner'
-import walletData from '@/data/wallet.json'
 import ActivityTab from '@/pages/wallet/components/activity-tab.jsx'
 import StakeDialog from '@/pages/wallet/components/stake-dialog.jsx'
 
 export default function WalletSheet({ open, onOpenChange }) {
   const navigate = useNavigate()
-  const { walletAddress, formatAddress, getTotalBalance, disconnectWallet } = useWallet()
+  const { walletAddress, formatAddress, getTotalBalance, disconnectWallet, getWalletData } = useWallet()
   const [activeTab, setActiveTab] = useState('balances')
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
+
+  const walletData = getWalletData()
 
   const copyAddress = () => {
     navigator.clipboard.writeText(walletAddress)
@@ -79,7 +81,13 @@ export default function WalletSheet({ open, onOpenChange }) {
 
           {/* Total Balance */}
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Estimated Balance</p>
+            <button
+              onClick={handleViewAll}
+              className="flex items-center gap-1 text-sm text-muted-foreground mb-1 hover:text-foreground transition-colors cursor-pointer"
+            >
+              Estimated Balance
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
             <h2 className="text-4xl font-bold text-foreground mb-1">
               ${getTotalBalance().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </h2>
@@ -130,60 +138,112 @@ export default function WalletSheet({ open, onOpenChange }) {
 
             <TabsContent value="balances" className="flex-1 overflow-y-auto mt-0 data-[state=inactive]:hidden">
               <div className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium text-muted-foreground">TOP ASSETS</h3>
-                    <Button
-                      variant="link"
-                      className="text-green-400 h-auto p-0 text-sm hov er:text-green-400/80"
-                      onClick={handleViewAll}
-                    >
-                      VIEW ALL
-                    </Button>
-                  </div>
-
-                  {/* Assets List */}
-                  <div className="space-y-3">
-                    {walletData.assets.slice(0, 5).map((asset) => (
-                      <button
-                        key={asset.id}
-                        onClick={() => handleAssetClick(asset.chainId)}
-                        className="w-full flex items-center justify-between py-2 hover:bg-muted/50 rounded-lg px-2 transition-colors cursor-pointer"
+                {walletData.assets.length === 0 ? (
+                  /* Empty State */
+                  <Card className="p-12 border-0">
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="p-4 bg-muted rounded-full">
+                        <Wallet className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold">No assets yet</h3>
+                        <p className="text-sm text-muted-foreground max-w-md">
+                          Start your blockchain journey by creating or investing in chains on the launchpad.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          navigate('/')
+                          onOpenChange(false)
+                        }}
+                        className="mt-2"
                       >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: asset.color }}
-                          >
-                            <span className="text-sm font-bold text-white">
-                              {asset.symbol.slice(0, 1)}
-                            </span>
-                          </div>
-                          <div className="text-left">
-                            <div className="font-medium text-foreground">{asset.name} <span className="text-muted-foreground">{asset.symbol}</span></div>
-                            <div className="text-sm text-muted-foreground">
-                              {asset.balance.toLocaleString()} {asset.symbol}
+                        Go to Launchpad
+                      </Button>
+                    </div>
+                  </Card>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-medium text-muted-foreground">TOP ASSETS</h3>
+                      <Button
+                        variant="link"
+                        className="text-green-400 h-auto p-0 text-sm hover:text-green-400/80"
+                        onClick={handleViewAll}
+                      >
+                        VIEW ALL
+                      </Button>
+                    </div>
+
+                    {/* Assets List */}
+                    <div className="space-y-3">
+                      {walletData.assets.slice(0, 5).map((asset) => (
+                        <button
+                          key={asset.id}
+                          onClick={() => handleAssetClick(asset.chainId)}
+                          className="w-full flex items-center justify-between py-2 hover:bg-muted/50 rounded-lg px-2 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: asset.color }}
+                            >
+                              <span className="text-sm font-bold text-white">
+                                {asset.symbol.slice(0, 1)}
+                              </span>
+                            </div>
+                            <div className="text-left">
+                              <div className="font-medium text-foreground">{asset.name} <span className="text-muted-foreground">{asset.symbol}</span></div>
+                              <div className="text-sm text-muted-foreground">
+                                {asset.balance.toLocaleString()} {asset.symbol}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-medium text-foreground">
-                            ${asset.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                          <div className="text-right">
+                            <div className="font-medium text-foreground">
+                              ${asset.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              ${asset.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </div>
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            ${asset.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </TabsContent>
 
             <TabsContent value="activity" className="flex-1 overflow-y-auto mt-0 data-[state=inactive]:hidden">
               <div className="p-6">
-                <ActivityTab transactions={walletData.transactions} compact={true} />
+                {walletData.transactions.length === 0 ? (
+                  /* Empty State */
+                  <Card className="p-12 border-0">
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="p-4 bg-muted rounded-full">
+                        <Activity className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold">No activity yet</h3>
+                        <p className="text-sm text-muted-foreground max-w-md">
+                          Start your blockchain journey by creating or investing in chains on the launchpad.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          navigate('/')
+                          onOpenChange(false)
+                        }}
+                        className="mt-2"
+                      >
+                        Go to Launchpad
+                      </Button>
+                    </div>
+                  </Card>
+                ) : (
+                  <ActivityTab transactions={walletData.transactions} compact={true} />
+                )}
               </div>
             </TabsContent>
           </Tabs>
