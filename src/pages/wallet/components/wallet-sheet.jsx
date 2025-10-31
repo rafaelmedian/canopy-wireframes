@@ -22,12 +22,32 @@ export default function WalletSheet({ open, onOpenChange }) {
   }
 
   const handleDisconnect = () => {
-    disconnectWallet()
     onOpenChange(false)
+    navigate('/')
+    // Disconnect wallet after navigation
+    setTimeout(() => {
+      disconnectWallet()
+    }, 100)
   }
 
   const handleViewAll = () => {
     navigate('/wallet')
+    onOpenChange(false)
+  }
+
+  const handleAssetClick = (chainId) => {
+    // Map chainId to the correct route based on db.js special mappings
+    const chainRoutes = {
+      1: 'someone-else-chain',    // Onchain ENS
+      2: 'my-chain',               // MyGameChain
+      3: 'graduated-chain',        // Social Connect
+      4: 'draft-chain',            // DeFi Protocol
+      5: 'onchain-bnb',            // StreamVault
+      6: 'defi-masters'            // DeFi Masters (add to db.js if needed)
+    }
+
+    const route = chainRoutes[chainId] || chainId
+    navigate(`/chain/${route}`)
     onOpenChange(false)
   }
 
@@ -125,7 +145,11 @@ export default function WalletSheet({ open, onOpenChange }) {
                   {/* Assets List */}
                   <div className="space-y-3">
                     {walletData.assets.slice(0, 5).map((asset) => (
-                      <div key={asset.id} className="flex items-center justify-between py-2">
+                      <button
+                        key={asset.id}
+                        onClick={() => handleAssetClick(asset.chainId)}
+                        className="w-full flex items-center justify-between py-2 hover:bg-muted/50 rounded-lg px-2 transition-colors cursor-pointer"
+                      >
                         <div className="flex items-center gap-3">
                           <div
                             className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
@@ -135,7 +159,7 @@ export default function WalletSheet({ open, onOpenChange }) {
                               {asset.symbol.slice(0, 1)}
                             </span>
                           </div>
-                          <div>
+                          <div className="text-left">
                             <div className="font-medium text-foreground">{asset.name} <span className="text-muted-foreground">{asset.symbol}</span></div>
                             <div className="text-sm text-muted-foreground">
                               {asset.balance.toLocaleString()} {asset.symbol}
@@ -150,7 +174,7 @@ export default function WalletSheet({ open, onOpenChange }) {
                             ${asset.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </div>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>

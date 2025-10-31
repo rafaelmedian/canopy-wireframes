@@ -971,8 +971,8 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
             <div className="px-6 pb-6 space-y-6">
               {/* Balance Summary - Compact */}
               <div className="p-4 bg-muted rounded-xl space-y-3">
-                <p className="text-sm text-muted-foreground">Total Balance</p>
-                <p className="text-3xl font-bold">
+                <p className="text-sm text-muted-foreground">Balance Available</p>
+                <p className="text-3xl font-bold -mt-2">
                   ${selectedWalletForConversion ? getTotalBalance(selectedWalletForConversion).toFixed(2) : getTotalBalance().toFixed(2)}
                 </p>
 
@@ -1105,7 +1105,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
 
               <h2 className="text-2xl font-bold text-center mb-2">Convert to CNPY</h2>
               <p className="text-sm text-muted-foreground text-center max-w-sm">
-                Convert your USDT/USDC to CNPY to start buying into projects
+                Convert your {selectedToken?.token || 'USDT/USDC'} to CNPY to start buying into projects
               </p>
             </div>
 

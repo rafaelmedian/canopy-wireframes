@@ -191,7 +191,7 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
               </div>
             </div>
             <Button variant="outline" className="h-10" onClick={() => setEarningsHistoryOpen(true)}>
-              View Earn Balances
+              View Earned Balances
             </Button>
           </div>
         </Card>
