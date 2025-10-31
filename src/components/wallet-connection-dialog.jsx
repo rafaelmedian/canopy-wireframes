@@ -384,7 +384,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-0 gap-0 !rounded-3xl" hideClose noAnimation>
+      <DialogContent className="sm:max-w-[500px] p-0 gap-0 !rounded-3xl" hideClose noAnimation onInteractOutside={(e) => e.preventDefault()}>
         {/* Step 1: Email Entry */}
         {step === 1 && (
           <div className="flex flex-col">
