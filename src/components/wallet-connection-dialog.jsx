@@ -1070,7 +1070,7 @@ export default function WalletConnectionDialog({ open, onOpenChange }) {
                 className="w-full h-12 rounded-xl bg-primary"
                 onClick={handleContinueToConversion}
               >
-                Convert to CNPY
+                Continue
               </Button>
             </div>
           </div>
