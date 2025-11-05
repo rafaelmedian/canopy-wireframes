@@ -11,8 +11,10 @@ import Review from '@/pages/launch-chain/review'
 import ChainDetail from '@/pages/chain-detail'
 import TransactionPage from '@/pages/transaction-page'
 import BlockPage from '@/pages/block-page'
+import Wallet from '@/pages/wallet'
 import { Toaster } from '@/components/ui/sonner'
 import { LaunchFlowProvider, useLaunchFlow } from '@/contexts/launch-flow-context'
+import { WalletProvider } from '@/contexts/wallet-context'
 
 function RouteWatcher() {
   const location = useLocation()
@@ -39,6 +41,8 @@ function AppContent() {
         {/* Transaction and Block detail routes */}
         <Route path="/transaction/:hash" element={<TransactionPage />} />
         <Route path="/block/:blockHash" element={<BlockPage />} />
+        {/* Wallet route */}
+        <Route path="/wallet" element={<Wallet />} />
         <Route path="/launchpad/language" element={<LanguageSelection />} />
         <Route path="/launchpad/repository" element={<ConnectRepo />} />
         <Route path="/launchpad/configure" element={<ConfigureChain />} />
@@ -55,9 +59,11 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <LaunchFlowProvider>
-        <AppContent />
-      </LaunchFlowProvider>
+      <WalletProvider>
+        <LaunchFlowProvider>
+          <AppContent />
+        </LaunchFlowProvider>
+      </WalletProvider>
     </Router>
   )
 }

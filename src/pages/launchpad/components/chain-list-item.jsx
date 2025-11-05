@@ -16,7 +16,7 @@ export default function ChainListItem({ chain }) {
       onClick={handleClick}
       className="p-4 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
     >
-      <div className="grid grid-cols-[200px_1fr_120px_120px_120px_120px_100px] gap-6 items-center">
+      <div className="grid grid-cols-[120px_1fr_120px_100px_100px_100px_100px] gap-6 items-center">
         {/* Chain Name & Logo */}
         <div className="flex items-center gap-3">
           <div

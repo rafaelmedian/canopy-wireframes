@@ -1,0 +1,399 @@
+{
+  "withfunds@email.com": {
+    "totalValue": 12458.32,
+    "change24h": 5.2,
+    "assets": [
+    {
+      "id": 1,
+      "chainId": 1,
+      "symbol": "OENS",
+      "name": "Onchain ENS",
+      "balance": 2500,
+      "price": 2.24256,
+      "value": 5606.24,
+      "change24h": 3.2,
+      "logo": null,
+      "color": "#10b981",
+      "priceHistory": [
+        {"price": 0.80}, {"price": 0.95}, {"price": 3.50}, {"price": 3.40},
+        {"price": 0.60}, {"price": 0.75}, {"price": 3.80}, {"price": 2.24}
+      ]
+    },
+    {
+      "id": 2,
+      "chainId": 2,
+      "symbol": "GAME",
+      "name": "MyGameChain",
+      "balance": 450,
+      "price": 6.92129,
+      "value": 3114.58,
+      "change24h": 8.1,
+      "logo": null,
+      "color": "#8b5cf6",
+      "priceHistory": [
+        {"price": 2.50}, {"price": 2.80}, {"price": 11.20}, {"price": 10.80},
+        {"price": 1.50}, {"price": 2.00}, {"price": 12.50}, {"price": 6.92}
+      ]
+    },
+    {
+      "id": 3,
+      "chainId": 3,
+      "symbol": "SOCL",
+      "name": "Social Connect",
+      "balance": 890,
+      "price": 2.10084,
+      "value": 1869.75,
+      "change24h": -2.3,
+      "logo": null,
+      "color": "#06b6d4",
+      "priceHistory": [
+        {"price": 4.20}, {"price": 4.10}, {"price": 0.30}, {"price": 0.40},
+        {"price": 4.50}, {"price": 4.30}, {"price": 0.20}, {"price": 2.10}
+      ]
+    },
+    {
+      "id": 4,
+      "chainId": 5,
+      "symbol": "STRM",
+      "name": "StreamVault",
+      "balance": 320,
+      "price": 4.55,
+      "value": 1456.00,
+      "change24h": 1.8,
+      "logo": null,
+      "color": "#f59e0b",
+      "priceHistory": [
+        {"price": 1.20}, {"price": 1.40}, {"price": 8.50}, {"price": 8.20},
+        {"price": 0.80}, {"price": 1.10}, {"price": 9.20}, {"price": 4.55}
+      ]
+    },
+    {
+      "id": 5,
+      "chainId": 6,
+      "symbol": "DFIM",
+      "name": "DeFi Masters",
+      "balance": 150,
+      "price": 2.745,
+      "value": 411.75,
+      "change24h": -0.5,
+      "logo": null,
+      "color": "#ec4899",
+      "priceHistory": [
+        {"price": 5.50}, {"price": 5.30}, {"price": 0.50}, {"price": 0.65},
+        {"price": 5.80}, {"price": 5.60}, {"price": 0.40}, {"price": 2.745}
+      ]
+    }
+  ],
+  "stakes": [
+    {
+      "id": 1,
+      "chainId": 1,
+      "symbol": "OENS",
+      "chain": "Onchain ENS",
+      "amount": 500,
+      "apy": 12.5,
+      "rewards": 2.15,
+      "rewardsUSD": 4.82,
+      "color": "#10b981"
+    },
+    {
+      "id": 2,
+      "chainId": 2,
+      "symbol": "GAME",
+      "chain": "MyGameChain",
+      "amount": 200,
+      "apy": 18.2,
+      "rewards": 0.82,
+      "rewardsUSD": 5.68,
+      "color": "#8b5cf6"
+    },
+    {
+      "id": 3,
+      "chainId": 3,
+      "symbol": "SOCL",
+      "chain": "Social Connect",
+      "amount": 0,
+      "apy": 8.5,
+      "rewards": 0,
+      "color": "#06b6d4"
+    },
+    {
+      "id": 4,
+      "chainId": 5,
+      "symbol": "STRM",
+      "chain": "StreamVault",
+      "amount": 0,
+      "apy": 15.3,
+      "rewards": 0,
+      "color": "#f59e0b"
+    },
+    {
+      "id": 5,
+      "chainId": 6,
+      "symbol": "DFIM",
+      "chain": "DeFi Masters",
+      "amount": 0,
+      "apy": 10.8,
+      "rewards": 0,
+      "color": "#ec4899"
+    }
+  ],
+  "unstaking": [
+    {
+      "id": 1,
+      "chainId": 1,
+      "symbol": "OENS",
+      "amount": 100,
+      "daysRemaining": 5,
+      "hoursRemaining": 3
+    }
+  ],
+  "transactions": [
+    {
+      "id": 1,
+      "type": "sent",
+      "amount": -50,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "2 hours ago",
+      "status": "completed",
+      "hash": "0x1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z",
+      "from": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "to": "0xRecipient1234567890abcdef1234567890abcdef12",
+      "fee": 0.0012
+    },
+    {
+      "id": 2,
+      "type": "received",
+      "amount": 125,
+      "symbol": "GAME",
+      "chainId": 2,
+      "timestamp": "5 hours ago",
+      "status": "completed",
+      "hash": "0x9z8y7x6w5v4u3t2s1r0q9p8o7n6m5l4k3j2i1h0g9f8e7d6c5b4a",
+      "from": "0xSender1234567890abcdef1234567890abcdef1234",
+      "to": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "fee": 0.0008
+    },
+    {
+      "id": 3,
+      "type": "swap",
+      "amountFrom": 100,
+      "symbolFrom": "OENS",
+      "amountTo": 45,
+      "symbolTo": "SOCL",
+      "chainId": 1,
+      "timestamp": "Yesterday",
+      "status": "completed",
+      "hash": "0xaabbccddeeff00112233445566778899aabbccddeeff001122",
+      "from": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "to": "0xSwapContract1234567890abcdef1234567890abcd",
+      "fee": 0.0015
+    },
+    {
+      "id": 4,
+      "type": "staked",
+      "amount": -500,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "3 days ago",
+      "status": "completed",
+      "hash": "0x112233445566778899aabbccddeeff00112233445566778899",
+      "from": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "to": "0xStakingContract1234567890abcdef1234567890ab",
+      "fee": 0.001,
+      "apy": 12.5
+    },
+    {
+      "id": 5,
+      "type": "unstaked",
+      "amount": 100,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "5 days ago",
+      "status": "completed",
+      "hash": "0xffeeddccbbaa99887766554433221100ffeeddccbbaa998877",
+      "from": "0xStakingContract1234567890abcdef1234567890ab",
+      "to": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "fee": 0.001,
+      "rewards": 2.15
+    },
+    {
+      "id": 6,
+      "type": "claimed",
+      "amount": 2.15,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "1 week ago",
+      "status": "completed",
+      "hash": "0x998877665544332211009988776655443322110099887766",
+      "from": "0xStakingContract1234567890abcdef1234567890ab",
+      "to": "0xYourWallet1234567890abcdef1234567890abcdef",
+      "fee": 0.0005
+    }
+  ],
+  "earningsHistory": [
+    {
+      "date": "Today",
+      "transactions": [
+        {
+          "id": "earn-1",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.15,
+          "amountUSD": 0.34
+        },
+        {
+          "id": "earn-2",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.08,
+          "amountUSD": 0.55
+        }
+      ]
+    },
+    {
+      "date": "Yesterday",
+      "transactions": [
+        {
+          "id": "earn-3",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.14,
+          "amountUSD": 0.31
+        },
+        {
+          "id": "earn-4",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.09,
+          "amountUSD": 0.62
+        }
+      ]
+    },
+    {
+      "date": "Dec 28, 2024",
+      "transactions": [
+        {
+          "id": "earn-5",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.16,
+          "amountUSD": 0.36
+        },
+        {
+          "id": "earn-6",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.10,
+          "amountUSD": 0.69
+        }
+      ]
+    },
+    {
+      "date": "Dec 27, 2024",
+      "transactions": [
+        {
+          "id": "earn-7",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.15,
+          "amountUSD": 0.34
+        },
+        {
+          "id": "earn-8",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.08,
+          "amountUSD": 0.55
+        }
+      ]
+    },
+    {
+      "date": "Dec 26, 2024",
+      "transactions": [
+        {
+          "id": "earn-9",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.17,
+          "amountUSD": 0.38
+        },
+        {
+          "id": "earn-10",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.09,
+          "amountUSD": 0.62
+        }
+      ]
+    },
+    {
+      "date": "Dec 25, 2024",
+      "transactions": [
+        {
+          "id": "earn-11",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.14,
+          "amountUSD": 0.31
+        },
+        {
+          "id": "earn-12",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.08,
+          "amountUSD": 0.55
+        }
+      ]
+    },
+    {
+      "date": "Dec 24, 2024",
+      "transactions": [
+        {
+          "id": "earn-13",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.16,
+          "amountUSD": 0.36
+        },
+        {
+          "id": "earn-14",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.10,
+          "amountUSD": 0.69
+        }
+      ]
+    },
+    {
+      "date": "Dec 23, 2024",
+      "transactions": [
+        {
+          "id": "earn-15",
+          "chainId": 1,
+          "symbol": "OENS",
+          "amount": 0.15,
+          "amountUSD": 0.34
+        },
+        {
+          "id": "earn-16",
+          "chainId": 2,
+          "symbol": "GAME",
+          "amount": 0.09,
+          "amountUSD": 0.62
+        }
+      ]
+    }
+  ]
+  },
+  "nofunds@email.com": {
+    "totalValue": 0,
+    "change24h": 0,
+    "assets": [],
+    "stakes": [],
+    "unstaking": [],
+    "transactions": [],
+    "earningsHistory": []
+  }
+}

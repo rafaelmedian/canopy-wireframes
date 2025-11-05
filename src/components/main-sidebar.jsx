@@ -1,14 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Separator } from '@/components/ui/separator'
-import { Search, Plus, Zap, BarChart3, Activity, TrendingUp, User, Home, PieChart, Repeat, MoreHorizontal, Wallet } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Search, Plus, Zap, BarChart3, Activity, TrendingUp, User, Home, PieChart, Repeat, MoreHorizontal, Wallet as WalletIcon } from 'lucide-react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import LaunchOverviewDialog from './launch-overview-dialog'
 import CommandSearchDialog from './command-search-dialog'
+import WalletSheet from '../pages/wallet/components/wallet-sheet.jsx'
+import WalletConnectionDialog from './wallet-connection-dialog'
+import { useWallet } from '@/contexts/wallet-context'
 
 export default function MainSidebar({ variant = 'default' }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const [showDialog, setShowDialog] = useState(false)
   const [showCommandSearch, setShowCommandSearch] = useState(false)
+  const [showWalletSheet, setShowWalletSheet] = useState(false)
+  const [showWalletConnection, setShowWalletConnection] = useState(false)
+  const { isConnected, walletAddress, getTotalBalance, formatAddress } = useWallet()
+
+  // Check if we're on the launchpad (home page)
+  const isLaunchpad = location.pathname === '/'
 
   const handleStartLaunch = () => {
     setShowDialog(false)
@@ -78,7 +88,9 @@ export default function MainSidebar({ variant = 'default' }) {
             <nav className="flex flex-col items-center gap-2">
               <button
                 onClick={() => navigate('/')}
-                className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+                className={`w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isLaunchpad ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
               >
                 <Zap className="w-4 h-4" />
                 <span className="text-[10px]">Launchpad</span>
@@ -87,7 +99,16 @@ export default function MainSidebar({ variant = 'default' }) {
                 <BarChart3 className="w-4 h-4" />
                 <span className="text-[10px]">Explorer</span>
               </button>
-              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button
+                onClick={() => {
+                  if (isConnected) {
+                    navigate('/wallet?tab=staking')
+                  } else {
+                    setShowWalletConnection(true)
+                  }
+                }}
+                className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+              >
                 <Activity className="w-4 h-4" />
                 <span className="text-[10px]">Staking</span>
               </button>
@@ -104,9 +125,21 @@ export default function MainSidebar({ variant = 'default' }) {
 
           {/* Bottom Section */}
           <div className="px-2">
-            <button className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80 flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
-            </button>
+            {isConnected ? (
+              <button
+                onClick={() => setShowWalletSheet(true)}
+                className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80 flex items-center justify-center"
+              >
+                <WalletIcon className="w-5 h-5" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowWalletConnection(true)}
+                className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80 flex items-center justify-center"
+              >
+                <WalletIcon className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -119,6 +152,16 @@ export default function MainSidebar({ variant = 'default' }) {
         <CommandSearchDialog
           open={showCommandSearch}
           onOpenChange={setShowCommandSearch}
+        />
+
+        <WalletSheet
+          open={showWalletSheet}
+          onOpenChange={setShowWalletSheet}
+        />
+
+        <WalletConnectionDialog
+          open={showWalletConnection}
+          onOpenChange={setShowWalletConnection}
         />
       </>
     )
@@ -175,7 +218,9 @@ export default function MainSidebar({ variant = 'default' }) {
             <nav className="px-4 space-y-2">
               <button
                 onClick={() => navigate('/')}
-                className="w-full h-9 flex items-center gap-3 px-4 rounded-xl bg-white/10 text-sm font-medium text-white shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)] transition-colors"
+                className={`w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isLaunchpad ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
               >
                 <Zap className="w-4 h-4" />
                 <span>Launchpad</span>
@@ -184,7 +229,16 @@ export default function MainSidebar({ variant = 'default' }) {
                 <BarChart3 className="w-4 h-4" />
                 <span>Explorer</span>
               </button>
-              <button className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button
+                onClick={() => {
+                  if (isConnected) {
+                    navigate('/wallet?tab=staking')
+                  } else {
+                    setShowWalletConnection(true)
+                  }
+                }}
+                className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+              >
                 <Activity className="w-4 h-4" />
                 <span>Staking</span>
               </button>
@@ -201,10 +255,34 @@ export default function MainSidebar({ variant = 'default' }) {
 
         {/* Bottom Section */}
         <div className="px-4 space-y-3">
-          {/* Connect Wallet */}
-          <button className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80">
-            Connect wallet
-          </button>
+          {/* Connect Wallet or Wallet Card */}
+          {isConnected ? (
+            <button
+              onClick={() => setShowWalletSheet(true)}
+              className="w-full rounded-xl bg-gradient-to-br from-neutral-900 to-neutral-700 p-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <span className="text-xs font-medium text-white/70">Balance</span>
+                <WalletIcon className="w-4 h-4 text-white/70" />
+              </div>
+              <div className="text-2xl text-left font-bold text-white mb-2">
+                ${getTotalBalance().toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-[#1dd13a] flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-white">C</span>
+                </div>
+                <span className="text-sm font-medium text-white/90">{formatAddress(walletAddress)}</span>
+              </div>
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowWalletConnection(true)}
+              className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80"
+            >
+              Connect wallet
+            </button>
+          )}
         </div>
       </div>
 
@@ -217,6 +295,16 @@ export default function MainSidebar({ variant = 'default' }) {
       <CommandSearchDialog
         open={showCommandSearch}
         onOpenChange={setShowCommandSearch}
+      />
+
+      <WalletSheet
+        open={showWalletSheet}
+        onOpenChange={setShowWalletSheet}
+      />
+
+      <WalletConnectionDialog
+        open={showWalletConnection}
+        onOpenChange={setShowWalletConnection}
       />
     </>
   )

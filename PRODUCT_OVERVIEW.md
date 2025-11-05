@@ -11,8 +11,7 @@ This document describes the design and user flows for key pages of the Canopy La
 - Chain detail pages (multiple states)
 - Transaction & block explorer pages
 - Report functionality
-
-**Note:** Wallet connection functionality is not included in this build as it's being developed separately by Rafa and will be integrated once finalized.
+- Wallet functionality (connection, creation, funding, staking, and portfolio management)
 
 ---
 
@@ -24,6 +23,7 @@ This document describes the design and user flows for key pages of the Canopy La
 4. [Chain Detail Pages](#4-chain-detail-pages)
 5. [Transaction & Block Explorer](#5-transaction--block-explorer)
 6. [Report an Issue](#6-report-an-issue)
+7. [Wallet](#7-wallet)
 
 ---
 
@@ -1286,4 +1286,1029 @@ Feature for users to report chains that violate platform policies.
 - Successful publish should clear draft data
 - Delete draft should clear all associated data
 - "Start fresh" option should clear saved progress
+
+---
+
+## 7. Wallet
+
+Cross-chain wallet system for managing assets, staking, and transactions across the Canopy ecosystem.
+
+### Overview
+
+The wallet implementation provides a complete solution for wallet creation, connection, funding, asset management, and staking functionality. It integrates with the launchpad and chain pages to enable seamless token transactions.
+
+**Access Points:**
+- Wallet icon in sidebar (globally accessible)
+- Opens wallet sheet (sidebar overlay)
+- Dedicated `/wallet` page for full view
+- Buy buttons in wallet sheet and full wallet page open funding dialog
+
+---
+
+### Authentication & Connection
+
+**Live Example:** Click "Connect Wallet" button in sidebar
+
+Email-based authentication system with OTP verification.
+
+**Demo User Accounts:**
+
+Two test accounts are available for demo purposes:
+
+1. **User with Funds:**
+   - Email: `withfunds@email.com`
+   - Has existing wallet: Yes
+   - Wallet address: `0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199`
+   - Total balance: $12,458.32
+   - Assets: 5 different tokens (OENS, GAME, SOCL, STRM, DFIM)
+   - Active stakes: 2 positions
+   - Transaction history: 6 transactions
+
+2. **User without Wallet:**
+   - Email: `nofunds@email.com`
+   - Has existing wallet: No
+   - Goes through full wallet creation flow
+   - Shows empty states after creation
+
+**OTP Verification:**
+- Demo verification code: `1111`
+- Any other code will show error
+
+**Email Validation:**
+- Only accepts `withfunds@email.com` or `nofunds@email.com`
+- Other emails show error: "Please use a valid email for the demo: withfunds@email.com or nofunds@email.com"
+
+**Connection Dialog Steps:**
+
+The WalletConnectionDialog component handles a 7-step flow:
+
+**Step 1: Email Entry**
+- Input field for email address
+- "Continue" button (disabled if email invalid)
+- "Login with Seed Phrase" alternative option
+- Close button (X) returns to previous page
+
+**Step 1.5: Login with Seed Phrase** (Optional alternative path)
+- 12-word seed phrase input grid
+- Each word in separate input field
+- Accepts any 12 filled words (demo mode)
+- "Login" button connects wallet immediately
+- Back button returns to Step 1
+
+**Step 2: OTP Verification**
+- Four-digit code input (one digit per box)
+- Auto-focus next input on entry
+- Backspace moves to previous input
+- "Resend code" button shows toast
+- "Continue" button with loading states:
+  - Normal state: "Continue"
+  - Verifying: "Verifying..." with spinner
+  - Success: "Verified!" with checkmark (1.5s)
+- After verification:
+  - If user has wallet (withfunds@email.com): Connects immediately and closes dialog
+  - If user has no wallet (nofunds@email.com): Proceeds to Step 3
+
+**Step 3: Wallet Setup** (Only for users without wallet)
+- Title: "No Canopy Wallet Found for {email}"
+- Two action buttons:
+  - "Import Keyfile" (disabled, not implemented)
+  - "Create Wallet" button with states:
+    - Normal: "Create Wallet"
+    - Creating: "Creating wallet..." with spinner (3s)
+    - Success: "Wallet Created" with checkmark
+- After 1.5s success state, proceeds to Step 3.1
+
+**Step 3.1: Secure Your Wallet - Seed Phrase Display**
+- Shows 12-word recovery phrase in 2-column grid
+- Each word numbered (1-12)
+- Warning card with yellow background:
+  - Title: "Never Share Your Recovery Phrase"
+  - Warning text about security
+- "I've Written It Down" button proceeds to Step 3.2
+
+**Step 3.2: Verify Seed Phrase**
+- Two verification questions
+- Each asks "What is word #X?"
+- Four options per question (radio buttons)
+- Must answer both correctly to proceed
+- Incorrect answers show error toast
+- "Continue" button (disabled until both answered)
+- After correct verification, connects wallet and proceeds to Step 3.3
+
+**Step 3.3: Wallet Created - Fund or Skip**
+- Success message: "Wallet Created!"
+- Shows wallet address with copy button
+- Two action buttons:
+  - "Fund Wallet" → Proceeds to Step 4
+  - "Do It Later" → Connects wallet with $0 balance and closes dialog
+
+**Step 4: Connect Wallets to Fund**
+- Title: "Connect Your Wallets"
+- Subtitle: "Connect wallets fund your account"
+- Three wallet connection options:
+
+  **Solana Wallet:**
+  - Label: "Solana Wallet"
+  - Shows "Connect Solana Wallet" card when disconnected
+  - Available providers: MetaMask, WalletConnect
+  - When connected:
+    - Shows provider name
+    - Displays balances (USDT, USDC)
+    - Green checkmark icon
+    - Disconnect button (X)
+
+  **EVM Wallet:**
+  - Label: "EVM Wallet"
+  - Shows "Connect EVM Wallet" card when disconnected
+  - Available providers: MetaMask, WalletConnect
+  - When connected:
+    - Shows provider name
+    - Multi-chain indicator
+    - Green checkmark icon
+    - Disconnect button (X)
+
+  **Fund via Transfer:**
+  - Shows Canopy wallet address
+  - Copy button for address
+  - Text: "Transfer CNPY from another Canopy Wallet"
+
+- "Continue" button (disabled until at least one wallet connected)
+- Mock connection: Automatically creates balances (USDT: 100.50, USDC: 50.25)
+
+**Step 5: Choose Fund Source**
+- Title: "Choose Fund Source"
+- Subtitle: "Select which token you want to convert to CNPY"
+- Balance summary card:
+  - Shows "Balance Available"
+  - Large display: Total balance from selected wallet
+  - Wallet selector dropdown:
+    - Shows currently selected wallet (provider name + address)
+    - Dropdown to switch between connected wallets
+    - Each option shows total balance
+  - Token list with radio buttons:
+    - Each token shows: Icon, name, balance, USD value
+    - Radio button for selection
+    - Default: First token auto-selected
+- "Continue" button proceeds to Step 6
+
+**Step 6: Convert to CNPY**
+- Title: "Convert to CNPY"
+- Large amount input:
+  - Placeholder: "$0"
+  - Center-aligned, large font (5xl)
+  - Accepts decimal values
+- Shows available balance and wallet address
+- "Use max" button fills maximum amount
+- Swap direction arrow (decorative)
+- Conversion result card:
+  - Shows CNPY logo
+  - Displays converted amount (1:1 ratio)
+  - Shows USD value
+- "Convert to CNPY" button with states:
+  - Normal: "Convert to CNPY"
+  - Converting: "Converting..." with spinner (2s)
+  - Success: "Converted!" with checkmark
+- Exchange rate display: "1 USD = 1 CNPY"
+- After conversion, proceeds to Step 7
+
+**Step 7: Success - Wallet Funded**
+- Title: "Wallet Funded!"
+- Subtitle: "Your Canopy wallet is ready. You can now buy into projects."
+- Balance card:
+  - Shows converted amount
+  - Displays "CNPY" label
+  - Funded source information (token used, amount)
+- Two action buttons:
+  - "Start Buying Projects" → Connects wallet with funded data and closes dialog
+  - "Add More Funds" → Returns to Step 4
+
+**Wallet Data Creation on Completion:**
+
+When user completes funding (Step 7), the following data is created and saved to localStorage:
+
+```javascript
+{
+  totalValue: convertedAmount,  // The amount user entered
+  assets: [
+    {
+      id: 1,
+      chainId: 1,
+      symbol: 'CNPY',
+      name: 'Canopy',
+      balance: convertedAmount,
+      price: 1,
+      value: convertedAmount,
+      change24h: 0,
+      color: '#1dd13a'
+    }
+  ],
+  transactions: [
+    {
+      id: 1,
+      type: 'received',
+      symbol: 'CNPY',
+      amount: convertedAmount,
+      timestamp: currentDate,  // e.g., "Jan 15, 2025"
+      status: 'completed',
+      hash: '0x...' // Random 40-character hex
+    }
+  ],
+  stakes: [
+    {
+      id: 1,
+      chainId: 1,
+      symbol: 'CNPY',
+      chain: 'Canopy',
+      amount: 0,  // Not staked yet, available to stake
+      apy: 15.0,
+      rewards: 0,
+      color: '#1dd13a'
+    }
+  ],
+  unstaking: [],
+  earningsHistory: []
+}
+```
+
+**initialStep Prop:**
+
+The WalletConnectionDialog accepts an `initialStep` prop to open at a specific step:
+- Default: `initialStep={1}` (email entry)
+- Buy button usage: `initialStep={4}` (opens at Connect Wallets step)
+- Resets to initialStep when dialog closes
+
+**State Persistence:**
+
+- Wallet connection state stored in localStorage:
+  - `walletAddress`: The wallet address
+  - `isWalletConnected`: Boolean connection status
+  - `userEmail`: User's email address
+  - `walletData`: Funded wallet data (when user completes funding)
+- Loaded on page refresh/app mount
+- Cleared on logout
+
+**Wallet Context:**
+
+Global context providing wallet state and functions:
+- `isConnected`: Boolean connection status
+- `walletAddress`: Current wallet address (or null)
+- `currentUser`: User object (email, hasWallet, walletAddress)
+- `connectWallet(email, address)`: Connect wallet
+- `disconnectWallet()`: Disconnect and clear all localStorage
+- `getTotalBalance()`: Returns total balance (checks funded data first, then user JSON, then default)
+- `getWalletData()`: Returns wallet data (checks funded data first, then user JSON, then default)
+- `updateWalletData(fundedData)`: Save funded data to state and localStorage
+- `formatAddress(address)`: Format address as "0x1234...5678"
+- `getUserByEmail(email)`: Fetch user object by email
+
+---
+
+### Wallet Sheet (Sidebar)
+
+**Access:** Click wallet icon in sidebar
+
+Side sheet overlay that shows wallet summary and quick actions.
+
+**Layout:**
+- Opens from left side
+- Full height
+- Width: `sm:max-w-[420px]`
+- Three sections: Header (fixed), Tabs (scrollable), Footer (fixed)
+
+**Header Section** (Fixed, non-scrollable):
+
+**Wallet Identity:**
+- Canopy logo avatar (green circle with "C")
+- Wallet address (formatted: "0x8626...1199")
+- Copy button (copies full address to clipboard)
+- Connection status: "Connected" in green text
+
+**Total Balance Display:**
+- Label: "Estimated Balance" with chevron icon
+- Clickable → Navigates to `/wallet` page
+- Large balance display: "$12,458.32" (formatted with 2 decimals)
+
+**Quick Action Buttons:**
+- 4-column grid layout
+- Each button shows icon + label:
+  1. **Swap:** Repeat icon, "Swap" label (no functionality)
+  2. **Buy:** Download icon, "Buy" label → Opens WalletConnectionDialog at step 4
+  3. **Send:** Send icon, "Send" label (no functionality)
+  4. **Stake:** Coins icon, "Stake" label → Opens StakeDialog
+
+**Tabs Section** (Scrollable):
+
+**Two tabs:** Balances, Activity
+
+**Balances Tab:**
+- Empty state (when no assets):
+  - Wallet icon in muted circle
+  - Heading: "No assets yet"
+  - Description: "Start your blockchain journey by creating or investing in chains on the launchpad."
+  - "Go to Launchpad" button → Navigates to `/`
+
+- With assets:
+  - Section header: "TOP ASSETS" with "VIEW ALL" link → Navigates to `/wallet`
+  - Shows top 5 assets only
+  - Each asset card (clickable):
+    - Token avatar (colored circle with symbol initial)
+    - Token name and symbol
+    - Balance: "{amount} {symbol}"
+    - Price: "${price}" (per token)
+    - Value: "${total value}" (balance × price)
+    - Click → Navigates to chain detail page
+
+**Activity Tab:**
+- Empty state (when no transactions):
+  - Activity icon in muted circle
+  - Heading: "No activity yet"
+  - Description: "Start your blockchain journey by creating or investing in chains on the launchpad."
+  - "Go to Launchpad" button → Navigates to `/`
+
+- With transactions:
+  - Shows ActivityTab component in compact mode
+  - No search or filters (compact=true)
+  - Click transaction → Opens TransactionDetailSheet
+
+**Footer Section** (Fixed, non-scrollable):
+
+Two buttons:
+1. **Wallet settings:** Ghost button with Settings icon (no functionality)
+2. **Disconnect wallet:** Ghost button with LogOut icon in red
+   - On click:
+     - Navigates to `/` (home)
+     - After 100ms delay, calls `disconnectWallet()`
+     - Clears all localStorage (walletAddress, isWalletConnected, userEmail, walletData)
+
+**Dialogs:**
+- StakeDialog: Opens when clicking Stake button or asset
+- WalletConnectionDialog: Opens when clicking Buy button (initialStep={4})
+
+---
+
+### Full Wallet Page
+
+**Live Example:** Click "Estimated Balance" in wallet sheet, or navigate to `/wallet`
+
+Full-page wallet view with complete portfolio management.
+
+**Layout:**
+- Sidebar navigation (MainSidebar)
+- Main content area (max-width: 1024px)
+- Two-column layout:
+  - Left: Main content (tabs)
+  - Right: Quick Actions sidebar (fixed position)
+
+**Wallet Header:**
+
+**Wallet Identity:**
+- Canopy logo avatar (green circle with "C")
+- Wallet address (formatted)
+- Copy button
+- Connection status: "Connected" in green
+
+**Header Actions:**
+- Settings button (icon only, no functionality)
+- Disconnect button (icon only):
+  - Red color on hover
+  - On click:
+    - Navigates to `/` (home)
+    - After 100ms delay, calls `disconnectWallet()`
+
+**Tabs:**
+
+Four tabs with URL query parameter tracking (`?tab=assets`):
+1. Assets
+2. Staking
+3. Activity
+4. Governance (not implemented, empty tab)
+
+**Tab behavior:**
+- Active tab synced with URL (`?tab=assets`, `?tab=staking`, etc.)
+- Clicking tab updates URL
+- URL change updates active tab
+- Page scrolls to top on load
+
+---
+
+### Assets Tab
+
+Complete portfolio view with chart and asset table.
+
+**Portfolio Chart Card:**
+
+**Estimated Balance Header:**
+- Label: "Estimated Balance"
+- Large balance display: "$12,458.32"
+- Secondary display: "≈ $12458.32" in muted text
+- Today's PnL:
+  - Label: "Today's PnL"
+  - Value: "-$12.46(0.10%)" in red/green
+  - Calculated as: `totalValue * 0.001`
+
+**Chart Section:**
+- Time period selector (top-right):
+  - Buttons: 1H, 1D, 1W, 1M, 1Y
+  - Active period highlighted
+  - Default: 1D
+- Line chart (Recharts):
+  - Orange gradient line (#f59e0b)
+  - Shows portfolio value over time
+  - Data points vary by period:
+    - 1H: 12 points (5-minute intervals)
+    - 1D: 12 points (2-hour intervals)
+    - 1W: 7 points (daily)
+    - 1M: 10 points (3-day intervals)
+    - 1Y: 12 points (monthly)
+  - Mock data: Random variation around total value (±10%)
+  - Grid lines (horizontal only)
+  - No Y-axis labels
+  - Tooltip shows time and value
+
+**Search:**
+- Search input with magnifying glass icon
+- Placeholder: "Search assets..."
+- Filters by asset name or symbol (case-insensitive)
+- Real-time filtering as user types
+
+**Assets Table:**
+
+**Sortable columns** (click header to sort):
+1. **Chain:**
+   - Token avatar (colored circle)
+   - Symbol (bold)
+   - Name (muted)
+   - Sortable by name
+
+2. **Amount:**
+   - Total value: "$5,606.24" (bold)
+   - Balance: "2,500 OENS" (muted)
+   - Sortable by value (default sort)
+
+3. **24H Change:**
+   - Mini sparkline chart (12px × 6px)
+   - Percentage: "+3.2%" or "-2.3%"
+   - Green for positive, red for negative
+   - Chart color matches percentage color
+   - Sortable by change percentage
+
+4. **Price:**
+   - Price per token: "$2.2426"
+   - 4 decimal places
+   - Sortable by price
+
+**Sort Behavior:**
+- Default: Sort by value (desc)
+- Click header to sort by that column
+- Click again to toggle asc/desc
+- Arrow icon indicates sortable columns
+
+**Row Interaction:**
+- Entire row is clickable
+- Hover: Background changes to muted
+- Click: Navigates to chain detail page
+- Uses `getChainById(asset.chainId)` to find route
+
+**Empty State:**
+- Shows when search returns no results
+- Search icon in muted circle
+- Text: "No assets found"
+- Subtext: "Try searching with a different asset name or symbol"
+
+**Data Structure:**
+
+Each asset contains:
+```javascript
+{
+  id: 1,
+  chainId: 1,           // Links to chain in db.js
+  symbol: "OENS",
+  name: "Onchain ENS",
+  balance: 2500,        // Token amount
+  price: 2.24256,       // Price per token
+  value: 5606.24,       // balance × price
+  change24h: 3.2,       // Percentage change
+  color: "#10b981",     // Token brand color
+  priceHistory: [       // For mini chart
+    { price: 0.80 },
+    { price: 0.95 },
+    // ... 8 data points total
+  ]
+}
+```
+
+---
+
+### Staking Tab
+
+Complete staking interface with rewards, active stakes, and unstaking queue.
+
+**Total Interest Earned Card:**
+
+**Header:**
+- Label: "Total interest earned to date"
+- Large balance: "$10.50" (sum of all rewardsUSD from earningsHistory)
+- Unit: "USD" in muted text
+- Info text: "Earn up to 8.05% APY on your crypto. Redeem any time."
+- Info icon with tooltip:
+  - "Annual Percentage Yield (APY) varies by asset and network conditions."
+  - "You can unstake and withdraw your funds at any time."
+
+**Action:**
+- "View Earned Balances" button → Opens EarningsHistorySheet
+
+**Three Tabs:**
+
+Tabs show badge count:
+1. **Rewards:** Available chains to stake
+2. **Active Stakes (2):** Currently staked positions
+3. **Unstaking Queue (1):** Pending unstakes
+
+---
+
+**Rewards Tab** (Available chains to stake):
+
+Table with sortable columns:
+
+**Columns:**
+1. **Chain:**
+   - Token avatar
+   - Chain name (bold)
+   - Symbol (muted)
+
+2. **Annual yield** (sortable):
+   - APY percentage: "12.5%"
+   - Default sort column (desc)
+
+3. **Current Earned Balance** (sortable):
+   - If earning:
+     - Rewards: "2.15 OENS"
+     - USD value: "4.82 USD" (muted)
+   - If not earning:
+     - "Not yet earning" (muted)
+
+4. **Actions:**
+   - "Claim" button (if rewards > 0) → Opens ClaimDialog
+   - "Stake" button → Opens StakeDialog
+
+**Behavior:**
+- Shows all stakes (amount: 0 means available but not staked)
+- Sortable by APY (default) or earnings
+- Click "Stake" → Opens StakeDialog with selected chain
+- Click "Claim" → Opens ClaimDialog with selected stake
+
+---
+
+**Active Stakes Tab:**
+
+Shows only stakes with `amount > 0` (excluding fully unstaked).
+
+**Columns:**
+1. **Chain:** Avatar + name + symbol
+2. **Staked Amount:**
+   - Token amount: "500 OENS"
+   - USD value: "$1,121.28" (calculated: amount × asset.price)
+3. **APY:** Percentage
+4. **Rewards Earned:**
+   - Token amount: "2.15 OENS"
+   - USD value: "$4.82 USD" (if > 0)
+5. **Actions:**
+   - "Unstake" button → Opens UnstakeDialog
+
+**State Management:**
+- Tracks unstaked chains in `unstakedChainIds` state
+- Tracks partial unstakes in `stakeAdjustments` state
+- When fully unstaked: Hidden from active stakes
+- When partially unstaked:
+  - Amount reduced by unstaked amount
+  - Rewards reset to 0
+  - Still shows in table with new amount
+
+**Empty State:**
+- Checkmark icon in muted circle
+- Text: "No active stakes"
+- Subtext: "Start staking to earn rewards"
+
+---
+
+**Unstaking Queue Tab:**
+
+Shows pending unstakes (7-day unstaking period).
+
+**Columns:**
+1. **Chain:**
+   - Avatar + symbol
+   - "Pending" badge
+2. **Amount:** Token amount
+3. **Available In:** "5 days, 3 hours"
+4. **Actions:**
+   - "View Details" → Opens UnstakingDetailSheet
+   - "Cancel" → Opens CancelUnstakeDialog
+
+**Unstaking Items:**
+- Combines original `unstaking` data + new items from `newUnstakingItems` state
+- Filters out canceled items (tracked in `canceledUnstakeIds`)
+- Each unstake has 7-day countdown
+- Cancel restores to active stake (adds to `canceledUnstakeIds`)
+
+**Empty State:**
+- Checkmark icon in muted circle
+- Text: "No pending unstakes"
+- Subtext: "Unstaked funds will appear here during the unstaking period"
+
+---
+
+**Staking Dialogs:**
+
+**StakeDialog:**
+- Select chain (dropdown if not pre-selected)
+- Shows available balance from assets
+- Enter amount to stake
+- Shows APY
+- "Stake" button (demo only, no actual transaction)
+
+**ClaimDialog:**
+- Shows rewards amount
+- Shows USD value
+- "Claim Rewards" button (demo only)
+- Success state after claiming
+
+**UnstakeDialog:**
+- Shows staked amount
+- Select amount or percentage to unstake (25%, 50%, 75%, 100%)
+- Enter custom amount
+- Warning: 7-day unstaking period
+- "Unstake" button
+- On success:
+  - Calls `onUnstakeSuccess(stake, amount)`
+  - Updates state (full or partial unstake)
+  - Adds to unstaking queue
+
+**UnstakingDetailSheet:**
+- Side sheet showing unstake details
+- Chain information
+- Amount unstaking
+- Time remaining
+- "Cancel Unstake" button
+
+**CancelUnstakeDialog:**
+- Confirmation dialog
+- Warning: "This will return your funds to active staking"
+- "Cancel Unstake" and "Keep Unstaking" buttons
+- On confirm: Adds to `canceledUnstakeIds`
+
+**EarningsHistorySheet:**
+- Side sheet showing daily earnings
+- Grouped by date (Today, Yesterday, dates)
+- Each day shows:
+  - Date header
+  - List of earnings by chain
+  - Chain avatar + symbol
+  - Token amount + USD value
+- Scrollable list
+
+---
+
+### Activity Tab
+
+Transaction history with filtering and detail sheets.
+
+**Filters** (Three dropdown menus):
+
+**Type Filter:**
+- Options: Sent, Received, Swap, Staked, Unstaked, Claimed
+- Multi-select (checkboxes)
+- Button label:
+  - No selection: "Type"
+  - One selected: Shows type name (e.g., "Sent")
+  - Multiple: "Type (2)"
+
+**Status Filter:**
+- Options: Completed, Pending
+- Multi-select
+- Button label same pattern as Type
+
+**Asset Filter:**
+- Options: All token symbols from transactions
+- Multi-select
+- Shows token avatar in dropdown
+- Button label same pattern
+
+**Reset Filters:**
+- Shows when any filter active
+- Link button: "Reset filters"
+- Clears all selections
+
+**Transaction List:**
+
+**Table Headers** (not shown in compact mode):
+- Details
+- Amount
+- Date
+
+**Each Transaction Row:**
+
+**Details Column:**
+- Token avatar (colored circle with first letter)
+- Transaction type badge (bottom-right corner):
+  - Sent: ArrowUpRight icon
+  - Received: ArrowDownLeft icon
+  - Swap: Repeat icon
+  - Staked: TrendingUp icon
+  - Unstaked: TrendingDown icon
+  - Claimed: CheckCircle icon
+- Type text:
+  - "Sent OENS"
+  - "Received GAME"
+  - "Swapped OENS to SOCL"
+  - "Staked OENS"
+  - "Unstaked OENS"
+  - "Claimed OENS"
+
+**Amount Column:**
+- Primary: USD value with +/- sign
+  - Send: "-$111.28"
+  - Receive: "+$865.16"
+  - Swap: "$224.26" (no sign)
+- Secondary: Token amount
+  - Send: "-50 OENS"
+  - Receive: "+125 GAME"
+  - Swap: "100 OENS → 45 SOCL"
+
+**Date Column:**
+- Relative time: "2 hours ago", "Yesterday", "3 days ago"
+
+**Row Interaction:**
+- Entire row clickable
+- Hover: Background changes to muted
+- Click: Opens TransactionDetailSheet
+
+**Empty States:**
+
+**No transactions at all:**
+- Activity icon in muted circle
+- Heading: "No activity yet"
+- Description: "Start your blockchain journey by creating or investing in chains on the launchpad."
+- "Go to Launchpad" button
+
+**No results after filtering:**
+- Text: "No transactions found"
+- Subtext: "Try adjusting your filters"
+
+**TransactionDetailSheet:**
+
+Side sheet showing full transaction details:
+
+**Header:**
+- Title: "Transaction Details"
+- Close button
+
+**Content:**
+- Transaction Hash: Full hash with copy button
+- Status badge: Success (green), Pending (yellow), Failed (red)
+- Timestamp: Relative + absolute
+- Block Number: Clickable → Opens block detail page
+- From Address: Full address with copy button
+- To Address: Full address with copy button
+- Amount: With token symbol
+- Transaction Fee: With token symbol (or "< 0.001" if minimal)
+
+**Compact Mode** (used in wallet sheet):
+- No table headers
+- No filter UI
+- Just transaction list
+- Same row layout and click behavior
+
+**Transaction Data Structure:**
+
+```javascript
+{
+  id: 1,
+  type: "sent",           // sent, received, swap, staked, unstaked, claimed
+  symbol: "OENS",         // For single token txs
+  amount: -50,            // Negative for send/stake
+  timestamp: "2 hours ago",
+  status: "completed",    // completed, pending
+  hash: "0x1a2b...",
+  from: "0xYour...",
+  to: "0xRecip...",
+  fee: 0.0012,
+  // For swap transactions:
+  symbolFrom: "OENS",
+  symbolTo: "SOCL",
+  amountFrom: 100,
+  amountTo: 45,
+  // For staking transactions:
+  apy: 12.5,              // (staked only)
+  rewards: 2.15           // (unstaked only)
+}
+```
+
+---
+
+### Quick Actions Sidebar
+
+**Location:** Right sidebar on `/wallet` page
+
+**Position:**
+- Fixed position (sticky top-4)
+- Width: 64 (256px)
+- Padding top: 158px (aligns below wallet header)
+
+**Card Content:**
+
+**Header:**
+- Title: "Quick Actions"
+
+**4-Button Grid** (2×2):
+
+1. **Send:**
+   - Send icon
+   - Label: "Send"
+   - No functionality
+
+2. **Buy:**
+   - Download icon
+   - Label: "Buy"
+   - Opens WalletConnectionDialog at step 4
+
+3. **Swap:**
+   - Repeat icon
+   - Label: "Swap"
+   - No functionality
+
+4. **Stake:**
+   - Coins icon
+   - Label: "Stake"
+   - Opens StakeDialog
+
+**Button Style:**
+- Outline variant
+- Flex column layout (icon above text)
+- Padding: py-4
+- Gap between icon and text
+
+---
+
+### Data Structure & Persistence
+
+**User Data** (`/src/data/users.json`):
+
+```javascript
+{
+  "users": [
+    {
+      "email": "withfunds@email.com",
+      "hasWallet": true,
+      "walletAddress": "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
+    },
+    {
+      "email": "nofunds@email.com",
+      "hasWallet": false,
+      "walletAddress": null
+    }
+  ]
+}
+```
+
+**Wallet Data** (`/src/data/wallet.json`):
+
+Keyed by user email:
+
+```javascript
+{
+  "withfunds@email.com": {
+    "totalValue": 12458.32,
+    "change24h": 5.2,
+    "assets": [ /* array of assets */ ],
+    "stakes": [ /* array of stake positions */ ],
+    "unstaking": [ /* array of pending unstakes */ ],
+    "transactions": [ /* array of transactions */ ],
+    "earningsHistory": [ /* array of daily earnings */ ]
+  },
+  "nofunds@email.com": {
+    "totalValue": 0,
+    "assets": [],
+    "stakes": [],
+    "unstaking": [],
+    "transactions": [],
+    "earningsHistory": []
+  }
+}
+```
+
+**LocalStorage Keys:**
+
+When wallet is connected:
+- `walletAddress`: Wallet address string
+- `isWalletConnected`: "true" or not present
+- `userEmail`: User's email
+- `walletData`: JSON string of funded wallet data (if user completed funding)
+
+**Wallet Context Priority:**
+
+When loading wallet data:
+1. First checks `fundedWalletData` (from localStorage or state)
+2. If not found, checks `walletDataByUser[currentUser.email]`
+3. If not found, defaults to `walletDataByUser['withfunds@email.com']`
+
+When user completes funding flow:
+1. Creates wallet data object with funded amount
+2. Saves to state via `setFundedWalletData(data)`
+3. Saves to localStorage via `localStorage.setItem('walletData', JSON.stringify(data))`
+4. Persists across page refreshes
+5. Cleared on logout
+
+---
+
+### Features Not Implemented
+
+The following features from the wallet PRD are **not implemented**:
+
+**Transaction Actions:**
+- Send: Button present but no functionality
+- Receive: Not implemented
+- Swap: Button present but no functionality (Swap tab in trading panel not implemented)
+- Actual Buy functionality: Dialog flow implemented but no real transaction/API calls
+
+**Wallet Settings:**
+- Settings button present but no functionality
+- No password change
+- No keyfile export
+- No connected wallets management
+- No notification preferences
+
+**Governance:**
+- Tab exists but completely empty
+- No proposal voting
+- No governance token staking
+- No proposal creation
+
+**Additional Missing Features:**
+- Real-time balance updates (static demo data)
+- Token price charts (only portfolio chart)
+- Multi-chain support (chains from launchpad, but no real blockchain integration)
+- Hardware wallet support
+- Transaction detail modal partially implemented (sheet only)
+- Actual blockchain transactions (all demo/mock)
+- Real wallet providers integration (MetaMask/WalletConnect UI only)
+- Seed phrase import functionality (UI present, accepts any 12 words)
+- Keyfile import (button disabled)
+
+---
+
+### Components Structure
+
+**Main Components:**
+- `/src/components/wallet-connection-dialog.jsx` - 7-step wallet connection/creation flow
+- `/src/pages/wallet/index.jsx` - Full wallet page with tabs
+- `/src/pages/wallet/components/wallet-sheet.jsx` - Sidebar wallet overlay
+- `/src/contexts/wallet-context.jsx` - Global wallet state management
+
+**Wallet Page Components:**
+- `assets-tab.jsx` - Portfolio chart and assets table
+- `staking-tab.jsx` - Staking management with 3 tabs
+- `activity-tab.jsx` - Transaction history with filters
+
+**Staking Components:**
+- `stake-dialog.jsx` - Stake tokens dialog
+- `unstake-dialog.jsx` - Unstake tokens dialog
+- `claim-dialog.jsx` - Claim rewards dialog
+- `unstaking-detail-sheet.jsx` - Unstaking details side sheet
+- `cancel-unstake-dialog.jsx` - Cancel unstake confirmation
+- `earnings-history-sheet.jsx` - Daily earnings history
+
+**Activity Components:**
+- `transaction-detail-sheet.jsx` - Transaction details side sheet
+
+**Data Files:**
+- `/src/data/users.json` - User accounts (2 demo users)
+- `/src/data/wallet.json` - Wallet data keyed by email
+
+---
+
+### Integration Points
+
+**Sidebar Integration:**
+- Wallet icon in MainSidebar
+- Shows balance when connected
+- Opens wallet sheet on click
+
+**Launchpad Integration:**
+- Empty states link to launchpad
+- Asset rows link to chain detail pages
+- Buy buttons open funding dialog
+
+**Chain Detail Pages:**
+- Trading panel has "Connect Wallet" placeholder
+- Will integrate with wallet context when implemented
+
+**Navigation:**
+- `/wallet` - Full wallet page
+- `/wallet?tab=assets` - Assets tab
+- `/wallet?tab=staking` - Staking tab
+- `/wallet?tab=activity` - Activity tab
+- `/wallet?tab=governance` - Governance tab (empty)
+
+---
 

@@ -74,8 +74,8 @@ export default function Launchpad() {
   return (
     <div className="flex min-h-screen bg-background">
       <MainSidebar />
-
-      <div className="flex-1 p-6 pt-4 space-y-8">
+      <div className="flex-1 p-6 pt-4">
+        <div className="max-w-[1024px] mx-auto space-y-8">
         {/* Top Chains Carousel */}
         <div>
           <h1 className="text-[16px] font-bold mb-6">Top Chains</h1>
@@ -95,7 +95,7 @@ export default function Launchpad() {
         {/* Chains Grid/List */}
         <div className="space-y-6">
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
               {filteredChains.length > 0 ? (
                 filteredChains.map((chain) => (
                   <ChainCard key={chain.id} chain={chain} />
@@ -131,6 +131,7 @@ export default function Launchpad() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   )
