@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import {
   AlertCircle,
   ChevronRight,
@@ -13,10 +13,8 @@ import {
   AlertTriangle,
   TrendingUp,
   Users,
-  Shield,
-  ArrowLeft
+  Shield
 } from 'lucide-react'
-import ProposalDetailSheet from './proposal-detail-sheet'
 import governanceData from '@/data/governance.json'
 import chainsData from '@/data/chains.json'
 
@@ -38,13 +36,11 @@ const mockProposals = governanceData.proposals.map(proposal => {
 
 
 export default function GovernanceTab({ userVotingPower = 2500 }) {
-  const [selectedProposal, setSelectedProposal] = useState(null)
-  const [detailSheetOpen, setDetailSheetOpen] = useState(false)
+  const navigate = useNavigate()
   const [filter, setFilter] = useState('all') // all, active, passed, failed
 
   const handleProposalClick = (proposal) => {
-    setSelectedProposal(proposal)
-    setDetailSheetOpen(true)
+    navigate(`/governance/${proposal.id}`)
   }
 
   const getUrgencyBadge = (urgency) => {
@@ -260,14 +256,6 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
           </Card>
         ))}
       </div>
-
-      {/* Proposal Detail Sheet */}
-      <ProposalDetailSheet
-        open={detailSheetOpen}
-        onOpenChange={setDetailSheetOpen}
-        proposal={selectedProposal}
-        userVotingPower={userVotingPower}
-      />
     </div>
   )
 }
