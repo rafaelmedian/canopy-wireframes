@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   AlertCircle,
   ChevronRight,
@@ -80,6 +81,8 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
   }
 
   const activeProposalsCount = mockProposals.filter(p => p.status === 'active').length
+  const passedProposalsCount = mockProposals.filter(p => p.status === 'passed').length
+  const failedProposalsCount = mockProposals.filter(p => p.status === 'failed').length
   const votedProposalsCount = mockProposals.filter(p => p.userVote !== null).length
 
   return (
@@ -129,41 +132,34 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
         </Card>
       </div>
 
-      {/* Filter Buttons */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant={filter === 'all' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilter('all')}
-        >
-          All Proposals
-        </Button>
-        <Button
-          variant={filter === 'active' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilter('active')}
-        >
-          Active ({activeProposalsCount})
-        </Button>
-        <Button
-          variant={filter === 'passed' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilter('passed')}
-        >
-          Passed
-        </Button>
-        <Button
-          variant={filter === 'failed' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilter('failed')}
-        >
-          Not Passed
-        </Button>
-      </div>
+      {/* Governance Tabs */}
+      <Tabs value={filter} onValueChange={setFilter}>
+        <TabsList className="w-full justify-start mb-6">
+          <TabsTrigger value="all">All Proposals</TabsTrigger>
+          <TabsTrigger value="active">
+            Active
+            <Badge variant="secondary" className="ml-2">
+              {activeProposalsCount}
+            </Badge>
+          </TabsTrigger>
+          <TabsTrigger value="passed">
+            Passed
+            <Badge variant="secondary" className="ml-2">
+              {passedProposalsCount}
+            </Badge>
+          </TabsTrigger>
+          <TabsTrigger value="failed">
+            Not Passed
+            <Badge variant="secondary" className="ml-2">
+              {failedProposalsCount}
+            </Badge>
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Proposals List */}
-      <div className="space-y-4">
-        {getFilteredProposals().map((proposal) => (
+        <TabsContent value={filter}>
+          {/* Proposals List */}
+          <div className="space-y-4">
+            {getFilteredProposals().map((proposal) => (
           <Card
             key={proposal.id}
             className="cursor-pointer hover:shadow-md transition-shadow"
@@ -254,8 +250,10 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

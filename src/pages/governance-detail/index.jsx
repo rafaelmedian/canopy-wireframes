@@ -409,12 +409,12 @@ export default function GovernanceDetailPage() {
                           <p className="text-sm text-muted-foreground">You voted</p>
                           <p className="text-lg font-semibold mt-1">
                             {proposal.userVote === 'for' ? (
-                              <span className="flex items-center justify-center gap-2 text-green-600">
+                              <span className="flex items-center justify-center gap-2 text-green-500">
                                 <Check className="w-5 h-5" />
                                 For
                               </span>
                             ) : (
-                              <span className="flex items-center justify-center gap-2 text-red-600">
+                              <span className="flex items-center justify-center gap-2 text-red-400">
                                 <X className="w-5 h-5" />
                                 Against
                               </span>
