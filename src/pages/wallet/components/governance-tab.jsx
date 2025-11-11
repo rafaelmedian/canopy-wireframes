@@ -50,7 +50,7 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
   const getUrgencyBadge = (urgency) => {
     if (urgency === 'urgent') {
       return (
-        <Badge variant="destructive" className="gap-1">
+        <Badge variant="outline" className="border-orange-500/50 text-orange-500 gap-1">
           <AlertCircle className="w-3 h-3" />
           URGENT
         </Badge>
@@ -70,7 +70,7 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
       case 'failed':
         return (
           <Badge variant="outline" className="text-red-600 border-red-600">
-            Failed
+            Not Passed
           </Badge>
         )
       default:
@@ -161,7 +161,7 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
           size="sm"
           onClick={() => setFilter('failed')}
         >
-          Failed
+          Not Passed
         </Button>
       </div>
 
@@ -188,7 +188,14 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
                   </div>
                   <CardTitle className="text-lg">{proposal.title}</CardTitle>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <div className="flex items-center gap-2">
+                  {proposal.userVote && (
+                    <Badge variant="secondary" className="text-xs">
+                      Your Vote: {proposal.userVote === 'for' ? '✓' : '✗'}
+                    </Badge>
+                  )}
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -205,85 +212,50 @@ export default function GovernanceTab({ userVotingPower = 2500 }) {
                 <span className="text-sm text-muted-foreground">{proposal.network}</span>
               </div>
 
-              {proposal.status === 'active' && (
-                <>
-                  {/* Voting Progress - Single Bar Split Layout like Figma */}
-                  <div className="space-y-2">
-                    {/* Progress Bar */}
-                    <div className="relative h-2 flex gap-0.5 rounded-full overflow-hidden bg-transparent">
-                      {/* For Section */}
-                      <div
-                        className="bg-green-500/70 rounded-full transition-all"
-                        style={{ width: `${proposal.votesFor}%` }}
-                      />
-                      {/* Gap */}
-                      <div className="w-0.5" />
-                      {/* Against Section */}
-                      <div
-                        className="bg-red-500/60 rounded-full transition-all"
-                        style={{ width: `${proposal.votesAgainst}%` }}
-                      />
-                    </div>
+              {/* Voting Progress - Show for all statuses */}
+              <div className="space-y-2">
+                {/* Progress Bar */}
+                <div className="relative h-2 flex gap-0.5 rounded-full overflow-hidden bg-transparent">
+                  {/* For Section */}
+                  <div
+                    className={`rounded-full transition-all ${
+                      proposal.status === 'active'
+                        ? 'bg-green-500/70'
+                        : proposal.status === 'passed'
+                          ? 'bg-green-500/70'
+                          : 'bg-green-500/20'
+                    }`}
+                    style={{ width: `${proposal.votesFor}%` }}
+                  />
+                  {/* Gap */}
+                  <div className="w-0.5" />
+                  {/* Against Section */}
+                  <div
+                    className={`rounded-full transition-all ${
+                      proposal.status === 'active'
+                        ? 'bg-red-500/60'
+                        : proposal.status === 'passed'
+                          ? 'bg-red-500/15'
+                          : 'bg-red-500/60'
+                    }`}
+                    style={{ width: `${proposal.votesAgainst}%` }}
+                  />
+                </div>
 
-                    {/* Labels Below */}
-                    <div className="flex justify-between text-xs">
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <Check className="w-3 h-3 text-green-600" />
-                        <span className="font-medium">For</span>
-                        <span>({proposal.votesFor}%) · {((proposal.totalVotes * proposal.votesFor) / 100).toLocaleString()} CNPY</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <span>{((proposal.totalVotes * proposal.votesAgainst) / 100).toLocaleString()} CNPY · ({proposal.votesAgainst}%)</span>
-                        <span className="font-medium">Against</span>
-                        <X className="w-3 h-3 text-red-600" />
-                      </div>
-                    </div>
+                {/* Labels Below */}
+                <div className="flex justify-between text-xs">
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Check className="w-3 h-3 text-green-600" />
+                    <span className="font-medium">For</span>
+                    <span>({proposal.votesFor}%) · {((proposal.totalVotes * proposal.votesFor) / 100).toLocaleString()} CNPY</span>
                   </div>
-
-                  {/* Voting Status */}
-                  <div className="flex items-center justify-between pt-2 border-t">
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="text-muted-foreground">
-                        Total: {proposal.totalVotes.toLocaleString()} CNPY
-                      </span>
-                      {proposal.quorumReached ? (
-                        <Badge variant="outline" className="text-green-600 border-green-600">
-                          <Check className="w-3 h-3 mr-1" />
-                          Quorum Reached
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-orange-600 border-orange-600">
-                          <AlertTriangle className="w-3 h-3 mr-1" />
-                          Quorum Not Met
-                        </Badge>
-                      )}
-                    </div>
-                    {proposal.userVote && (
-                      <Badge variant="secondary">
-                        Your Vote: {proposal.userVote === 'for' ? '✓ For' : '✗ Against'}
-                      </Badge>
-                    )}
-                    {!proposal.userVote && proposal.status === 'active' && (
-                      <Badge variant="outline">Not Voted</Badge>
-                    )}
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <span>{((proposal.totalVotes * proposal.votesAgainst) / 100).toLocaleString()} CNPY · ({proposal.votesAgainst}%)</span>
+                    <span className="font-medium">Against</span>
+                    <X className="w-3 h-3 text-red-600" />
                   </div>
-                </>
-              )}
-
-              {proposal.status !== 'active' && (
-                <>
-                  <div className="flex items-center justify-between pt-2 border-t">
-                    <div className="text-sm text-muted-foreground">
-                      Final: {proposal.votesFor}% For, {proposal.votesAgainst}% Against
-                    </div>
-                    {proposal.userVote && (
-                      <Badge variant="secondary">
-                        You voted: {proposal.userVote === 'for' ? 'For' : 'Against'}
-                      </Badge>
-                    )}
-                  </div>
-                </>
-              )}
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}

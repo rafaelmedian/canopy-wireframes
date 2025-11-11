@@ -43,7 +43,7 @@ export default function ProposalDetailSheet({ open, onOpenChange, proposal, user
   const getUrgencyBadge = () => {
     if (proposal.urgency === 'urgent') {
       return (
-        <Badge variant="destructive" className="gap-1">
+        <Badge variant="outline" className="border-orange-500/50 text-orange-500 gap-1">
           <AlertCircle className="w-3 h-3" />
           URGENT • Ends in {proposal.endsIn}
         </Badge>
@@ -68,7 +68,7 @@ export default function ProposalDetailSheet({ open, onOpenChange, proposal, user
       case 'failed':
         return (
           <Badge variant="outline" className="text-red-600 border-red-600">
-            Failed
+            Not Passed
           </Badge>
         )
       default:
@@ -225,7 +225,7 @@ export default function ProposalDetailSheet({ open, onOpenChange, proposal, user
                         {proposal.status === 'passed' ? (
                           <Badge className="bg-green-600">Passed</Badge>
                         ) : (
-                          <Badge className="bg-red-600">Failed</Badge>
+                          <Badge className="bg-red-600">Not Passed</Badge>
                         )}
                       </div>
                     </div>
