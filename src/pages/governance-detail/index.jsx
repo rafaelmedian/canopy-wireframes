@@ -404,11 +404,23 @@ export default function GovernanceDetailPage() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg text-center">
-                        <p className="font-medium text-sm mb-2">You have already voted</p>
-                        <Badge className="bg-primary">
-                          {proposal.userVote === 'for' ? '✓ For' : '✗ Against'}
-                        </Badge>
+                      <div className="space-y-3">
+                        <div className="text-center p-3 bg-muted rounded-lg">
+                          <p className="text-sm text-muted-foreground">You voted</p>
+                          <p className="text-lg font-semibold mt-1">
+                            {proposal.userVote === 'for' ? (
+                              <span className="flex items-center justify-center gap-2 text-green-600">
+                                <Check className="w-5 h-5" />
+                                For
+                              </span>
+                            ) : (
+                              <span className="flex items-center justify-center gap-2 text-red-600">
+                                <X className="w-5 h-5" />
+                                Against
+                              </span>
+                            )}
+                          </p>
+                        </div>
                       </div>
                     )}
                   </CardContent>
