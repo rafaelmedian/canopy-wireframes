@@ -272,7 +272,7 @@ export default function BuyDialog({ open, onOpenChange, defaultTab = 'cnpy', ass
                           <div>
                             <p className="font-medium">From External Wallet</p>
                             <p className="text-sm text-muted-foreground">
-                              Use USDT/USDC from Solana or EVM wallets
+                              Use ETH/USDC from EVM wallets with MetaMask
                             </p>
                           </div>
                         </div>
