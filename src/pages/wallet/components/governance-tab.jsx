@@ -48,14 +48,13 @@ const mockProposals = governanceData.proposals.map(proposal => {
 
 export default function GovernanceTab() {
   const navigate = useNavigate()
-  const { getTotalBalance, getWalletData } = useWallet()
+  const { getWalletData } = useWallet()
   const [filter, setFilter] = useState('all') // all, active, passed, failed
   const [selectedChain, setSelectedChain] = useState(null) // null means "All Chains"
   const [showLeftGradient, setShowLeftGradient] = useState(false)
   const [showRightGradient, setShowRightGradient] = useState(true)
   const scrollContainerRef = useRef(null)
 
-  const totalBalance = getTotalBalance()
   const walletData = getWalletData()
 
   // Get unique chain IDs that have governance proposals
@@ -71,10 +70,12 @@ export default function GovernanceTab() {
       chainId: chainId,
       chainName: chain?.name || 'Unknown',
       chainColor: chain?.brandColor || '#1dd13a',
-      balance: balance,
-      percentage: totalBalance > 0 ? (balance / totalBalance) * 100 : 0
+      balance: balance
     }
   }).sort((a, b) => b.balance - a.balance)
+
+  // Calculate total voting power (only from chains with governance)
+  const totalVotingPower = votingPowerByChain.reduce((sum, item) => sum + item.balance, 0)
 
   // Get unique chains from proposals
   const uniqueChains = [...new Set(mockProposals.map(p => p.chainId))]
@@ -187,7 +188,7 @@ export default function GovernanceTab() {
             <div className="space-y-1">
               <p className="text-lg font-bold text-white">Total Voting Power</p>
               <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold">${totalBalance.toLocaleString()}</p>
+                <p className="text-3xl font-bold">${totalVotingPower.toLocaleString()}</p>
                 <span className="text-sm text-muted-foreground">USD</span>
               </div>
             </div>
