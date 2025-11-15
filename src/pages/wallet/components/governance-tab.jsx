@@ -10,6 +10,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   AlertCircle,
   ChevronRight,
   Clock,
@@ -177,8 +183,8 @@ export default function GovernanceTab() {
       {/* Voting Power Card - Compact */}
       <Card className="mb-6">
         <CardContent className="px-5 py-4">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="space-y-5">
+            <div className="space-y-1">
               <p className="text-lg font-bold text-white">Total Voting Power</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-3xl font-bold">${totalBalance.toLocaleString()}</p>
@@ -186,17 +192,26 @@ export default function GovernanceTab() {
               </div>
             </div>
             {votingPowerByChain.length > 0 && (
-              <div className="flex items-center gap-2">
-                {votingPowerByChain.map((item) => (
-                  <div key={item.chainId} className="flex items-center gap-1.5 text-xs">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: item.chainColor }}
-                    />
-                    <span className="text-muted-foreground">${item.balance.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
+              <TooltipProvider>
+                <div className="flex items-center gap-2">
+                  {votingPowerByChain.map((item) => (
+                    <Tooltip key={item.chainId}>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-1.5 text-xs cursor-pointer">
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: item.chainColor }}
+                          />
+                          <span className="text-muted-foreground">${item.balance.toLocaleString()}</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{item.chainName}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </div>
+              </TooltipProvider>
             )}
           </div>
         </CardContent>
