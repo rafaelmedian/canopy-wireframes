@@ -329,42 +329,25 @@ export default function GovernanceTab() {
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        {getUrgencyBadge(proposal.urgency)}
-                        {getStatusBadge(proposal.status)}
-                        {proposal.status === 'active' && (
-                          <Badge variant="outline" className="gap-1">
-                            <Clock className="w-3 h-3" />
-                            Ends in {proposal.endsIn}
-                          </Badge>
-                        )}
+                    <div className="space-y-4 flex-1">
+                      {/* Network info with avatar */}
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                          style={{ backgroundColor: proposal.chainColor }}
+                        >
+                          {proposal.network.charAt(0)}
+                        </div>
+                        <span className="font-semibold">{proposal.network}</span>
                       </div>
-                      <CardTitle className="text-lg">{proposal.title}</CardTitle>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {proposal.userVote && (
-                        <Badge variant="secondary" className="text-xs">
-                          Your Vote: {proposal.userVote === 'for' ? '✓' : '✗'}
-                        </Badge>
-                      )}
-                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
+
+                      {/* Title - Made smaller */}
+                      <CardTitle className="text-base font-semibold">{proposal.title}</CardTitle>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 pb-4">
                   <p className="text-sm text-muted-foreground">{proposal.description}</p>
-
-                  {/* Network info with avatar */}
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                      style={{ backgroundColor: proposal.chainColor }}
-                    >
-                      {proposal.network.charAt(0)}
-                    </div>
-                    <span className="text-sm text-muted-foreground">{proposal.network}</span>
-                  </div>
 
                   {/* Voting Progress - Show for all statuses */}
                   <div className="space-y-2">
@@ -408,6 +391,34 @@ export default function GovernanceTab() {
                         <span className="font-medium">Against</span>
                         <X className="w-3 h-3 text-red-600" />
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Divider Line */}
+                  <div className="border-t" />
+
+                  {/* Bottom Section: Badges on left, Vote + Chevron on right */}
+                  <div className="flex items-center justify-between">
+                    {/* Left: Badges */}
+                    <div className="flex items-center gap-2">
+                      {getUrgencyBadge(proposal.urgency)}
+                      {getStatusBadge(proposal.status)}
+                      {proposal.status === 'active' && (
+                        <Badge variant="outline" className="gap-1">
+                          <Clock className="w-3 h-3" />
+                          Ends in {proposal.endsIn}
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Right: Your Vote + Chevron */}
+                    <div className="flex items-center gap-2">
+                      {proposal.userVote && (
+                        <Badge variant="secondary" className="text-xs">
+                          Your Vote: {proposal.userVote === 'for' ? '✓' : '✗'}
+                        </Badge>
+                      )}
+                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
                     </div>
                   </div>
                 </CardContent>
