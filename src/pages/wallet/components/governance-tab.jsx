@@ -194,7 +194,7 @@ export default function GovernanceTab() {
             {votingPowerByChain.length > 0 && (
               <TooltipProvider>
                 <div className="flex items-center gap-2">
-                  {votingPowerByChain.map((item) => (
+                  {votingPowerByChain.slice(0, 3).map((item) => (
                     <Tooltip key={item.chainId}>
                       <TooltipTrigger asChild>
                         <div className="flex items-center gap-1.5 text-xs cursor-pointer">
@@ -210,6 +210,29 @@ export default function GovernanceTab() {
                       </TooltipContent>
                     </Tooltip>
                   ))}
+                  {votingPowerByChain.length > 3 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer bg-muted/50 rounded-md">
+                          +{votingPowerByChain.length - 3}
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        {votingPowerByChain.slice(3).map((item) => (
+                          <div key={item.chainId} className="flex items-center justify-between gap-3 px-2 py-1.5 text-xs">
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: item.chainColor }}
+                              />
+                              <span className="font-medium">{item.chainName}</span>
+                            </div>
+                            <span className="text-muted-foreground">${item.balance.toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
               </TooltipProvider>
             )}
