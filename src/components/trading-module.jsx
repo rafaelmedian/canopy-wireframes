@@ -1,0 +1,236 @@
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { ArrowUpRight, ArrowDownRight, RotateCcw, Repeat, Droplet } from 'lucide-react'
+import SwapTab from '@/components/trading-module/swap-tab'
+import LiquidityTab from '@/components/trading-module/liquidity-tab'
+import BuySellTab from '@/components/trading-module/buy-sell-tab'
+import ConvertTab from '@/components/trading-module/convert-tab'
+import TokenSelectionDialog from '@/components/token-selection-dialog'
+import tokensData from '@/data/tokens.json'
+
+/**
+ * TradingModule - Flexible trading component that adapts based on variant
+ * 
+ * @param {Object} props
+ * @param {'trade' | 'chain' | 'liquidity'} props.variant - Module type
+ * @param {Object} props.chainData - Chain data (required for 'chain' variant)
+ * @param {Object} props.defaultTokenPair - Default token pair { from, to }
+ * @param {string} props.defaultTab - Default active tab
+ * @param {boolean} props.isPreview - Preview mode flag
+ */
+export default function TradingModule({ 
+  variant = 'trade', 
+  chainData = null,
+  defaultTokenPair = null,
+  defaultTab = null,
+  isPreview = false 
+}) {
+  // Determine tabs based on variant
+  const getTabsConfig = () => {
+    switch (variant) {
+      case 'trade':
+        return {
+          tabs: ['swap', 'liquidity', 'convert'],
+          defaultTab: defaultTab || 'swap'
+        }
+      case 'chain':
+        return {
+          tabs: ['buy', 'sell', 'convert'],
+          defaultTab: defaultTab || 'buy'
+        }
+      case 'liquidity':
+        return {
+          tabs: ['liquidity', 'swap', 'convert'],
+          defaultTab: defaultTab || 'liquidity'
+        }
+      default:
+        return {
+          tabs: ['swap', 'liquidity', 'convert'],
+          defaultTab: 'swap'
+        }
+    }
+  }
+
+  const tabsConfig = getTabsConfig()
+  const [activeTab, setActiveTab] = useState(tabsConfig.defaultTab)
+  const [showTokenDialog, setShowTokenDialog] = useState(false)
+  const [tokenDialogMode, setTokenDialogMode] = useState(null) // 'from', 'to', 'tokenA', 'tokenB'
+
+  // Token state for swap/liquidity
+  const [fromToken, setFromToken] = useState(() => {
+    if (variant === 'trade' && defaultTokenPair?.to) {
+      return tokensData.find(t => t.symbol === defaultTokenPair.to) || tokensData.find(t => t.symbol === 'CNPY')
+    }
+    if (variant === 'chain') {
+      return tokensData.find(t => t.symbol === 'CNPY')
+    }
+    return null
+  })
+
+  const [toToken, setToToken] = useState(() => {
+    if (variant === 'trade' && defaultTokenPair?.from) {
+      return tokensData.find(t => t.symbol === defaultTokenPair.from) || null
+    }
+    if (variant === 'chain' && chainData) {
+      return {
+        symbol: chainData.ticker,
+        name: chainData.name,
+        brandColor: chainData.brandColor,
+        currentPrice: chainData.currentPrice,
+        ...chainData
+      }
+    }
+    return tokensData.find(t => t.symbol === 'CNPY')
+  })
+
+  const [tokenA, setTokenA] = useState(null)
+  const [tokenB, setTokenB] = useState(null)
+
+  const handleSelectToken = (mode) => {
+    setTokenDialogMode(mode)
+    setShowTokenDialog(true)
+  }
+
+  const handleTokenSelected = (token) => {
+    switch (tokenDialogMode) {
+      case 'from':
+        setFromToken(token)
+        break
+      case 'to':
+        setToToken(token)
+        break
+      case 'tokenA':
+        setTokenA(token)
+        break
+      case 'tokenB':
+        setTokenB(token)
+        break
+    }
+    setShowTokenDialog(false)
+    setTokenDialogMode(null)
+  }
+
+  const renderTabButtons = () => {
+    const getTabIcon = (tab) => {
+      switch (tab) {
+        case 'buy':
+          return <ArrowUpRight className="w-4 h-4" />
+        case 'sell':
+          return <ArrowDownRight className="w-4 h-4" />
+        case 'swap':
+          return <Repeat className="w-4 h-4" />
+        case 'liquidity':
+          return <Droplet className="w-4 h-4" />
+        case 'convert':
+          return <RotateCcw className="w-4 h-4" />
+        default:
+          return null
+      }
+    }
+
+    const getTabLabel = (tab) => {
+      return tab.charAt(0).toUpperCase() + tab.slice(1)
+    }
+
+    return (
+      <div className="bg-muted/50 p-1 rounded-lg flex gap-1">
+        {tabsConfig.tabs.map(tab => (
+          <Button
+            key={tab}
+            variant={activeTab === tab ? 'default' : 'ghost'}
+            size="sm"
+            className={`flex-1 h-9 gap-2 ${activeTab === tab ? 'bg-primary text-primary-foreground' : ''}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {getTabIcon(tab)}
+            <span className="text-xs font-medium">{getTabLabel(tab)}</span>
+          </Button>
+        ))}
+      </div>
+    )
+  }
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'buy':
+        return (
+          <BuySellTab
+            mode="buy"
+            chainData={chainData}
+            isPreview={isPreview}
+          />
+        )
+      case 'sell':
+        return (
+          <BuySellTab
+            mode="sell"
+            chainData={chainData}
+            isPreview={isPreview}
+          />
+        )
+      case 'swap':
+        return (
+          <SwapTab
+            fromToken={fromToken}
+            toToken={toToken}
+            isPreview={isPreview}
+            onSelectToken={handleSelectToken}
+          />
+        )
+      case 'liquidity':
+        return (
+          <LiquidityTab
+            tokenA={tokenA}
+            tokenB={tokenB}
+            isPreview={isPreview}
+            onSelectToken={handleSelectToken}
+          />
+        )
+      case 'convert':
+        return (
+          <ConvertTab
+            chainData={chainData}
+            isPreview={isPreview}
+            onSelectToken={handleSelectToken}
+          />
+        )
+      default:
+        return null
+    }
+  }
+
+  // Get excluded token for dialog
+  const getExcludedToken = () => {
+    if (tokenDialogMode === 'from' && toToken) return toToken.symbol
+    if (tokenDialogMode === 'to' && fromToken) return fromToken.symbol
+    if (tokenDialogMode === 'tokenA' && tokenB) return tokenB.symbol
+    if (tokenDialogMode === 'tokenB' && tokenA) return tokenA.symbol
+    return null
+  }
+
+  return (
+    <>
+      <Card className="p-1 sticky top-6">
+        <div className="space-y-4">
+          {/* Tab Navigation */}
+          <div className="px-3 pt-3">
+            {renderTabButtons()}
+          </div>
+
+          {/* Tab Content */}
+          {renderTabContent()}
+        </div>
+      </Card>
+
+      {/* Token Selection Dialog */}
+      <TokenSelectionDialog
+        open={showTokenDialog}
+        onOpenChange={setShowTokenDialog}
+        onSelectToken={handleTokenSelected}
+        excludeToken={getExcludedToken()}
+      />
+    </>
+  )
+}
+
