@@ -117,9 +117,14 @@ This architectural constraint:
 - Token selection cards (shows "Select token" when null)
 - Amount input with decimal validation
 - Automatic conversion calculation
-- Exchange rate display
+- Exchange rate display with Zap icon
 - "Use max" button
 - **Arrow down button**: Swaps sell and buy tokens (e.g., OENS → CNPY becomes CNPY → OENS)
+- **Slippage settings**: Displayed in bottom right with settings icon (e.g., "1% ⚙️")
+  - Default: 1%
+  - Presets: 0.1%, 0.5%, 1.0%
+  - Custom input (0-50%)
+  - Warning for high slippage (>5%)
 
 ### LiquidityTab
 
