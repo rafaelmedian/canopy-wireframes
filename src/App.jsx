@@ -12,6 +12,8 @@ import ChainDetail from '@/pages/chain-detail'
 import TransactionPage from '@/pages/transaction-page'
 import BlockPage from '@/pages/block-page'
 import Wallet from '@/pages/wallet'
+import TradePage from '@/pages/trade'
+import LiquidityPage from '@/pages/liquidity'
 import { Toaster } from '@/components/ui/sonner'
 import { LaunchFlowProvider, useLaunchFlow } from '@/contexts/launch-flow-context'
 import { WalletProvider } from '@/contexts/wallet-context'
@@ -43,6 +45,9 @@ function AppContent() {
         <Route path="/block/:blockHash" element={<BlockPage />} />
         {/* Wallet route */}
         <Route path="/wallet" element={<Wallet />} />
+        {/* Trade and Liquidity routes */}
+        <Route path="/trade/:tokenPair" element={<TradePage />} />
+        <Route path="/liquidity/:tokenPair" element={<LiquidityPage />} />
         <Route path="/launchpad/language" element={<LanguageSelection />} />
         <Route path="/launchpad/repository" element={<ConnectRepo />} />
         <Route path="/launchpad/configure" element={<ConfigureChain />} />
