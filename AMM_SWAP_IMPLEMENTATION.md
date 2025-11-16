@@ -355,10 +355,11 @@ const handleAmountAChange = (value) => {
 
 ```javascript
 const [fromToken, setFromToken] = useState(() => {
-  if (variant === 'trade' && defaultTokenPair?.to) {
-    return tokensData.find(t => t.symbol === defaultTokenPair.to) || 
-           tokensData.find(t => t.symbol === 'CNPY')
+  // For trade variant, always start with no token selected (user must select)
+  if (variant === 'trade') {
+    return null
   }
+  // For chain variant, default to CNPY
   if (variant === 'chain') {
     return tokensData.find(t => t.symbol === 'CNPY')
   }
@@ -366,9 +367,11 @@ const [fromToken, setFromToken] = useState(() => {
 })
 
 const [toToken, setToToken] = useState(() => {
-  if (variant === 'trade' && defaultTokenPair?.from) {
-    return tokensData.find(t => t.symbol === defaultTokenPair.from) || null
+  // For trade variant, default to CNPY as receiving token
+  if (variant === 'trade') {
+    return tokensData.find(t => t.symbol === 'CNPY')
   }
+  // For chain variant, use the chain's token
   if (variant === 'chain' && chainData) {
     return {
       symbol: chainData.ticker,
@@ -378,9 +381,20 @@ const [toToken, setToToken] = useState(() => {
       ...chainData
     }
   }
+  // Default fallback to CNPY
   return tokensData.find(t => t.symbol === 'CNPY')
 })
 ```
+
+**Trade Variant Default State:**
+- `fromToken`: `null` (requires user selection - "Select token" state)
+- `toToken`: CNPY (pre-selected as receiving token)
+
+**Chain Variant Default State:**
+- `fromToken`: CNPY (pre-selected for buying/selling)
+- `toToken`: Chain's token
+
+This creates an intuitive flow where users on the Trade page must actively select what token they want to sell/swap.
 
 ### Recent Tokens (localStorage)
 
