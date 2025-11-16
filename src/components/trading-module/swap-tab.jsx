@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Plus, ChevronRight, ArrowDown, Zap } from 'lucide-react'
+import { Plus, ChevronRight, ArrowDown, Zap, Settings } from 'lucide-react'
+import SlippageSettings from './slippage-settings'
 
 export default function SwapTab({ 
   fromToken = null, 
@@ -11,6 +12,8 @@ export default function SwapTab({
   onSwapTokens
 }) {
   const [amount, setAmount] = useState('')
+  const [slippage, setSlippage] = useState(1.0) // Default 1% slippage
+  const [showSlippageSettings, setShowSlippageSettings] = useState(false)
 
   // Calculate conversion based on token prices
   const calculateConversion = () => {
@@ -219,16 +222,34 @@ export default function SwapTab({
         </Button>
       </div>
 
-      {/* Exchange Rate */}
+      {/* Exchange Rate and Slippage */}
       {fromToken && toToken && (
         <div className="px-4 pb-4">
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <span>
-              1 {fromToken.symbol} = {((fromToken.currentPrice || 0) / (toToken.currentPrice || 1)).toFixed(6)} {toToken.symbol}
-            </span>
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Zap className="w-3 h-3" />
+              <span>
+                1 {fromToken.symbol} = {((fromToken.currentPrice || 0) / (toToken.currentPrice || 1)).toFixed(6)} {toToken.symbol}
+              </span>
+            </div>
+            <button
+              onClick={() => setShowSlippageSettings(true)}
+              className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span className="font-medium">{slippage}%</span>
+              <Settings className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       )}
+
+      {/* Slippage Settings Dialog */}
+      <SlippageSettings
+        open={showSlippageSettings}
+        onOpenChange={setShowSlippageSettings}
+        slippage={slippage}
+        onSlippageChange={setSlippage}
+      />
     </>
   )
 }
