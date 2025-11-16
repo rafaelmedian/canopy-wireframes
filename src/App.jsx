@@ -46,8 +46,8 @@ function AppContent() {
         {/* Wallet route */}
         <Route path="/wallet" element={<Wallet />} />
         {/* Trade and Liquidity routes */}
-        <Route path="/trade/:tokenPair" element={<TradePage />} />
-        <Route path="/liquidity/:tokenPair" element={<LiquidityPage />} />
+        <Route path="/trade/:tokenPair?" element={<TradePage />} />
+        <Route path="/liquidity/:tokenPair?" element={<LiquidityPage />} />
         <Route path="/launchpad/language" element={<LanguageSelection />} />
         <Route path="/launchpad/repository" element={<ConnectRepo />} />
         <Route path="/launchpad/configure" element={<ConfigureChain />} />

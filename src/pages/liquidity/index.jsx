@@ -15,6 +15,7 @@ export default function LiquidityPage() {
   }, [])
 
   // Parse token pair from URL (e.g., "cnpy-oens")
+  // If no tokenPair, default to null for both tokens
   const parseTokenPair = () => {
     if (!tokenPair) return { tokenA: null, tokenB: null }
     

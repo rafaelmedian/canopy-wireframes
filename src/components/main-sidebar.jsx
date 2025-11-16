@@ -114,7 +114,7 @@ export default function MainSidebar({ variant = 'default' }) {
                 <span className="text-[10px]">Staking</span>
               </button>
               <button
-                onClick={() => navigate('/trade/cnpy-select')}
+                onClick={() => navigate('/trade')}
                 className={`w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white transition-colors ${
                   isTrade ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
                 }`}
@@ -249,7 +249,7 @@ export default function MainSidebar({ variant = 'default' }) {
                 <span>Staking</span>
               </button>
               <button
-                onClick={() => navigate('/trade/cnpy-select')}
+                onClick={() => navigate('/trade')}
                 className={`w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white transition-colors ${
                   isTrade ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
                 }`}

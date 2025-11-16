@@ -13,14 +13,12 @@ export default function TradePage() {
     window.scrollTo(0, 0)
   }, [])
 
-  // Parse token pair from URL (e.g., "cnpy-oens" or "cnpy-select")
+  // Parse token pair from URL (e.g., "cnpy-oens")
+  // If no tokenPair, default to CNPY with "select" state
   const parseTokenPair = () => {
     if (!tokenPair) return { from: null, to: 'CNPY' }
     
     const [to, from] = tokenPair.split('-').map(t => t.toUpperCase())
-    
-    // Handle "select" state
-    if (from === 'SELECT') return { from: null, to }
     
     return { from, to }
   }
