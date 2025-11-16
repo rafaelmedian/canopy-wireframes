@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import TradingModule from '@/components/trading-module'
-import { TrendingUp } from 'lucide-react'
 
 export default function TradePage() {
   const { tokenPair } = useParams()
@@ -29,21 +28,6 @@ export default function TradePage() {
       
       <div className="flex-1">
         <div className="max-w-[480px] mx-auto px-8 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold">Trade</h1>
-                <p className="text-muted-foreground">
-                  Swap tokens and manage liquidity across chains
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Trading Module - Centered */}
           <TradingModule
             variant="trade"
