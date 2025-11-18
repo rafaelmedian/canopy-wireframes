@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Plus, ChevronRight, ArrowDown, Zap, Settings } from 'lucide-react'
-import { useWallet } from '@/contexts/wallet-context'
 import SlippageSettings from './slippage-settings'
 
 export default function SwapTab({ 
@@ -10,10 +9,8 @@ export default function SwapTab({
   toToken = null, 
   isPreview = false, 
   onSelectToken,
-  onSwapTokens,
-  onShowConfirmation
+  onSwapTokens
 }) {
-  const { isConnected } = useWallet()
   const [amount, setAmount] = useState('')
   const [slippage, setSlippage] = useState(1.0) // Default 1% slippage
   const [showSlippageSettings, setShowSlippageSettings] = useState(false)
@@ -54,19 +51,8 @@ export default function SwapTab({
     }
   }
 
-  const handleContinue = () => {
-    if (isConnected && fromToken && toToken && amount && onShowConfirmation) {
-      onShowConfirmation({
-        fromToken,
-        toToken,
-        fromAmount: amount,
-        toAmount: conversion.tokens
-      })
-    }
-  }
-
   return (
-    <div className="space-y-4">
+    <>
       {/* Input Token Card */}
       <div className="px-4">
         {fromToken ? (
@@ -156,7 +142,7 @@ export default function SwapTab({
       </div>
 
       {/* Swap Direction Button */}
-      <div className="relative flex justify-center -my-2">
+      <div className="relative flex justify-center">
         <Button
           variant="outline"
           size="icon"
@@ -225,27 +211,20 @@ export default function SwapTab({
         )}
       </div>
 
-      {/* Connect Wallet / Continue Button */}
-      <div className="px-4">
+      {/* Connect Wallet Button */}
+      <div className="px-4 pb-3">
         <Button 
           className="w-full h-11" 
           size="lg" 
           disabled={isPreview || !fromToken || !toToken || !amount}
-          onClick={handleContinue}
         >
-          {isPreview 
-            ? 'Preview Mode' 
-            : !fromToken || !toToken 
-            ? 'Select tokens' 
-            : isConnected 
-            ? 'Continue' 
-            : 'Connect Wallet'}
+          {isPreview ? 'Preview Mode' : !fromToken || !toToken ? 'Select tokens' : 'Connect Wallet'}
         </Button>
       </div>
 
       {/* Exchange Rate and Slippage */}
       {fromToken && toToken && (
-        <div className="px-4">
+        <div className="px-4 pb-4">
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Zap className="w-3 h-3" />
@@ -271,7 +250,7 @@ export default function SwapTab({
         slippage={slippage}
         onSlippageChange={setSlippage}
       />
-    </div>
+    </>
   )
 }
 
