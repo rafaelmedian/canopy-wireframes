@@ -83,6 +83,20 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
     }
   }, [open, initialStep])
 
+  // When opening at step 2.3 (wallet switching), load user from localStorage
+  useEffect(() => {
+    if (open && initialStep === 2.3) {
+      const storedEmail = localStorage.getItem('userEmail')
+      if (storedEmail) {
+        setEmail(storedEmail)
+        const user = getUserByEmail(storedEmail)
+        if (user && user.wallets && user.wallets.length > 0) {
+          setAvailableWallets(user.wallets)
+        }
+      }
+    }
+  }, [open, initialStep, getUserByEmail])
+
   // Set the first connected wallet as selected when navigating to step 5
   useEffect(() => {
     if (step === 5 && !selectedWalletForConversion) {
@@ -208,9 +222,8 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
     setTimeout(() => {
       const user = getUserByEmail(email)
       if (user && user.hasWallet) {
-        // Use selected wallet address if available, otherwise fall back to old format
-        const address = selectedWallet ? selectedWallet.address : user.walletAddress
-        connectWalletContext(email, address)
+        // Use selected wallet info if available
+        connectWalletContext(email, selectedWallet?.address, selectedWallet)
         setIsLoggingIn(false)
         handleClose()
       }
@@ -631,14 +644,17 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
           <div className="flex flex-col">
             {/* Header */}
             <div className="relative px-6 py-12 flex flex-col items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-2 top-2 rounded-full"
-                onClick={() => setStep(2)}
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
+              {/* Only show back button if NOT in switch mode */}
+              {initialStep !== 2.3 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-2 top-2 rounded-full"
+                  onClick={() => setStep(2)}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -665,6 +681,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
                   key={index}
                   onClick={() => {
                     setSelectedWallet(wallet)
+                    // Always go to password step for security
                     setStep(2.5)
                   }}
                   className="w-full p-4 bg-muted hover:bg-muted/70 rounded-xl flex items-center justify-between transition-colors"
@@ -713,9 +730,13 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
                 <Shield className="w-8 h-8 text-primary" />
               </div>
 
-              <h2 className="text-2xl font-bold text-center mb-2">Enter Password</h2>
+              <h2 className="text-2xl font-bold text-center mb-2">
+                {initialStep === 2.3 ? 'Confirm Switch' : 'Enter Password'}
+              </h2>
               <p className="text-sm text-muted-foreground text-center max-w-sm">
-                {selectedWallet ? `Unlocking ${selectedWallet.nickname}` : 'Please enter your password to access your wallet'}
+                {selectedWallet
+                  ? `Enter password for ${selectedWallet.nickname}`
+                  : 'Please enter your password to access your wallet'}
               </p>
             </div>
 
@@ -746,10 +767,10 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
                 {isLoggingIn ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Logging in...
+                    {initialStep === 2.3 ? 'Switching...' : 'Logging in...'}
                   </>
                 ) : (
-                  'Continue'
+                  initialStep === 2.3 ? 'Switch Wallet' : 'Continue'
                 )}
               </Button>
             </div>

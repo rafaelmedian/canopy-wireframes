@@ -20,6 +20,7 @@ import GovernanceTab from './components/governance-tab'
 import StakeDialog from './components/stake-dialog'
 import SendDialog from './components/send-dialog'
 import BuyDialog from './components/buy-dialog'
+import WalletConnectionDialog from '@/components/wallet-connection-dialog'
 import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
 
@@ -31,7 +32,8 @@ export default function Wallet() {
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
   const [sendDialogOpen, setSendDialogOpen] = useState(false)
   const [buyDialogOpen, setBuyDialogOpen] = useState(false)
-  const { isConnected, connectWallet, walletAddress, formatAddress, disconnectWallet, getWalletData } = useWallet()
+  const [switchWalletDialogOpen, setSwitchWalletDialogOpen] = useState(false)
+  const { isConnected, connectWallet, walletAddress, formatAddress, disconnectWallet, getWalletData, currentUser, currentWallet } = useWallet()
 
   const walletData = getWalletData()
 
@@ -93,7 +95,21 @@ export default function Wallet() {
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
-                  <div className="text-sm text-[#1dd13a]">Connected</div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm text-muted-foreground">{currentWallet?.nickname || 'My Wallet'}</div>
+                    {currentUser && currentUser.wallets && currentUser.wallets.length > 1 && (
+                      <>
+                        <span className="text-muted-foreground">•</span>
+                        <Button
+                          variant="link"
+                          className="h-auto p-0 text-sm text-primary hover:text-primary/80"
+                          onClick={() => setSwitchWalletDialogOpen(true)}
+                        >
+                          Switch Wallet
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -237,6 +253,13 @@ export default function Wallet() {
           open={buyDialogOpen}
           onOpenChange={setBuyDialogOpen}
           assets={walletData.assets}
+        />
+
+        {/* Switch Wallet Dialog */}
+        <WalletConnectionDialog
+          open={switchWalletDialogOpen}
+          onOpenChange={setSwitchWalletDialogOpen}
+          initialStep={2.3}
         />
       </div>
     </div>

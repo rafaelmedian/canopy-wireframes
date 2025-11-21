@@ -8,6 +8,7 @@ export function WalletProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false)
   const [walletAddress, setWalletAddress] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
+  const [currentWallet, setCurrentWallet] = useState(null)
   const [fundedWalletData, setFundedWalletData] = useState(null)
 
   // Check localStorage for existing connection
@@ -16,6 +17,7 @@ export function WalletProvider({ children }) {
     const storedIsConnected = localStorage.getItem('isWalletConnected')
     const storedEmail = localStorage.getItem('userEmail')
     const storedWalletData = localStorage.getItem('walletData')
+    const storedWallet = localStorage.getItem('currentWallet')
 
     if (storedAddress && storedIsConnected === 'true') {
       setWalletAddress(storedAddress)
@@ -29,6 +31,11 @@ export function WalletProvider({ children }) {
         }
       }
 
+      // Restore current wallet info
+      if (storedWallet) {
+        setCurrentWallet(JSON.parse(storedWallet))
+      }
+
       // Restore funded wallet data
       if (storedWalletData) {
         setFundedWalletData(JSON.parse(storedWalletData))
@@ -40,29 +47,45 @@ export function WalletProvider({ children }) {
     return usersData.users.find(user => user.email.toLowerCase() === email.toLowerCase())
   }
 
-  const connectWallet = (email = null, address = null) => {
+  const connectWallet = (email = null, address = null, walletInfo = null) => {
     // Get user from email if provided
     let user = null
     let walletAddr = address
+    let wallet = walletInfo
 
     if (email) {
       user = getUserByEmail(email)
       if (user && user.hasWallet) {
-        walletAddr = user.walletAddress
+        // If wallet info is provided, use it
+        if (walletInfo) {
+          walletAddr = walletInfo.address
+          wallet = walletInfo
+        } else if (user.wallets && user.wallets.length > 0) {
+          // Find the wallet matching the address, or use first wallet
+          wallet = user.wallets.find(w => w.address === address) || user.wallets[0]
+          walletAddr = wallet.address
+        } else {
+          // Old format - use walletAddress
+          walletAddr = user.walletAddress
+          wallet = { address: walletAddr, nickname: 'My Wallet', icon: 'wallet' }
+        }
       }
     }
 
     // Use provided address or default mock address
     if (!walletAddr) {
       walletAddr = '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199'
+      wallet = { address: walletAddr, nickname: 'My Wallet', icon: 'wallet' }
     }
 
     setWalletAddress(walletAddr)
     setIsConnected(true)
     setCurrentUser(user)
+    setCurrentWallet(wallet)
 
     localStorage.setItem('walletAddress', walletAddr)
     localStorage.setItem('isWalletConnected', 'true')
+    localStorage.setItem('currentWallet', JSON.stringify(wallet))
 
     if (email) {
       localStorage.setItem('userEmail', email)
@@ -73,11 +96,13 @@ export function WalletProvider({ children }) {
     setWalletAddress(null)
     setIsConnected(false)
     setCurrentUser(null)
+    setCurrentWallet(null)
     setFundedWalletData(null)
     localStorage.removeItem('walletAddress')
     localStorage.removeItem('isWalletConnected')
     localStorage.removeItem('userEmail')
     localStorage.removeItem('walletData')
+    localStorage.removeItem('currentWallet')
   }
 
   const updateWalletData = (fundedData) => {
@@ -125,6 +150,7 @@ export function WalletProvider({ children }) {
         isConnected,
         walletAddress,
         currentUser,
+        currentWallet,
         connectWallet,
         disconnectWallet,
         getTotalBalance,

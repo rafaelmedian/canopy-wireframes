@@ -2,7 +2,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet.jsx'
 import { Button } from '@/components/ui/button.jsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.jsx'
 import { Card } from '@/components/ui/card.jsx'
-import { Copy, Repeat, Send, Download, Coins, LogOut, Settings, Wallet, ChevronRight, Activity } from 'lucide-react'
+import { Copy, Repeat, Send, Download, Coins, LogOut, Settings, Wallet, ChevronRight, Activity, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useWallet } from '@/contexts/wallet-context.jsx'
@@ -11,14 +11,16 @@ import ActivityTab from '@/pages/wallet/components/activity-tab.jsx'
 import StakeDialog from '@/pages/wallet/components/stake-dialog.jsx'
 import SendDialog from '@/pages/wallet/components/send-dialog.jsx'
 import BuyDialog from '@/pages/wallet/components/buy-dialog.jsx'
+import WalletConnectionDialog from '@/components/wallet-connection-dialog.jsx'
 
 export default function WalletSheet({ open, onOpenChange }) {
   const navigate = useNavigate()
-  const { walletAddress, formatAddress, getTotalBalance, disconnectWallet, getWalletData } = useWallet()
+  const { walletAddress, formatAddress, getTotalBalance, disconnectWallet, getWalletData, currentUser, currentWallet } = useWallet()
   const [activeTab, setActiveTab] = useState('balances')
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
   const [sendDialogOpen, setSendDialogOpen] = useState(false)
   const [buyDialogOpen, setBuyDialogOpen] = useState(false)
+  const [switchWalletDialogOpen, setSwitchWalletDialogOpen] = useState(false)
 
   const walletData = getWalletData()
 
@@ -79,7 +81,21 @@ export default function WalletSheet({ open, onOpenChange }) {
                   <Copy className="w-3 h-3" />
                 </Button>
               </div>
-              <div className="text-sm text-[#1dd13a]">Connected</div>
+              <div className="flex items-center gap-2">
+                <div className="text-sm text-muted-foreground">{currentWallet?.nickname || 'My Wallet'}</div>
+                {currentUser && currentUser.wallets && currentUser.wallets.length > 1 && (
+                  <>
+                    <span className="text-muted-foreground">•</span>
+                    <Button
+                      variant="link"
+                      className="h-auto p-0 text-sm text-primary hover:text-primary/80"
+                      onClick={() => setSwitchWalletDialogOpen(true)}
+                    >
+                      Switch Wallet
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -308,6 +324,13 @@ export default function WalletSheet({ open, onOpenChange }) {
         open={buyDialogOpen}
         onOpenChange={setBuyDialogOpen}
         assets={walletData.assets}
+      />
+
+      {/* Switch Wallet Dialog */}
+      <WalletConnectionDialog
+        open={switchWalletDialogOpen}
+        onOpenChange={setSwitchWalletDialogOpen}
+        initialStep={2.3}
       />
     </Sheet>
   )
