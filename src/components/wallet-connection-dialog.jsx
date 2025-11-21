@@ -56,6 +56,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState(null)
   const [availableWallets, setAvailableWallets] = useState([])
+  const [newWalletName, setNewWalletName] = useState('')
   const { connectWallet: connectWalletContext, getUserByEmail, updateWalletData, currentWallet } = useWallet()
 
   // Reset state when dialog closes
@@ -81,6 +82,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
         setIsLoggingIn(false)
         setSelectedWallet(null)
         setAvailableWallets([])
+        setNewWalletName('')
       }, 300)
     }
   }, [open, initialStep])
@@ -312,8 +314,14 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
     )
 
     if (allCorrect) {
+      // Create wallet info with the user's chosen name
+      const walletInfo = {
+        address: walletAddress,
+        nickname: newWalletName || 'New Wallet',
+        icon: 'wallet'
+      }
       // Connect wallet immediately so sidebar shows it active
-      connectWalletContext(email, walletAddress)
+      connectWalletContext(email, walletAddress, walletInfo)
       // Go to step 3.3 to show funding options
       setStep(3.3)
     } else {
@@ -677,47 +685,153 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
             </div>
 
             {/* Wallet List */}
-            <div className="px-6 pb-6 space-y-3">
-              {availableWallets.map((wallet, index) => {
-                const isCurrentWallet = currentWallet && currentWallet.address === wallet.address
-                return (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      setSelectedWallet(wallet)
-                      // Always go to password step for security
-                      setStep(2.5)
-                    }}
-                    className={`w-full p-4 rounded-xl flex items-center justify-between transition-colors ${
-                      isCurrentWallet
-                        ? 'bg-primary/10 border-2 border-primary'
-                        : 'bg-muted hover:bg-muted/70'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isCurrentWallet ? 'bg-primary/20' : 'bg-primary/10'
-                      }`}>
-                        <WalletIcon className={`w-5 h-5 ${isCurrentWallet ? 'text-primary' : 'text-primary'}`} />
-                      </div>
-                      <div className="text-left">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">{wallet.nickname}</p>
-                          {isCurrentWallet && (
-                            <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-0">
-                              Connected
-                            </Badge>
-                          )}
+            <div className="px-6 pb-6 space-y-4">
+              <div className="space-y-3">
+                {availableWallets.map((wallet, index) => {
+                  const isCurrentWallet = currentWallet && currentWallet.address === wallet.address
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setSelectedWallet(wallet)
+                        // Always go to password step for security
+                        setStep(2.5)
+                      }}
+                      className={`w-full p-4 rounded-xl flex items-center justify-between transition-colors ${
+                        isCurrentWallet
+                          ? 'bg-primary/10 border-2 border-primary'
+                          : 'bg-muted hover:bg-muted/70'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          isCurrentWallet ? 'bg-primary/20' : 'bg-primary/10'
+                        }`}>
+                          <WalletIcon className={`w-5 h-5 ${isCurrentWallet ? 'text-primary' : 'text-primary'}`} />
                         </div>
-                        <p className="text-sm text-muted-foreground font-mono">
-                          {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
-                        </p>
+                        <div className="text-left">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{wallet.nickname}</p>
+                            {isCurrentWallet && (
+                              <Badge variant="secondary" className="text-xs bg-primary/20 text-primary border-0">
+                                Connected
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground font-mono">
+                            {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                )
-              })}
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Divider */}
+              <div className="flex items-center gap-4">
+                <div className="flex-1 border-t border-border"></div>
+                <span className="text-sm text-muted-foreground">or</span>
+                <div className="flex-1 border-t border-border"></div>
+              </div>
+
+              {/* Create New Wallet Button */}
+              <Button
+                variant="outline"
+                className="w-full h-11 rounded-xl"
+                onClick={() => {
+                  setIsCreatingWallet(true)
+                  // Simulate wallet creation delay
+                  setTimeout(() => {
+                    setIsCreatingWallet(false)
+                    setStep(2.9) // Go to wallet name step
+                  }, 2000)
+                }}
+                disabled={isCreatingWallet}
+              >
+                {isCreatingWallet ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating wallet...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create New Wallet
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2.9: Wallet Name */}
+        {step === 2.9 && (
+          <div className="flex flex-col">
+            {/* Header */}
+            <div className="relative px-6 py-12 flex flex-col items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-2 top-2 rounded-full"
+                onClick={() => setStep(2.3)}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-2 rounded-full"
+                onClick={handleClose}
+              >
+                <X className="w-5 h-5" />
+              </Button>
+
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <WalletIcon className="w-8 h-8 text-primary" />
+              </div>
+
+              <h2 className="text-2xl font-bold text-center mb-2">Name Your Wallet</h2>
+              <p className="text-sm text-muted-foreground text-center max-w-sm">
+                Choose a name to easily identify this wallet
+              </p>
+            </div>
+
+            {/* Form */}
+            <div className="px-6 pb-6 space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="wallet-name" className="block text-sm font-medium">Wallet Name</Label>
+                <Input
+                  id="wallet-name"
+                  type="text"
+                  placeholder="e.g., Main Wallet, Trading, Savings"
+                  value={newWalletName}
+                  onChange={(e) => setNewWalletName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && newWalletName && handleWalletNameContinue()}
+                  autoFocus
+                  className="h-11 rounded-xl"
+                  maxLength={30}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {newWalletName.length}/30 characters
+                </p>
+              </div>
+
+              <Button
+                className="w-full h-11 rounded-xl bg-primary"
+                onClick={() => {
+                  // Generate seed phrase and go to step 3.1
+                  const phrase = generateSeedPhrase()
+                  setSeedPhrase(phrase)
+                  setVerificationQuestions(generateVerificationQuestions(phrase))
+                  setWalletAddress('0x' + Math.random().toString(16).substr(2, 40))
+                  setStep(3.1)
+                }}
+                disabled={!newWalletName.trim()}
+              >
+                Continue
+              </Button>
             </div>
           </div>
         )}
