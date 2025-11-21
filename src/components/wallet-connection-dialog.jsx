@@ -52,6 +52,8 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
   const [emailError, setEmailError] = useState('')
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [selectedWallet, setSelectedWallet] = useState(null)
+  const [availableWallets, setAvailableWallets] = useState([])
   const { connectWallet: connectWalletContext, getUserByEmail, updateWalletData } = useWallet()
 
   // Reset state when dialog closes
@@ -75,6 +77,8 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
         setVerifySuccess(false)
         setPassword('')
         setIsLoggingIn(false)
+        setSelectedWallet(null)
+        setAvailableWallets([])
       }, 300)
     }
   }, [open, initialStep])
@@ -162,8 +166,19 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
           setVerifySuccess(false)
 
           if (user && user.hasWallet) {
-            // User has wallet - go to password step
-            setStep(2.5)
+            // User has wallet - check if they have multiple wallets
+            if (user.wallets && user.wallets.length > 1) {
+              // Multiple wallets - show wallet selection
+              setAvailableWallets(user.wallets)
+              setStep(2.3)
+            } else if (user.wallets && user.wallets.length === 1) {
+              // Single wallet - auto-select and go to password
+              setSelectedWallet(user.wallets[0])
+              setStep(2.5)
+            } else {
+              // Old format - go to password step
+              setStep(2.5)
+            }
           } else {
             // User doesn't have wallet - go to Step 3 (create wallet)
             setStep(3)
@@ -193,7 +208,9 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
     setTimeout(() => {
       const user = getUserByEmail(email)
       if (user && user.hasWallet) {
-        connectWalletContext(email, user.walletAddress)
+        // Use selected wallet address if available, otherwise fall back to old format
+        const address = selectedWallet ? selectedWallet.address : user.walletAddress
+        connectWalletContext(email, address)
         setIsLoggingIn(false)
         handleClose()
       }
@@ -609,8 +626,8 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
           </div>
         )}
 
-        {/* Step 2.5: Password Entry */}
-        {step === 2.5 && (
+        {/* Step 2.3: Wallet Selection */}
+        {step === 2.3 && (
           <div className="flex flex-col">
             {/* Header */}
             <div className="relative px-6 py-12 flex flex-col items-center">
@@ -632,12 +649,73 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
               </Button>
 
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <WalletIcon className="w-8 h-8 text-primary" />
+              </div>
+
+              <h2 className="text-2xl font-bold text-center mb-2">Select Wallet</h2>
+              <p className="text-sm text-muted-foreground text-center max-w-sm">
+                Choose which wallet you want to log in with
+              </p>
+            </div>
+
+            {/* Wallet List */}
+            <div className="px-6 pb-6 space-y-3">
+              {availableWallets.map((wallet, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedWallet(wallet)
+                    setStep(2.5)
+                  }}
+                  className="w-full p-4 bg-muted hover:bg-muted/70 rounded-xl flex items-center justify-between transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <WalletIcon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium">{wallet.nickname}</p>
+                      <p className="text-sm text-muted-foreground font-mono">
+                        {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 2.5: Password Entry */}
+        {step === 2.5 && (
+          <div className="flex flex-col">
+            {/* Header */}
+            <div className="relative px-6 py-12 flex flex-col items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-2 top-2 rounded-full"
+                onClick={() => setStep(availableWallets.length > 1 ? 2.3 : 2)}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-2 rounded-full"
+                onClick={handleClose}
+              >
+                <X className="w-5 h-5" />
+              </Button>
+
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                 <Shield className="w-8 h-8 text-primary" />
               </div>
 
               <h2 className="text-2xl font-bold text-center mb-2">Enter Password</h2>
               <p className="text-sm text-muted-foreground text-center max-w-sm">
-                Please enter your password to access your wallet
+                {selectedWallet ? `Unlocking ${selectedWallet.nickname}` : 'Please enter your password to access your wallet'}
               </p>
             </div>
 
