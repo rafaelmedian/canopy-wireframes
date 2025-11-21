@@ -320,6 +320,21 @@ export default function WalletSettings() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
+                <Label htmlFor="wallet-nickname">Wallet Nickname</Label>
+                <Input
+                  id="wallet-nickname"
+                  type="text"
+                  placeholder="e.g., Main Wallet, Trading, Savings"
+                  value={settings.walletNickname || ''}
+                  onChange={(e) => updateSetting('walletNickname', e.target.value, 'display')}
+                  maxLength={30}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Customize the name displayed for your current wallet
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <Label>Display Currency</Label>
                 <Select
                   value={settings.currency}
