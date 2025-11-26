@@ -124,7 +124,7 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
               <Separator className="my-3" />
               <p className="text-xs text-muted-foreground flex items-start gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-                <span>Flags are community-driven warnings. This project continues to trade but proceed with caution. All flags are transparent and recorded on-chain.</span>
+                <span>Flags are community-driven warnings. This project continues to trade but proceed with caution.</span>
               </p>
             </div>
           </div>
