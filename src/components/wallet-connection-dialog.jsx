@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -46,6 +46,9 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
   const [availableWallets, setAvailableWallets] = useState([])
   const [newWalletName, setNewWalletName] = useState('')
   const { connectWallet: connectWalletContext, getUserByEvmAddress, updateWalletData, currentWallet } = useWallet()
+
+  // Refs to store timeout IDs for cancellation
+  const connectionTimeoutsRef = useRef([])
 
   // Demo EVM addresses for prototype
   const DEMO_EVM_ADDRESSES = {
@@ -105,6 +108,8 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
   }, [step])
 
   const handleClose = () => {
+    // Clear any pending connection timeouts
+    clearConnectionTimeouts()
     onOpenChange(false)
   }
 
@@ -114,8 +119,17 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
     }
   }
 
+  // Clear all connection timeouts
+  const clearConnectionTimeouts = () => {
+    connectionTimeoutsRef.current.forEach(id => clearTimeout(id))
+    connectionTimeoutsRef.current = []
+  }
+
   // Step 1: Connect EVM Wallet - starts the 3-step connection sequence
   const handleConnectEvmWallet = (provider) => {
+    // Clear any existing timeouts
+    clearConnectionTimeouts()
+
     setEvmProvider(provider)
     setStep(2) // Move to connection flow step
     setConnectionStep(1) // Start with "Requesting connection..."
@@ -130,15 +144,15 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
     setConnectedEvmAddress(demoAddress)
 
     // Step 1: Requesting connection (2 seconds)
-    setTimeout(() => {
+    const timeout1 = setTimeout(() => {
       setConnectionStep(2) // Move to "Signature requested"
 
       // Step 2: Signature requested (2 seconds)
-      setTimeout(() => {
+      const timeout2 = setTimeout(() => {
         setConnectionStep(3) // Move to "Connection Approved"
 
         // Step 3: Connection Approved (1.5 seconds then navigate)
-        setTimeout(() => {
+        const timeout3 = setTimeout(() => {
           // Check if user has Canopy wallet
           const user = getUserByEvmAddress(demoAddress)
 
@@ -165,12 +179,17 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
             setStep(3)
           }
         }, 1500)
+        connectionTimeoutsRef.current.push(timeout3)
       }, 2000)
+      connectionTimeoutsRef.current.push(timeout2)
     }, 2000)
+    connectionTimeoutsRef.current.push(timeout1)
   }
 
   // Cancel connection flow
   const handleCancelConnection = () => {
+    // Clear all pending timeouts
+    clearConnectionTimeouts()
     setConnectionStep(0)
     setStep(1)
     setEvmProvider('')
