@@ -12,8 +12,7 @@ import {
   Shield,
   Eye,
   Bell,
-  Wallet,
-  LogOut
+  Wallet
 } from 'lucide-react'
 import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
@@ -41,7 +40,7 @@ const DEFAULT_SETTINGS = {
 
 export default function WalletSettings() {
   const navigate = useNavigate()
-  const { formatAddress, evmAddress, disconnectWallet } = useWallet()
+  const { formatAddress, evmAddress } = useWallet()
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
 
   // Track changes per section
@@ -102,26 +101,12 @@ export default function WalletSettings() {
             </p>
           </div>
 
-          {/* Authenticated With */}
+          {/* Wallet Linked to */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-primary" />
-                  <CardTitle>Authenticated With</CardTitle>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
-                  onClick={() => {
-                    disconnectWallet()
-                    navigate('/')
-                  }}
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Disconnect wallet
-                </Button>
+              <div className="flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-primary" />
+                <CardTitle>Wallet Linked to</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -175,7 +160,7 @@ export default function WalletSettings() {
                 <CardTitle>Security & Privacy</CardTitle>
               </div>
               <CardDescription>
-                Configure security settings and privacy options
+                Configure security settings and privacy options for your Canopy wallet
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -263,7 +248,7 @@ export default function WalletSettings() {
                 <CardTitle>Display Preferences</CardTitle>
               </div>
               <CardDescription>
-                Customize how information is displayed
+                Customize how your Canopy wallet displays information
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -367,7 +352,7 @@ export default function WalletSettings() {
                 <CardTitle>Notifications</CardTitle>
               </div>
               <CardDescription>
-                Configure alert preferences
+                Configure alert preferences for your Canopy wallet
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

@@ -19,7 +19,6 @@ import {
   Shield,
   Loader2,
   RotateCcw,
-  ChevronDown,
   CheckCircle2
 } from 'lucide-react'
 import { useWallet } from '@/contexts/wallet-context'
@@ -33,17 +32,10 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
   const [verificationAnswers, setVerificationAnswers] = useState({})
   const [verificationQuestions, setVerificationQuestions] = useState([])
   const [walletAddress, setWalletAddress] = useState('')
-  const [connectedWallets, setConnectedWallets] = useState({
-    evm: null,
-    canopy: null
-  })
-  const [showWalletSelect, setShowWalletSelect] = useState(false)
-  const [walletType, setWalletType] = useState(null)
+  const [fundSourceTab, setFundSourceTab] = useState('evm') // 'evm' or 'canopy'
   const [convertAmount, setConvertAmount] = useState('')
   const [isCreatingWallet, setIsCreatingWallet] = useState(false)
   const [walletCreated, setWalletCreated] = useState(false)
-  const [selectedWalletForConversion, setSelectedWalletForConversion] = useState(null)
-  const [showWalletDropdown, setShowWalletDropdown] = useState(false)
   const [selectedToken, setSelectedToken] = useState(null) // { walletType, token, amount }
   const [isConverting, setIsConverting] = useState(false)
   const [conversionSuccess, setConversionSuccess] = useState(false)
@@ -53,7 +45,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
   const [selectedWallet, setSelectedWallet] = useState(null)
   const [availableWallets, setAvailableWallets] = useState([])
   const [newWalletName, setNewWalletName] = useState('')
-  const { connectWallet: connectWalletContext, getUserByEvmAddress, updateWalletData, currentWallet, evmAddress: storedEvmAddress } = useWallet()
+  const { connectWallet: connectWalletContext, getUserByEvmAddress, updateWalletData, currentWallet } = useWallet()
 
   // Demo EVM addresses for prototype
   const DEMO_EVM_ADDRESSES = {
@@ -68,10 +60,8 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
         setStep(initialStep)
         setConnectedEvmAddress('')
         setEvmProvider('')
-        setConnectedWallets({ evm: null, canopy: null })
+        setFundSourceTab('evm')
         setConvertAmount('')
-        setSelectedWalletForConversion(null)
-        setShowWalletDropdown(false)
         setSelectedToken(null)
         setIsConverting(false)
         setConversionSuccess(false)
@@ -106,28 +96,13 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
     }
   }, [open, initialStep, getUserByEvmAddress, currentWallet])
 
-  // Set the first connected wallet as selected when navigating to step 5
+  // Reset fund source tab when navigating to step 5
   useEffect(() => {
-    if (step === 5 && !selectedWalletForConversion) {
-      if (connectedWallets.evm) {
-        setSelectedWalletForConversion('evm')
-      }
+    if (step === 5) {
+      setFundSourceTab('evm')
+      setSelectedToken(null)
     }
-
-    // Auto-select first token when navigating to step 5
-    if (step === 5 && !selectedToken) {
-      const firstWallet = connectedWallets.evm
-      if (firstWallet) {
-        const firstTokenKey = Object.keys(firstWallet.balances)[0]
-        const walletType = 'evm'
-        setSelectedToken({
-          walletType,
-          token: firstTokenKey,
-          amount: firstWallet.balances[firstTokenKey]
-        })
-      }
-    }
-  }, [step, connectedWallets, selectedWalletForConversion, selectedToken])
+  }, [step])
 
   const handleClose = () => {
     onOpenChange(false)
@@ -292,50 +267,12 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
 
   // Step 3.3: Wallet created - Fund or skip
   const handleFundWallet = () => {
-    setStep(4)
+    setStep(5) // Go directly to Choose Fund Source
   }
 
   const handleDoItLater = () => {
     connectWalletContext(connectedEvmAddress, walletAddress)
     handleClose()
-  }
-
-  // Step 4: Connect wallets
-  const handleConnectWallet = (type) => {
-    setWalletType(type)
-    setShowWalletSelect(true)
-  }
-
-  const handleWalletProviderSelect = (provider) => {
-    // Simulate wallet connection
-    const mockBalance = {
-      provider,
-      address: '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199',
-      balances: {
-        ETH: 0.5,
-        USDC: 150.75
-      }
-    }
-
-    setConnectedWallets(prev => ({
-      ...prev,
-      [walletType]: mockBalance
-    }))
-    setShowWalletSelect(false)
-    setWalletType(null)
-  }
-
-  const handleDisconnectWallet = (type) => {
-    setConnectedWallets(prev => ({
-      ...prev,
-      [type]: null
-    }))
-  }
-
-  const handleContinueToBalances = () => {
-    if (connectedWallets.evm) {
-      setStep(5)
-    }
   }
 
   // Step 5: Continue to conversion
@@ -415,36 +352,6 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
 
     connectWalletContext(connectedEvmAddress, walletAddress)
     handleClose()
-  }
-
-  const getTotalBalance = (walletType = null) => {
-    if (walletType && connectedWallets[walletType]) {
-      return Object.values(connectedWallets[walletType].balances).reduce((a, b) => a + b, 0)
-    }
-
-    let total = 0
-    if (connectedWallets.evm) {
-      total += Object.values(connectedWallets.evm.balances).reduce((a, b) => a + b, 0)
-    }
-    return total
-  }
-
-  const getWalletIcon = (walletType) => {
-    if (walletType === 'evm') {
-      return 'bg-blue-500'
-    }
-    return 'bg-muted'
-  }
-
-  const getWalletLabel = (walletType) => {
-    const wallet = connectedWallets[walletType]
-    if (!wallet) return ''
-    return `${wallet.provider} (EVM)`
-  }
-
-  const formatWalletAddress = (address) => {
-    if (!address) return ''
-    return `${address.slice(0, 4)}...${address.slice(-4)}`
   }
 
   return (
@@ -760,7 +667,16 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
                   placeholder="e.g., Main Wallet, Trading, Savings"
                   value={newWalletName}
                   onChange={(e) => setNewWalletName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && newWalletName && handleWalletNameContinue()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newWalletName.trim()) {
+                      // Generate seed phrase and go to step 3.1
+                      const phrase = generateSeedPhrase()
+                      setSeedPhrase(phrase)
+                      setVerificationQuestions(generateVerificationQuestions(phrase))
+                      setWalletAddress('0x' + Math.random().toString(16).substr(2, 40))
+                      setStep(3.1)
+                    }
+                  }}
                   autoFocus
                   className="h-11 rounded-xl"
                   maxLength={30}
@@ -1198,161 +1114,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
           </div>
         )}
 
-        {/* Wallet Selection Modal */}
-        {showWalletSelect && (
-          <Dialog open={showWalletSelect} onOpenChange={setShowWalletSelect}>
-            <DialogContent className="sm:max-w-[400px] p-0 gap-0" hideClose noAnimation>
-              <div className="relative p-6 border-b">
-                <h3 className="text-xl font-bold">Select Wallet</h3>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-2 rounded-full"
-                  onClick={() => setShowWalletSelect(false)}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-
-              <div className="p-6 space-y-3">
-                <button
-                  onClick={() => handleWalletProviderSelect('MetaMask')}
-                  className="w-full p-4 bg-muted hover:bg-muted/70 rounded-xl flex items-center justify-between transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center">
-                      <WalletIcon className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">MetaMask</p>
-                      <p className="text-sm text-muted-foreground">Multi-chain</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-
-                <button
-                  onClick={() => handleWalletProviderSelect('WalletConnect')}
-                  className="w-full p-4 bg-muted hover:bg-muted/70 rounded-xl flex items-center justify-between transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
-                      <WalletIcon className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">WalletConnect</p>
-                      <p className="text-sm text-muted-foreground">Multi-chain</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {/* Step 4: Connect Wallets */}
-        {step === 4 && !showWalletSelect && (
-          <div className="flex flex-col">
-            {/* Header */}
-            <div className="relative p-6 pb-4 flex flex-col items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-2 rounded-full"
-                onClick={handleClose}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <WalletIcon className="w-8 h-8 text-primary" />
-              </div>
-
-              <h2 className="text-2xl font-bold text-center mb-2">Connect Your Wallets</h2>
-              <p className="text-sm text-muted-foreground text-center">Connect wallets fund your account</p>
-            </div>
-
-            {/* Content */}
-            <div className="px-6 pb-6 space-y-6 max-h-[400px] overflow-y-auto">
-              {/* EVM Wallet */}
-              <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground block">EVM Wallet</Label>
-                {connectedWallets.evm ? (
-                  <div className="p-4 bg-[#1dd13a]/10 border-2 border-[#1dd13a] rounded-xl">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
-                          <WalletIcon className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{connectedWallets.evm.provider}</p>
-                          <p className="text-sm text-muted-foreground">Multi-chain</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Check className="w-5 h-5 text-[#1dd13a]" />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleDisconnectWallet('evm')}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => handleConnectWallet('evm')}
-                    className="w-full p-4 border-2 border-dashed rounded-xl hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                          <Plus className="w-5 h-5" />
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium">Connect EVM Wallet</p>
-                          <p className="text-sm text-muted-foreground">MetaMask, WalletConnect</p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-5 h-5" />
-                    </div>
-                  </button>
-                )}
-              </div>
-
-              {/* Fund via Transfer */}
-              <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground block">Fund via Transfer</Label>
-                <div className="p-4 bg-muted rounded-xl">
-                  <p className="font-medium mb-2">Transfer CNPY from another Canopy Wallet</p>
-                  <p className="text-sm text-muted-foreground mb-3">Send CNPY tokens to this address</p>
-                  <div className="flex items-center gap-2 p-3 bg-background rounded-lg">
-                    <code className="flex-1 text-xs truncate">
-                      0x742d35Cc6634C0532925a3b844Bc9e7595f0...
-                    </code>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                className="w-full h-12 rounded-xl"
-                onClick={handleContinueToBalances}
-                disabled={!connectedWallets.evm}
-              >
-                Continue
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 5: Balances Found */}
+        {/* Step 5: Choose Fund Source */}
         {step === 5 && (
           <div className="flex flex-col">
             {/* Header */}
@@ -1361,7 +1123,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
                 variant="ghost"
                 size="icon"
                 className="absolute left-2 top-2 rounded-full"
-                onClick={handleBack}
+                onClick={() => setStep(3.3)}
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
@@ -1375,7 +1137,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
               </Button>
 
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <CheckCircle className="w-8 h-8 text-primary" />
+                <WalletIcon className="w-8 h-8 text-primary" />
               </div>
 
               <h2 className="text-2xl font-bold text-center mb-2">Choose Fund Source</h2>
@@ -1385,111 +1147,142 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
             </div>
 
             {/* Content */}
-            <div className="px-6 pb-6 space-y-6">
-              {/* Balance Summary - Compact */}
-              <div className="p-4 bg-muted rounded-xl space-y-3">
-                <p className="text-sm text-muted-foreground">Balance Available</p>
-                <p className="text-3xl font-bold -mt-2">
-                  ${selectedWalletForConversion ? getTotalBalance(selectedWalletForConversion).toFixed(2) : getTotalBalance().toFixed(2)}
-                </p>
-
-                {/* Wallet Selector Dropdown */}
-                {selectedWalletForConversion && (
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowWalletDropdown(!showWalletDropdown)}
-                      className="w-full flex items-center justify-between px-3 py-2 bg-background rounded-full hover:bg-background/80 transition-colors"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className={`w-5 h-5 rounded-full ${getWalletIcon(selectedWalletForConversion)} flex items-center justify-center`}>
-                          <WalletIcon className="w-3 h-3 text-white" />
-                        </div>
-                        <div className="flex items-center gap-1.5 text-sm">
-                          <span className="font-medium">{getWalletLabel(selectedWalletForConversion)}</span>
-                          <span className="text-muted-foreground">
-                            {formatWalletAddress(connectedWallets[selectedWalletForConversion]?.address)}
-                          </span>
-                        </div>
-                      </div>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${showWalletDropdown ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {showWalletDropdown && (
-                      <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-background rounded-xl border shadow-lg z-10">
-                        {Object.entries(connectedWallets).map(([type, wallet]) => {
-                          if (!wallet) return null
-                          return (
-                            <button
-                              key={type}
-                              onClick={() => {
-                                setSelectedWalletForConversion(type)
-                                setShowWalletDropdown(false)
-                              }}
-                              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors ${
-                                selectedWalletForConversion === type ? 'bg-muted' : ''
-                              }`}
-                            >
-                              <div className={`w-5 h-5 rounded-full ${getWalletIcon(type)} flex items-center justify-center`}>
-                                <WalletIcon className="w-3 h-3 text-white" />
-                              </div>
-                              <div className="flex-1 text-left">
-                                <p className="text-sm font-medium">{getWalletLabel(type)}</p>
-                                <p className="text-xs text-muted-foreground">${getTotalBalance(type).toFixed(2)}</p>
-                              </div>
-                              {selectedWalletForConversion === type && (
-                                <Check className="w-4 h-4 text-primary" />
-                              )}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Token List - Compact with Radio Buttons */}
-                {selectedWalletForConversion && connectedWallets[selectedWalletForConversion] && (
-                  <div className="space-y-2 pt-2 border-t">
-                    {Object.entries(connectedWallets[selectedWalletForConversion].balances).map(([token, amount]) => {
-                      const isSelected = selectedToken?.walletType === selectedWalletForConversion && selectedToken?.token === token
-                      return (
-                        <button
-                          key={token}
-                          onClick={() => setSelectedToken({ walletType: selectedWalletForConversion, token, amount })}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-background/80 transition-colors ${
-                            isSelected ? 'bg-background' : ''
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            {/* Radio Button */}
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              isSelected ? 'border-primary' : 'border-muted-foreground'
-                            }`}>
-                              {isSelected && <div className="w-2 h-2 rounded-full bg-primary" />}
-                            </div>
-                            <div className={`w-6 h-6 rounded-full ${token === 'ETH' ? 'bg-purple-500' : 'bg-blue-500'} flex items-center justify-center`}>
-                              <span className="text-xs font-bold text-white">{token === 'ETH' ? 'E' : '$'}</span>
-                            </div>
-                            <span className="text-sm font-medium">{token}</span>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-medium">{amount}</p>
-                            <p className="text-xs text-muted-foreground">${amount.toFixed(2)}</p>
-                          </div>
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
+            <div className="px-6 pb-6 space-y-4">
+              {/* Tabs */}
+              <div className="flex gap-2 p-1 bg-muted rounded-xl">
+                <button
+                  onClick={() => setFundSourceTab('evm')}
+                  className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                    fundSourceTab === 'evm'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  EVM Wallet
+                </button>
+                <button
+                  onClick={() => setFundSourceTab('canopy')}
+                  className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                    fundSourceTab === 'canopy'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Another Canopy Wallet
+                </button>
               </div>
 
-              <Button
-                className="w-full h-12 rounded-xl bg-primary"
-                onClick={handleContinueToConversion}
-              >
-                Continue
-              </Button>
+              {/* EVM Wallet Tab Content */}
+              {fundSourceTab === 'evm' && (
+                <div className="space-y-4">
+                  {/* Token Selection */}
+                  <div className="p-4 bg-muted rounded-xl space-y-3">
+                    {/* Connected EVM Wallet Info - Compact */}
+                    <div className="flex items-center justify-between pb-3 border-b border-border">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                          evmProvider === 'MetaMask' ? 'bg-[#F5841F]' : 'bg-[#3B99FC]'
+                        }`}>
+                          <img
+                            src={evmProvider === 'MetaMask' ? '/svg/metamaskt.svg' : '/svg/walletconnect.svg'}
+                            alt={evmProvider}
+                            className="w-4 h-4"
+                          />
+                        </div>
+                        <span className="text-sm font-medium">{evmProvider}</span>
+                        <span className="text-xs text-muted-foreground font-mono">
+                          {connectedEvmAddress ? `${connectedEvmAddress.slice(0, 6)}...${connectedEvmAddress.slice(-4)}` : ''}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#1dd13a]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#1dd13a]" />
+                        Connected
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">Select token to convert</p>
+                    <div className="space-y-2">
+                      {[
+                        { token: 'ETH', amount: 0.5, icon: 'bg-purple-500', symbol: 'E' },
+                        { token: 'USDC', amount: 150.75, icon: 'bg-blue-500', symbol: '$' }
+                      ].map(({ token, amount, icon, symbol }) => {
+                        const isSelected = selectedToken?.token === token
+                        return (
+                          <button
+                            key={token}
+                            onClick={() => setSelectedToken({ walletType: 'evm', token, amount })}
+                            className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
+                              isSelected ? 'bg-background border-2 border-primary' : 'bg-background/50 hover:bg-background'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                isSelected ? 'border-primary' : 'border-muted-foreground'
+                              }`}>
+                                {isSelected && <div className="w-2 h-2 rounded-full bg-primary" />}
+                              </div>
+                              <div className={`w-8 h-8 rounded-full ${icon} flex items-center justify-center`}>
+                                <span className="text-sm font-bold text-white">{symbol}</span>
+                              </div>
+                              <span className="font-medium">{token}</span>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium">{amount}</p>
+                              <p className="text-xs text-muted-foreground">${(token === 'ETH' ? amount * 2000 : amount).toFixed(2)}</p>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <Button
+                    className="w-full h-12 rounded-xl"
+                    onClick={handleContinueToConversion}
+                    disabled={!selectedToken}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )}
+
+              {/* Another Canopy Wallet Tab Content */}
+              {fundSourceTab === 'canopy' && (
+                <div className="space-y-4">
+                  <div className="p-4 bg-muted rounded-xl space-y-3">
+                    <p className="font-medium">Transfer CNPY from another Canopy Wallet</p>
+                    <p className="text-sm text-muted-foreground">Send CNPY tokens to this address</p>
+                    <div className="flex items-center gap-2 p-3 bg-background rounded-lg">
+                      <code className="flex-1 text-sm font-mono truncate">
+                        {walletAddress || '0x742d35Cc6634C0532925a3b844Bc9e7595f0...'}
+                      </code>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 flex-shrink-0"
+                        onClick={() => {
+                          navigator.clipboard.writeText(walletAddress || '0x742d35Cc6634C0532925a3b844Bc9e7595f00000')
+                          toast.success('Address copied')
+                        }}
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Button
+                    className="w-full h-12 rounded-xl"
+                    variant="outline"
+                    onClick={() => {
+                      // Skip funding and complete wallet setup
+                      connectWalletContext(connectedEvmAddress, walletAddress)
+                      handleClose()
+                    }}
+                  >
+                    I've sent the funds
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1551,14 +1344,14 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
                 {/* Available Balance & Max Button */}
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">
-                    <span className="block">Available: ${getTotalBalance().toFixed(2)}</span>
-                    <span className="text-xs">7xKX ... gAsU</span>
+                    <span className="block">Available: {selectedToken?.amount || 0} {selectedToken?.token || ''}</span>
+                    <span className="text-xs">${selectedToken?.token === 'ETH' ? ((selectedToken?.amount || 0) * 2000).toFixed(2) : (selectedToken?.amount || 0).toFixed(2)}</span>
                   </div>
                   <Button
                     variant="secondary"
                     size="sm"
                     className="h-7 text-xs"
-                    onClick={() => setConvertAmount(getTotalBalance().toString())}
+                    onClick={() => setConvertAmount((selectedToken?.token === 'ETH' ? (selectedToken?.amount || 0) * 2000 : selectedToken?.amount || 0).toString())}
                   >
                     Use max
                   </Button>
@@ -1684,7 +1477,7 @@ export default function WalletConnectionDialog({ open, onOpenChange, initialStep
                 className="w-full h-12 rounded-xl bg-primary"
                 onClick={handleComplete}
               >
-                Start Buying Projects
+                Get Started
               </Button>
 
               <Button
