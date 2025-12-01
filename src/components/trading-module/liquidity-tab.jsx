@@ -21,6 +21,7 @@ export default function LiquidityTab({
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [showWithdrawConfirmation, setShowWithdrawConfirmation] = useState(false)
   const [hasLiquidity, setHasLiquidity] = useState(false) // Track if user has added liquidity
+  const [withdrawPercent, setWithdrawPercent] = useState(0) // 0-100 percentage to withdraw
 
   // Find pool if both tokens are selected
   const pool = tokenA && tokenB 
@@ -34,11 +35,28 @@ export default function LiquidityTab({
   const userLiquidity = hasLiquidity ? {
     lpTokens: 125.45,
     valueUSD: 250.90,
+    initialValueUSD: 238.56, // What they deposited
     tokenAAmount: 12.5,
     tokenBAmount: 125.45,
     share: 0.221,
-    earnings: 12.34
+    earnings: 12.34, // valueUSD - initialValueUSD
+    depositDate: '2024-11-15'
   } : null
+
+  // Calculate withdrawal amounts based on percentage
+  const getWithdrawAmounts = () => {
+    if (!userLiquidity || withdrawPercent <= 0) {
+      return { tokenA: 0, tokenB: 0, totalUSD: 0, earnings: 0 }
+    }
+    const fraction = withdrawPercent / 100
+    const tokenAWithdraw = userLiquidity.tokenAAmount * fraction
+    const tokenBWithdraw = userLiquidity.tokenBAmount * fraction
+    const totalUSD = userLiquidity.valueUSD * fraction
+    const earningsWithdraw = userLiquidity.earnings * fraction
+    return { tokenA: tokenAWithdraw, tokenB: tokenBWithdraw, totalUSD, earnings: earningsWithdraw }
+  }
+
+  const withdrawAmounts = getWithdrawAmounts()
 
   // Mock wallet balances (would come from wallet in real app)
   const getWalletBalance = (token) => {
@@ -466,13 +484,13 @@ export default function LiquidityTab({
         </>
       ) : (
         <>
-          {/* Withdraw Mode Cards with spacing */}
+          {/* Withdraw Mode */}
           <div className="space-y-3">
-            {/* Pool to Withdraw From */}
+            {/* Pool Header with Position Info */}
             <div className="px-4">
-              {pool ? (
-              <Card className="bg-muted/30 p-4">
-                <div className="flex items-center justify-between">
+              {pool && userLiquidity ? (
+                <Card className="bg-muted/30 p-4 space-y-4">
+                  {/* Pool Identity */}
                   <div className="flex items-center gap-3">
                     <div className="flex -space-x-2">
                       <div
@@ -490,50 +508,62 @@ export default function LiquidityTab({
                     </div>
                     <div className="text-left">
                       <p className="text-base font-semibold">{tokenA.symbol}/{tokenB.symbol} Pool</p>
-                      <p className="text-sm text-muted-foreground">Your LP: 0.00</p>
+                      <p className="text-sm text-muted-foreground">
+                        Your position: ${userLiquidity.valueUSD.toFixed(2)}
+                      </p>
                     </div>
                   </div>
-                  {/* Right side: Input with two lines */}
-                  <div className="flex flex-col items-end gap-0.5">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={amountA}
-                      onChange={(e) => handleAmountAChange(e.target.value)}
-                      placeholder="0"
-                      className="text-base font-semibold bg-transparent border-0 outline-none p-0 h-auto text-right w-20 placeholder:text-muted-foreground"
-                    />
-                    <span className="text-sm text-muted-foreground">LP Tokens</span>
-                  </div>
-                </div>
-              </Card>
-            ) : (
-              <Card 
-                className="bg-muted/30 p-4 hover:bg-muted/40 transition-colors cursor-pointer"
-                onClick={() => onSelectToken && onSelectToken('tokenA')}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center">
-                      <Plus className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-base font-semibold">Select pool</p>
-                      <p className="text-sm text-muted-foreground">Choose liquidity pool</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
-              </Card>
-            )}
-          </div>
 
-          {/* Tokens You'll Receive */}
-          <div className="px-4">
-            {tokenA && tokenB ? (
-              <Card className="bg-muted/30 p-4 space-y-3">
-                <div className="text-base font-semibold mb-2">You'll receive</div>
-                <div className="space-y-2">
+                  {/* Percentage Display */}
+                  <div className="text-center py-2">
+                    <span className="text-4xl font-bold">{withdrawPercent}%</span>
+                  </div>
+
+                  {/* Slider */}
+                  <div className="px-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={withdrawPercent}
+                      onChange={(e) => setWithdrawPercent(parseInt(e.target.value))}
+                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                  </div>
+
+                  {/* Preset Buttons */}
+                  <div className="flex gap-2">
+                    {[25, 50, 75, 100].map((percent) => (
+                      <button
+                        key={percent}
+                        onClick={() => setWithdrawPercent(percent)}
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                          withdrawPercent === percent
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                        }`}
+                      >
+                        {percent === 100 ? 'Max' : `${percent}%`}
+                      </button>
+                    ))}
+                  </div>
+                </Card>
+              ) : (
+                <Card className="bg-muted/30 p-4">
+                  <div className="text-center text-sm text-muted-foreground">
+                    No liquidity position to withdraw
+                  </div>
+                </Card>
+              )}
+            </div>
+
+            {/* You'll Receive Preview */}
+            {pool && userLiquidity && withdrawPercent > 0 && (
+              <div className="px-4">
+                <Card className="bg-muted/30 p-4 space-y-3">
+                  <div className="text-sm font-medium text-muted-foreground">You'll receive</div>
+                  
+                  {/* Token A */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div
@@ -545,12 +575,16 @@ export default function LiquidityTab({
                       <span className="text-base">{tokenA.symbol}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-base font-semibold">{amountA || '0.0'}</span>
+                      <span className="text-base font-semibold">
+                        {withdrawAmounts.tokenA.toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                      </span>
                       <p className="text-xs text-muted-foreground">
-                        ${((parseFloat(amountA) || 0) * (tokenA.currentPrice || 0)).toFixed(2)}
+                        ${(withdrawAmounts.tokenA * (tokenA.currentPrice || 0)).toFixed(2)}
                       </p>
                     </div>
                   </div>
+
+                  {/* Token B */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div
@@ -562,42 +596,48 @@ export default function LiquidityTab({
                       <span className="text-base">{tokenB.symbol}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-base font-semibold">{amountB || '0.0'}</span>
+                      <span className="text-base font-semibold">
+                        {withdrawAmounts.tokenB.toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                      </span>
                       <p className="text-xs text-muted-foreground">
-                        ${((parseFloat(amountB) || 0) * (tokenB.currentPrice || 0)).toFixed(2)}
+                        ${(withdrawAmounts.tokenB * (tokenB.currentPrice || 0)).toFixed(2)}
                       </p>
                     </div>
                   </div>
-                </div>
-                {/* Total USD */}
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">Total</span>
-                  <span className="text-base font-semibold">
-                    ${(((parseFloat(amountA) || 0) * (tokenA.currentPrice || 0)) + 
-                       ((parseFloat(amountB) || 0) * (tokenB.currentPrice || 0))).toFixed(2)}
-                  </span>
-                </div>
-              </Card>
-            ) : (
-              <Card className="bg-muted/30 p-4">
-                <div className="text-center text-sm text-muted-foreground">
-                  Select a pool to see withdrawal details
-                </div>
-              </Card>
+
+                  {/* Totals */}
+                  <div className="pt-3 border-t border-border space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Total Value</span>
+                      <span className="text-base font-semibold">
+                        ${withdrawAmounts.totalUSD.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Your Earnings</span>
+                      <span className="text-base font-semibold text-green-500">
+                        +${withdrawAmounts.earnings.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Pool APR</span>
+                      <span className="text-sm font-medium text-green-500">{pool.apr}%</span>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             )}
-            </div>
           </div>
 
           {/* Withdraw Buttons */}
-          <div className="px-4 pt-1 pb-3 flex gap-2">
+          <div className="px-4 pt-3 pb-3 flex gap-2">
             <Button 
               variant="outline"
               className="flex-1 h-11" 
               size="lg" 
               onClick={() => {
                 setMode('deposit')
-                setAmountA('')
-                setAmountB('')
+                setWithdrawPercent(0)
               }}
             >
               Cancel
@@ -605,10 +645,10 @@ export default function LiquidityTab({
             <Button 
               className="flex-1 h-11" 
               size="lg" 
-              disabled={isPreview || !tokenA || !tokenB || !amountA}
-              onClick={() => tokenA && tokenB && amountA && setShowWithdrawConfirmation(true)}
+              disabled={isPreview || !pool || !userLiquidity || withdrawPercent <= 0}
+              onClick={() => pool && userLiquidity && withdrawPercent > 0 && setShowWithdrawConfirmation(true)}
             >
-              {isPreview ? 'Preview Mode' : !pool ? 'Select pool' : 'Remove Liquidity'}
+              {isPreview ? 'Preview Mode' : withdrawPercent <= 0 ? 'Select amount' : `Withdraw ${withdrawPercent}%`}
             </Button>
           </div>
         </>
@@ -641,15 +681,16 @@ export default function LiquidityTab({
           onClose={() => setShowWithdrawConfirmation(false)}
           onConfirm={() => {
             console.log('Liquidity withdrawal confirmed')
-            setAmountA('') // Reset amounts
-            setAmountB('')
+            setWithdrawPercent(0) // Reset
             setShowWithdrawConfirmation(false)
           }}
           tokenA={tokenA}
           tokenB={tokenB}
-          amountA={amountA}
-          amountB={amountB}
-          lpTokens={amountA}
+          amountA={withdrawAmounts.tokenA}
+          amountB={withdrawAmounts.tokenB}
+          withdrawPercent={withdrawPercent}
+          earnings={withdrawAmounts.earnings}
+          totalUSD={withdrawAmounts.totalUSD}
           pool={pool}
         />
       )}
