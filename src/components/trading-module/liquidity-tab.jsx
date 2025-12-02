@@ -63,18 +63,6 @@ export default function LiquidityTab({
   const balanceA = tokenA ? getWalletBalance(tokenA) : 0
   const balanceB = tokenB ? getWalletBalance(tokenB) : 0
 
-  // Get token amount in tokens
-  const getTokenAmount = (amount, inputMode, token) => {
-    if (!amount || amount === '' || !token) return 0
-    const inputAmount = parseFloat(amount)
-    if (inputMode === 'token') {
-      return inputAmount
-    } else {
-      const price = token.currentPrice || 0
-      return price > 0 ? inputAmount / price : 0
-    }
-  }
-
   // Get display values
   const getDisplayValues = (amount, inputMode, token) => {
     if (!amount || amount === '' || !token) {
