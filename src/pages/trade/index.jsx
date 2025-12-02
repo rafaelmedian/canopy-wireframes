@@ -1,16 +1,39 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import TradingModule from '@/components/trading-module'
 import { Button } from '@/components/ui/button'
 import { Share2, LayoutGrid } from 'lucide-react'
+import { useWallet } from '@/contexts/wallet-context'
+import YourPositionCard from '@/components/trading-module/your-position-card'
+import LiquidityWithdrawDialog from '@/components/trading-module/liquidity-withdraw-dialog'
 
 export default function TradePage() {
   const { tokenPair } = useParams()
+  const { isConnected, getWalletData } = useWallet()
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false)
+  const [selectedLiquidityPool, setSelectedLiquidityPool] = useState(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  // Get user's LP positions
+  const walletData = getWalletData()
+  
+  // Get position for the selected liquidity pool
+  const selectedPoolPosition = useMemo(() => {
+    if (!isConnected || !walletData?.lpPositions || !selectedLiquidityPool) return null
+    return walletData.lpPositions.find(pos => pos.poolId === selectedLiquidityPool.id)
+  }, [isConnected, walletData, selectedLiquidityPool])
+
+  const handleWithdraw = () => {
+    setShowWithdrawDialog(true)
+  }
+
+  const handleLiquidityPoolChange = (pool) => {
+    setSelectedLiquidityPool(pool)
+  }
 
   // Parse token pair from URL (e.g., "cnpy-oens")
   // If no tokenPair, default to CNPY with "select" state
@@ -45,15 +68,35 @@ export default function TradePage() {
 
         {/* Main Content */}
         <div className="flex-1">
-          <div className="max-w-[480px] mx-auto px-8 py-8">
+          <div className="max-w-[480px] mx-auto px-8 py-8 space-y-4">
             <TradingModule
               variant="trade"
               defaultTokenPair={{ from, to }}
               defaultTab="swap"
+              onLiquidityPoolChange={handleLiquidityPoolChange}
             />
+
+            {/* Selected Pool Position */}
+            {isConnected && selectedPoolPosition && selectedLiquidityPool && (
+              <YourPositionCard
+                position={selectedPoolPosition}
+                pool={selectedLiquidityPool}
+                onWithdraw={handleWithdraw}
+              />
+            )}
           </div>
         </div>
       </div>
+
+      {/* Withdraw Dialog */}
+      {showWithdrawDialog && selectedPoolPosition && selectedLiquidityPool && (
+        <LiquidityWithdrawDialog
+          open={showWithdrawDialog}
+          onClose={() => setShowWithdrawDialog(false)}
+          pool={selectedLiquidityPool}
+          position={selectedPoolPosition}
+        />
+      )}
     </div>
   )
 }

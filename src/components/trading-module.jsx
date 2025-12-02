@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ArrowUpRight, ArrowDownRight, RotateCcw, Repeat, Droplet } from 'lucide-react'
@@ -10,6 +10,7 @@ import TokenSelectionDialog from '@/components/token-selection-dialog'
 import SwapConfirmationDialog from '@/components/trading-module/swap-confirmation-dialog'
 import TransactionPendingDialog from '@/components/trading-module/transaction-pending-dialog'
 import tokensData from '@/data/tokens.json'
+import liquidityPoolsData from '@/data/liquidity-pools.json'
 
 /**
  * TradingModule - Flexible trading component that adapts based on variant
@@ -28,7 +29,8 @@ export default function TradingModule({
   defaultTokenPair = null,
   defaultTab = null,
   isPreview = false,
-  onOpenWalletDialog = null
+  onOpenWalletDialog = null,
+  onLiquidityPoolChange = null
 }) {
   // Determine tabs based on variant
   const getTabsConfig = () => {
@@ -96,10 +98,32 @@ export default function TradingModule({
     return tokensData.find(t => t.symbol === 'CNPY')
   })
 
-  const [tokenA, setTokenA] = useState(null)
+  const [tokenA, setTokenA] = useState(() => {
+    // For liquidity variant with defaultTokenPair, use the provided tokenA
+    if (variant === 'liquidity' && defaultTokenPair?.tokenA) {
+      return defaultTokenPair.tokenA
+    }
+    return null
+  })
   const [tokenB, setTokenB] = useState(() => {
+    // For liquidity variant with defaultTokenPair, use the provided tokenB
+    if (variant === 'liquidity' && defaultTokenPair?.tokenB) {
+      return defaultTokenPair.tokenB
+    }
     return tokensData.find(t => t.symbol === 'CNPY')
   })
+
+  // Find the matching pool for liquidity variant
+  const initialPool = useMemo(() => {
+    if (variant === 'liquidity' && defaultTokenPair?.tokenA) {
+      // tokenA is the non-CNPY token, tokenB is CNPY in the defaultTokenPair
+      const tokenSymbol = defaultTokenPair.tokenA.symbol
+      return liquidityPoolsData.find(
+        pool => pool.tokenB === tokenSymbol && pool.tokenA === 'CNPY'
+      ) || null
+    }
+    return null
+  }, [variant, defaultTokenPair])
 
   // Convert tab state
   const [convertAmount, setConvertAmount] = useState(0)
@@ -244,10 +268,9 @@ export default function TradingModule({
       case 'liquidity':
         return (
           <LiquidityTab
-            tokenA={tokenA}
-            tokenB={tokenB}
             isPreview={isPreview}
-            onSelectToken={handleSelectToken}
+            initialPool={initialPool}
+            onPoolChange={onLiquidityPoolChange}
           />
         )
       case 'convert':
