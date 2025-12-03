@@ -1,14 +1,30 @@
 {
   "users": [
     {
-      "email": "withfunds@email.com",
+      "evmAddress": "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
       "hasWallet": true,
-      "walletAddress": "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
+      "wallets": [
+        {
+          "address": "0xCNPY8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
+          "nickname": "Main Wallet",
+          "icon": "wallet"
+        },
+        {
+          "address": "0xCNPY742d35Cc6634C0532925a3b844Bc9e7595f05678",
+          "nickname": "Trading Wallet",
+          "icon": "wallet"
+        },
+        {
+          "address": "0xCNPY9A3b5c12d8e7f6a4b2c1d0e8f7a6b5c4d3e2f1a0",
+          "nickname": "Savings",
+          "icon": "wallet"
+        }
+      ]
     },
     {
-      "email": "nofunds@email.com",
+      "evmAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f00000",
       "hasWallet": false,
-      "walletAddress": null
+      "wallets": []
     }
   ]
 }

@@ -839,7 +839,7 @@ export default function BuyDialog({ open, onOpenChange, defaultTab = 'cnpy', ass
       <WalletConnectionDialog
         open={walletDialogOpen}
         onOpenChange={setWalletDialogOpen}
-        initialStep={4}
+        initialStep={5}
       />
     </TooltipProvider>
   )

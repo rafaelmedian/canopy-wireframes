@@ -1,5 +1,5 @@
 {
-  "withfunds@email.com": {
+  "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199": {
     "totalValue": 17055.22,
     "change24h": 5.2,
     "assets": [
@@ -574,7 +574,7 @@
     }
   ]
   },
-  "nofunds@email.com": {
+  "0x742d35Cc6634C0532925a3b844Bc9e7595f00000": {
     "totalValue": 0,
     "change24h": 0,
     "assets": [],

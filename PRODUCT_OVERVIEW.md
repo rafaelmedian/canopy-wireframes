@@ -1205,40 +1205,48 @@ Full-page view accessible via direct URL: `/block/[hash]`
 
 ---
 
-## 6. Report a Problem
+## 6. Flag Project
 
-Feature for users to report chains that violate platform policies.
+Flag-based system for users to flag chains that violate platform policies. Flagged chains continue to trade but display community warnings.
+
+**Flag Severity Levels:**
+- 🔴 **Critical (Red):** Scam/Fraud, Security Concerns
+- 🟡 **Warning (Yellow):** Misleading Information, Legal/Copyright Issues, Market Manipulation
+- 🔵 **Information (Blue):** Inappropriate Content, Technical Concerns
 
 **Access Point:**
-- "Report a Problem" button shown at bottom of chain detail pages
+- "Flag Project" button shown at bottom of chain detail pages
 - Hidden for draft chains
-- Opens dialog when clicked
+- Opens flag dialog when clicked
 
-**Report Dialog:**
+**Flag Dialog:**
 
 **Header:**
-- Title: "Report {Chain Name}"
-- Description: "Help us keep the Canopy ecosystem safe by reporting chains that violate our policies."
+- Title: "Flag {Chain Name}"
+- Description: "Help us keep the Canopy ecosystem safe by flagging chains that violate our policies."
 
 **Step 1: Choose Main Reason**
-- 6 category cards in 2-column grid:
-  1. Scam/Fraud
-  2. Inappropriate Content
-  3. Security Concerns
-  4. Misleading Information
-  5. Market Manipulation
-  6. Legal/Copyright Issues
+- 7 category cards in 2-column grid:
+  1. **Scam/Fraud** (Critical - Red)
+  2. **Security Concerns** (Critical - Red)
+  3. **Misleading Information** (Warning - Yellow)
+  4. **Legal/Copyright Issues** (Warning - Yellow)
+  5. **Market Manipulation** (Warning - Yellow)
+  6. **Inappropriate Content** (Info - Blue)
+  7. **Technical Concerns** (Info - Blue)
 - Radio selection, only one can be selected
+- Each category has an icon (Ban, Shield, FileWarning, Scale, TrendingDown, AlertTriangle, Info)
 
 **Step 2: Specify the Issue**
 - Shows after main reason selected
 - Each category has specific options:
-  - **Scam/Fraud:** Rug pull attempt, Fake/misleading project, Impersonation, Pump and dump scheme
-  - **Inappropriate Content:** Offensive or hateful content, Adult/NSFW content, Violence or illegal activities, Harassment
-  - **Security Concerns:** Malicious code in repository, Contract vulnerabilities, Backdoors or admin keys abuse, Suspicious smart contract behavior
-  - **Misleading Information:** False claims or promises, Fake team/advisors, Plagiarized documentation, Fake partnerships
-  - **Market Manipulation:** Wash trading, Price manipulation, Coordinated pump schemes, Fake volume, Other manipulation tactics
-  - **Legal/Copyright Issues:** Copyright infringement, Trademark violation, Using others' IP without permission, Regulatory violations
+  - **Scam/Fraud:** Suspect team identities, Plagiarized whitepaper, Impersonating existing project, Pump and dump scheme indicators, Exit scam patterns
+  - **Security Concerns:** Malicious code, Known exploit vulnerabilities, Backdoors in code
+  - **Misleading Information:** Exaggerated claims about partnerships, False technical capabilities, Unverifiable team credentials, Misleading tokenomics, Hidden fees or taxes
+  - **Legal/Copyright Issues:** Copyright infringement, Trademark violation, Using others' IP without permission, Regulatory violations in specific jurisdictions
+  - **Market Manipulation:** Wash trading indicators, Coordinated pump groups, Artificial volume generation, Sybil attack patterns
+  - **Inappropriate Content:** NSFW content without warning, Offensive material, Spam/low effort project
+  - **Technical Concerns:** No GitHub repository, Template not customized, Missing documentation
 - Radio selection list
 
 **Step 3: Additional Comments (Optional)**
@@ -1248,7 +1256,7 @@ Feature for users to report chains that violate platform policies.
 
 **Footer:**
 - Cancel button
-- "Send Report" button (disabled until main reason and specific reason selected)
+- "Submit Flag" button (disabled until main reason and specific reason selected)
 - Shows "Submitting..." state while sending
 
 **After Submission:**
@@ -1256,7 +1264,47 @@ Feature for users to report chains that violate platform policies.
 - Dialog closes
 - Form resets
 
-![Report dialog with category selection](public/imgs/report-dialog-category-selection.png)
+**Flag Display on Chain Pages:**
+
+**Chain Header Flag Icon:**
+- Small flag icon next to chain name (if flagged)
+- Icon color matches severity level (red/yellow/blue)
+- Hover tooltip shows:
+  - Flag reason
+  - Number of community flags (e.g., "12 community flags")
+
+**Overview Tab Warning Callout:**
+- Displayed at top of Overview tab (if flagged)
+- Card styling with colored border matching severity
+- Contains:
+  - Icon (AlertTriangle for critical, Flag for warning/info)
+  - "Community Warning" heading
+  - Flag count badge
+  - Main message: "This project has been flagged by the community for: {reason}"
+  - Divider
+  - Disclaimer with AlertTriangle icon: "Flags are community-driven warnings. This project continues to trade but proceed with caution. All flags are transparent and recorded on-chain."
+
+**Flag Data Structure:**
+```javascript
+{
+  severity: "critical", // critical, warning, info
+  reason: "Suspect team identities",
+  count: 12 // Number of flags
+}
+```
+
+**Demo Chains with Flags:**
+- MyGameChain (id: 2) - Blue flag: "No GitHub repository", 3 flags
+- Social Connect (id: 3) - Yellow flag: "Exaggerated claims about partnerships", 7 flags
+- StreamVault (id: 5) - Red flag: "Suspect team identities", 12 flags
+
+**Important Notes:**
+- Flags are warnings, not removals - chains continue to trade
+- All flags are transparent and recorded on-chain
+- Community-driven system
+- Flags are visible to all users
+
+![Flag dialog with category selection](public/imgs/flag-dialog-category-selection.png)
 
 ---
 

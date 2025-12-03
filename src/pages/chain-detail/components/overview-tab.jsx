@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card.jsx'
 import { Separator } from '@/components/ui/separator.jsx'
 import { Avatar } from '@/components/ui/avatar.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
-import { ChevronLeft, ChevronRight, Globe, Github, FileText, Link as LinkIcon, ExternalLink, Coins, BookOpen, Layers, Clock, Calendar, TrendingUp, Users, Code2, Activity, ArrowRight, Linkedin, Instagram, Youtube, Facebook } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Globe, Github, FileText, Link as LinkIcon, ExternalLink, Coins, BookOpen, Layers, Clock, Calendar, TrendingUp, Users, Code2, Activity, ArrowRight, Linkedin, Instagram, Youtube, Facebook, Flag, AlertTriangle } from 'lucide-react'
 
 // Custom social icons
 const TwitterIcon = () => (
@@ -88,6 +88,49 @@ export default function OverviewTab({ chainData, currentGalleryIndex, setCurrent
 
   return (
     <div className="space-y-6 mt-4">
+      {/* Flag Warning - Show if chain has flags */}
+      {chainData.flag && (
+        <Card className={`p-4 border-2 ${
+          chainData.flag.severity === 'critical' ? 'bg-red-500/5 border-red-500/50' :
+          chainData.flag.severity === 'warning' ? 'bg-yellow-500/5 border-yellow-500/50' :
+          'bg-blue-500/5 border-blue-500/50'
+        }`}>
+          <div className="flex items-start gap-3">
+            <div className={`mt-0.5 ${
+              chainData.flag.severity === 'critical' ? 'text-red-500' :
+              chainData.flag.severity === 'warning' ? 'text-yellow-500' :
+              'text-blue-500'
+            }`}>
+              {chainData.flag.severity === 'critical' ? (
+                <AlertTriangle className="w-5 h-5" />
+              ) : (
+                <Flag className="w-5 h-5" />
+              )}
+            </div>
+            <div className="flex-1 space-y-1">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-sm">Community Warning</h3>
+                <Badge variant="outline" className={`text-xs ${
+                  chainData.flag.severity === 'critical' ? 'border-red-500/50 text-red-500' :
+                  chainData.flag.severity === 'warning' ? 'border-yellow-500/50 text-yellow-500' :
+                  'border-blue-500/50 text-blue-500'
+                }`}>
+                  {chainData.flag.count} flag{chainData.flag.count !== 1 ? 's' : ''}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                This project has been flagged by the community for: <span className="font-medium text-foreground">{chainData.flag.reason}</span>
+              </p>
+              <Separator className="my-3" />
+              <p className="text-xs text-muted-foreground flex items-start gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                <span>Flags are community-driven warnings. This project continues to trade but proceed with caution.</span>
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* About and Gallery Card */}
       <Card className="p-6">
         <div className="space-y-6">

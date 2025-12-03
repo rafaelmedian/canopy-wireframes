@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button.jsx'
-import { AlertCircle } from 'lucide-react'
+import { Flag } from 'lucide-react'
 import ReportProblemDialog from './report-problem-dialog.jsx'
 
 export default function ReportProblemButton({ chainData }) {
@@ -14,8 +14,8 @@ export default function ReportProblemButton({ chainData }) {
           className="gap-2 text-muted-foreground"
           onClick={() => setDialogOpen(true)}
         >
-          <AlertCircle className="w-4 h-4" />
-          Report a Problem
+          <Flag className="w-4 h-4" />
+          Flag Project
         </Button>
       </div>
 

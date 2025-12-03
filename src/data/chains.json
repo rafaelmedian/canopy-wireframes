@@ -89,6 +89,11 @@
     "isVirtual": true,
     "isGraduated": false,
     "isDraft": false,
+    "flag": {
+      "severity": "info",
+      "reason": "No GitHub repository",
+      "count": 3
+    },
     "currentPrice": 0.005,
     "marketCap": 500,
     "volume": 100,
@@ -147,6 +152,11 @@
     "description": "Decentralized social network where creators own their content and earn from engagement. Our platform is designed to enhance the way digital assets are managed and exchanged.",
     "logo": null,
     "brandColor": "#06b6d4",
+    "flag": {
+      "severity": "warning",
+      "reason": "Exaggerated claims about partnerships",
+      "count": 7
+    },
     "language": "TypeScript",
     "repositoryName": "social-connect/protocol",
     "genesisBlock": 1847592,
@@ -281,6 +291,11 @@
     "isVirtual": true,
     "isGraduated": false,
     "isDraft": false,
+    "flag": {
+      "severity": "critical",
+      "reason": "Suspect team identities",
+      "count": 12
+    },
     "currentPrice": 0.0068,
     "marketCap": 34200,
     "volume": 12400,
