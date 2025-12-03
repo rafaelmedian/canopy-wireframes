@@ -233,12 +233,22 @@ export default function CnpyStakeDialog({
                   <X className="w-5 h-5" />
                 </Button>
                 <h2 className="text-xl font-bold text-center pt-2">Select Chains</h2>
-                <p className="text-sm text-muted-foreground text-center mt-1">
-                  Choose chains to earn their native tokens
-                </p>
               </div>
 
               <div className="px-6 pb-6 space-y-4">
+                {/* Info box */}
+                <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <div className="flex gap-3">
+                    <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">Earn native tokens from other chains</p>
+                      <p className="text-xs text-muted-foreground">
+                        Select chains to earn their tokens alongside your CNPY rewards. This is optional and can be changed later.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Staking summary */}
                 <div className="p-3 bg-muted/50 rounded-lg">
                   <div className="flex justify-between text-sm">
@@ -308,18 +318,13 @@ export default function CnpyStakeDialog({
                   })}
                 </div>
 
-                {selectedChains.length === 0 && (
-                  <p className="text-sm text-amber-500 text-center">
-                    Select at least one chain to stake for
-                  </p>
-                )}
-
                 <Button
                   className="w-full h-12"
                   onClick={handleContinue}
-                  disabled={selectedChains.length === 0}
                 >
-                  Continue ({selectedChains.length} chain{selectedChains.length !== 1 ? 's' : ''} selected)
+                  {selectedChains.length > 0
+                    ? `Continue (${selectedChains.length} chain${selectedChains.length !== 1 ? 's' : ''} selected)`
+                    : 'Continue without extra chains'}
                 </Button>
               </div>
             </>

@@ -610,6 +610,10 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
         selectedChain={selectedStake}
         availableChains={stakes}
         assets={assets}
+        onCnpySelected={(cnpyStake) => {
+          setSelectedStake(cnpyStake)
+          setCnpyStakeDialogOpen(true)
+        }}
       />
 
       {/* Unstake Dialog */}

@@ -3,14 +3,16 @@ import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { X, ArrowLeft, Check, Info, Wallet } from 'lucide-react'
+import { X, ArrowLeft, Check, Info, Wallet, RefreshCw } from 'lucide-react'
 
-export default function StakeDialog({ open, onOpenChange, selectedChain, availableChains = [], assets = [] }) {
+export default function StakeDialog({ open, onOpenChange, selectedChain, availableChains = [], assets = [], onCnpySelected }) {
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState('')
   const [source, setSource] = useState('trading')
+  const [autoCompound, setAutoCompound] = useState(true)
   const [internalSelectedChain, setInternalSelectedChain] = useState(null)
 
   // Determine if we need to show chain selection
@@ -24,12 +26,20 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
       setStep(1)
       setAmount('')
       setSource('trading')
+      setAutoCompound(true)
     }
   }, [open])
 
   const handleChainSelect = (chainId) => {
     const chain = availableChains.find(c => c.chainId === chainId)
     if (chain) {
+      // If CNPY is selected, notify parent to open CNPY dialog instead
+      if (chain.isCnpy && onCnpySelected) {
+        onOpenChange(false)
+        onCnpySelected(chain)
+        return
+      }
+
       // Enrich with asset data
       const asset = assets?.find(a => a.chainId === chainId)
       const enrichedChain = {
@@ -293,6 +303,30 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                         </p>
                       </div>
                     </div>
+
+                    {/* Auto-compound Toggle */}
+                    <div className="p-4 bg-muted/30 rounded-lg border">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-3">
+                          <RefreshCw className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <div className="space-y-1">
+                            <Label htmlFor="auto-compound" className="text-sm font-medium cursor-pointer">
+                              Auto-compound rewards
+                            </Label>
+                            <p className="text-xs text-muted-foreground">
+                              {autoCompound
+                                ? 'Rewards will be automatically restaked to maximize your earnings through compound interest.'
+                                : 'Rewards will be transferred to your wallet balance instead of being restaked.'}
+                            </p>
+                          </div>
+                        </div>
+                        <Switch
+                          id="auto-compound"
+                          checked={autoCompound}
+                          onCheckedChange={setAutoCompound}
+                        />
+                      </div>
+                    </div>
                   </>
                 )}
 
@@ -350,6 +384,11 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Annual % yield</span>
                       <span className="text-sm font-medium">{activeChain.apy}%</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Auto-compound</span>
+                      <span className="text-sm font-medium">{autoCompound ? 'Enabled' : 'Disabled'}</span>
                     </div>
 
                     <div className="flex justify-between">
