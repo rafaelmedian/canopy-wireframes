@@ -20,10 +20,14 @@ export default function CnpyStakeDialog({
   const [selectedChains, setSelectedChains] = useState([])
   const [autoCompound, setAutoCompound] = useState(true)
 
-  // Initialize selected chains from current committees
+  // Initialize selected chains and auto-compound from current stake
   useEffect(() => {
-    if (open && cnpyStake?.committees) {
-      setSelectedChains(cnpyStake.committees.map(c => c.chainId))
+    if (open && cnpyStake) {
+      if (cnpyStake.committees) {
+        setSelectedChains(cnpyStake.committees.map(c => c.chainId))
+      }
+      // Initialize auto-compound with existing stake setting
+      setAutoCompound(cnpyStake.restakeRewards ?? true)
     }
   }, [open, cnpyStake])
 
@@ -32,6 +36,7 @@ export default function CnpyStakeDialog({
     if (!open) {
       setStep(1)
       setAmount('')
+      setAutoCompound(true)
     }
   }, [open])
 
@@ -190,31 +195,41 @@ export default function CnpyStakeDialog({
                 </div>
 
                 {/* Auto-compound Toggle */}
-                <div className={`p-4 bg-muted/30 rounded-lg border ${isAddingMore ? 'opacity-60' : ''}`}>
+                <div className="p-4 bg-muted/30 rounded-lg border">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3">
                       <RefreshCw className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                       <div className="space-y-1">
-                        <Label htmlFor="cnpy-auto-compound" className={`text-sm font-medium ${isAddingMore ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                        <Label htmlFor="cnpy-auto-compound" className="text-sm font-medium cursor-pointer">
                           Auto-compound rewards
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          {isAddingMore
-                            ? 'This setting cannot be changed while you have an active stake. Unstake first to modify your reward preference.'
-                            : autoCompound
-                              ? 'Rewards will be automatically restaked to maximize your earnings through compound interest.'
-                              : 'Rewards will be transferred to your wallet balance instead of being restaked.'}
+                          {autoCompound
+                            ? 'Rewards will be automatically restaked to maximize your earnings through compound interest.'
+                            : 'Rewards will be transferred to your wallet balance instead of being restaked.'}
                         </p>
                       </div>
                     </div>
                     <Switch
                       id="cnpy-auto-compound"
-                      checked={isAddingMore ? (cnpyStake?.restakeRewards ?? true) : autoCompound}
+                      checked={autoCompound}
                       onCheckedChange={setAutoCompound}
-                      disabled={isAddingMore}
                     />
                   </div>
                 </div>
+
+                {/* Penalty Warning when auto-compound is disabled */}
+                {!autoCompound && (
+                  <div className="flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <Info className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-yellow-500">20% Reward Penalty</p>
+                      <p className="text-xs text-muted-foreground">
+                        Disabling auto-compound incurs a 20% penalty on your staking rewards to help maintain network security and stability.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <Button
                   className="w-full h-12"
@@ -394,9 +409,21 @@ export default function CnpyStakeDialog({
 
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Auto-compound</span>
-                      <span className="text-sm font-medium">
-                        {isAddingMore ? (cnpyStake?.restakeRewards ? 'Enabled' : 'Disabled') : (autoCompound ? 'Enabled' : 'Disabled')}
-                      </span>
+                      {autoCompound ? (
+                        <span className="text-sm font-medium">Enabled</span>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-yellow-500">Disabled (20% penalty)</span>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="w-3.5 h-3.5 text-yellow-500" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p>Disabling auto-compound incurs a 20% penalty on your staking rewards to help maintain network security and stability.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-2 border-t">
