@@ -1,30 +1,29 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Info, ArrowUpDown, CheckCircle2 } from 'lucide-react'
+import { Info, ArrowUpDown, CheckCircle2, RefreshCw, Wallet, Layers } from 'lucide-react'
 import StakeDialog from './stake-dialog'
-import ClaimDialog from './claim-dialog'
 import UnstakeDialog from './unstake-dialog'
 import UnstakingDetailSheet from './unstaking-detail-sheet'
 import CancelUnstakeDialog from './cancel-unstake-dialog'
-import EarningsHistorySheet from './earnings-history-sheet'
+import CnpyStakeDialog from './cnpy-stake-dialog'
 
 export default function StakingTab({ stakes, assets, unstaking, earningsHistory = [] }) {
+  const navigate = useNavigate()
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
-  const [claimDialogOpen, setClaimDialogOpen] = useState(false)
+  const [cnpyStakeDialogOpen, setCnpyStakeDialogOpen] = useState(false)
   const [unstakeDialogOpen, setUnstakeDialogOpen] = useState(false)
   const [unstakingDetailOpen, setUnstakingDetailOpen] = useState(false)
   const [cancelUnstakeDialogOpen, setCancelUnstakeDialogOpen] = useState(false)
-  const [earningsHistoryOpen, setEarningsHistoryOpen] = useState(false)
   const [selectedStake, setSelectedStake] = useState(null)
   const [selectedUnstaking, setSelectedUnstaking] = useState(null)
   const [sortBy, setSortBy] = useState('apy')
   const [sortOrder, setSortOrder] = useState('desc')
-  const [activeStakingTab, setActiveStakingTab] = useState('available')
+  const [activeFilter, setActiveFilter] = useState('all') // 'all', 'active', 'queue'
   const [canceledUnstakeIds, setCanceledUnstakeIds] = useState([])
   const [unstakedChainIds, setUnstakedChainIds] = useState([])
   const [newUnstakingItems, setNewUnstakingItems] = useState([])
@@ -45,12 +44,20 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
   }
 
   const sortedStakes = [...stakes].sort((a, b) => {
+    // CNPY always comes first
+    if (a.isCnpy) return -1
+    if (b.isCnpy) return 1
+
     let compareA, compareB
 
     switch (sortBy) {
       case 'apy':
         compareA = a.apy
         compareB = b.apy
+        break
+      case 'amount':
+        compareA = a.amount || 0
+        compareB = b.amount || 0
         break
       case 'earnings':
         compareA = a.rewardsUSD || 0
@@ -69,6 +76,13 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
   })
 
   const handleStakeClick = (stake) => {
+    // Check if this is CNPY - open special multi-chain dialog
+    if (stake.isCnpy) {
+      setSelectedStake(stake)
+      setCnpyStakeDialogOpen(true)
+      return
+    }
+
     // Find the corresponding asset to get price and balance
     const asset = assets?.find(a => a.chainId === stake.chainId)
     const enrichedStake = {
@@ -78,11 +92,6 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
     }
     setSelectedStake(enrichedStake)
     setStakeDialogOpen(true)
-  }
-
-  const handleClaimClick = (stake) => {
-    setSelectedStake(stake)
-    setClaimDialogOpen(true)
   }
 
   const handleUnstakeClick = (stake) => {
@@ -158,10 +167,117 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
     }
   })
 
-  // Filter out fully unstaked chains from active stakes
-  const visibleActiveStakes = adjustedStakes.filter(stake =>
-    stake.amount > 0 && !unstakedChainIds.includes(stake.chainId)
-  )
+  // Filter stakes based on active filter, excluding fully unstaked chains
+  const getFilteredStakes = () => {
+    const stakesWithoutFullyUnstaked = adjustedStakes.filter(
+      stake => !unstakedChainIds.includes(stake.chainId)
+    )
+
+    if (activeFilter === 'active') {
+      return stakesWithoutFullyUnstaked.filter(stake => stake.amount > 0)
+    }
+    return stakesWithoutFullyUnstaked
+  }
+
+  const filteredStakes = getFilteredStakes()
+  const activeStakesCount = adjustedStakes.filter(
+    stake => stake.amount > 0 && !unstakedChainIds.includes(stake.chainId)
+  ).length
+
+  // Render restake badge
+  const renderRestakeBadge = (stake) => {
+    if (stake.amount <= 0) return null
+
+    return stake.restakeRewards ? (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="outline" className="text-green-600 border-green-600/50 gap-1 whitespace-nowrap mt-1">
+            <RefreshCw className="w-3 h-3" />
+            Auto-compound
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Rewards are automatically restaked to increase your position</p>
+        </TooltipContent>
+      </Tooltip>
+    ) : (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="outline" className="text-blue-500 border-blue-500/50 gap-1 whitespace-nowrap mt-1">
+            <Wallet className="w-3 h-3" />
+            Auto-withdraw
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Rewards are automatically added to your wallet balance</p>
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
+
+  // Render action buttons based on stake status
+  const renderActionButtons = (stake) => {
+    const isActive = stake.amount > 0
+
+    // Special handling for CNPY
+    if (stake.isCnpy) {
+      if (isActive) {
+        return (
+          <div className="flex flex-col items-end gap-1">
+            <Button
+              size="sm"
+              className="h-7 text-xs w-[72px]"
+              onClick={() => handleStakeClick(stake)}
+            >
+              Add More
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs w-[72px]"
+              onClick={() => handleUnstakeClick(stake)}
+            >
+              Unstake
+            </Button>
+          </div>
+        )
+      }
+      return (
+        <Button size="sm" className="h-7 text-xs w-[72px]" onClick={() => handleStakeClick(stake)}>
+          Stake
+        </Button>
+      )
+    }
+
+    if (isActive) {
+      return (
+        <div className="flex flex-col items-end gap-1">
+          <Button
+            size="sm"
+            className="h-7 text-xs w-[72px]"
+            onClick={() => handleStakeClick(stake)}
+          >
+            Add More
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs w-[72px]"
+            onClick={() => handleUnstakeClick(stake)}
+          >
+            Unstake
+          </Button>
+        </div>
+      )
+    }
+
+    return (
+      <Button size="sm" className="h-7 text-xs w-[72px]" onClick={() => handleStakeClick(stake)}>
+        Stake
+      </Button>
+    )
+  }
+
   return (
     <TooltipProvider>
       <div className="space-y-6">
@@ -177,155 +293,116 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
                 <span className="text-sm text-muted-foreground">USD</span>
               </div>
 
-              <div className="flex items-center gap-1.5 mt-4">
-                <p className="text-sm text-muted-foreground">Earn up to 8.05% APY on your crypto. Redeem any time.</p>
+              <p className="text-sm text-muted-foreground mt-4 w-80">
+                Earn up to 8.05% APY on your crypto. Rewards are automatically transferred.
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                    <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help inline-block ml-1.5 align-middle" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
                     <p>Annual Percentage Yield (APY) varies by asset and network conditions.</p>
-                    <p className="mt-1 text-xs text-muted-foreground">You can unstake and withdraw your funds at any time.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Rewards are automatically transferred based on your preference (restake or to balance).</p>
                   </TooltipContent>
                 </Tooltip>
-              </div>
+              </p>
             </div>
-            <Button variant="outline" className="h-10" onClick={() => setEarningsHistoryOpen(true)}>
-              View Earned Balances
+            <Button variant="outline" className="h-10" onClick={() => navigate('/wallet?tab=activity&filter=reward')}>
+              View Reward History
             </Button>
           </div>
         </Card>
 
-      {/* Staking Tabs */}
-      <Tabs value={activeStakingTab} onValueChange={setActiveStakingTab}>
-        <TabsList className="w-full justify-start mb-6">
-          <TabsTrigger value="available">Rewards</TabsTrigger>
-          <TabsTrigger value="active">
-            Active Stakes
-            <Badge variant="secondary" className="ml-2">
-              {visibleActiveStakes.length}
-            </Badge>
-          </TabsTrigger>
-          <TabsTrigger value="queue">
+        {/* Pill Navigation */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveFilter('all')}
+            className={`h-9 px-4 rounded-full text-sm font-medium transition-colors flex-shrink-0 ${
+              activeFilter === 'all'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            All Stakes
+          </button>
+          <button
+            onClick={() => setActiveFilter('active')}
+            className={`h-9 px-4 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
+              activeFilter === 'active'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            Active
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+              activeFilter === 'active'
+                ? 'bg-primary-foreground/20'
+                : 'bg-foreground/10'
+            }`}>
+              {activeStakesCount}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveFilter('queue')}
+            className={`h-9 px-4 rounded-full text-sm font-medium transition-colors flex items-center gap-2 flex-shrink-0 ${
+              activeFilter === 'queue'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
             Unstaking Queue
-            <Badge variant="secondary" className="ml-2">
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+              activeFilter === 'queue'
+                ? 'bg-primary-foreground/20'
+                : 'bg-foreground/10'
+            }`}>
               {visibleUnstaking.length}
-            </Badge>
-          </TabsTrigger>
-        </TabsList>
+            </span>
+          </button>
+        </div>
 
-        {/* Tab 1: Available Chains */}
-        <TabsContent value="available">
+        {/* Stakes Table (for 'all' and 'active' filters) */}
+        {activeFilter !== 'queue' && (
           <Card>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Chain</TableHead>
+                  <TableHead className="whitespace-nowrap">Chain</TableHead>
                   <TableHead
-                    className="cursor-pointer hover:text-foreground"
+                    className="cursor-pointer hover:text-foreground whitespace-nowrap"
+                    onClick={() => handleSort('amount')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Staked Amount
+                      <ArrowUpDown className="w-4 h-4 flex-shrink-0" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:text-foreground whitespace-nowrap"
                     onClick={() => handleSort('apy')}
                   >
                     <div className="flex items-center gap-2">
-                      Annual yield
-                      <ArrowUpDown className="w-4 h-4" />
+                      APY
+                      <ArrowUpDown className="w-4 h-4 flex-shrink-0" />
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:text-foreground"
+                    className="cursor-pointer hover:text-foreground whitespace-nowrap"
                     onClick={() => handleSort('earnings')}
                   >
                     <div className="flex items-center gap-2">
-                      Current Earned Balance
-                      <ArrowUpDown className="w-4 h-4" />
+                      Rewards Earned
+                      <ArrowUpDown className="w-4 h-4 flex-shrink-0" />
                     </div>
                   </TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedStakes.length > 0 ? (
-                  sortedStakes.map((stake) => (
-                    <TableRow key={stake.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: stake.color }}
-                          >
-                            <span className="text-sm font-bold text-white">
-                              {stake.symbol.slice(0, 2)}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="font-semibold">{stake.chain}</div>
-                            <div className="text-sm text-muted-foreground">{stake.symbol}</div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium">{stake.apy}%</div>
-                      </TableCell>
-                      <TableCell>
-                        {stake.rewards && stake.rewards > 0 ? (
-                          <div>
-                            <div className="font-medium">
-                              {stake.rewards} {stake.symbol}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {stake.rewardsUSD ? `${stake.rewardsUSD.toFixed(2)} USD` : ''}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-sm text-muted-foreground">Not yet earning</div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {stake.rewards > 0 && (
-                            <Button size="sm" variant="outline" className="h-9" onClick={() => handleClaimClick(stake)}>
-                              Claim
-                            </Button>
-                          )}
-                          <Button size="sm" className="h-9" onClick={() => handleStakeClick(stake)}>
-                            Stake
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-12">
-                      <div className="flex flex-col items-center">
-                        <p className="text-sm font-medium text-muted-foreground mb-1">No staking positions</p>
-                        <p className="text-xs text-muted-foreground">Start staking to earn rewards</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </Card>
-        </TabsContent>
-
-        {/* Tab 2: Active Stakes */}
-        <TabsContent value="active">
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Chain</TableHead>
-                  <TableHead>Staked Amount</TableHead>
-                  <TableHead>APY</TableHead>
-                  <TableHead>Rewards Earned</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {visibleActiveStakes.length > 0 ? (
-                  visibleActiveStakes.map((stake) => {
+                {filteredStakes.length > 0 ? (
+                  filteredStakes.map((stake) => {
                     const asset = assets?.find(a => a.chainId === stake.chainId)
                     const stakedValueUSD = (stake.amount || 0) * (asset?.price || 0)
+                    const isActive = stake.amount > 0
 
                     return (
                       <TableRow key={stake.id}>
@@ -342,35 +419,81 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
                             <div>
                               <div className="font-semibold">{stake.chain}</div>
                               <div className="text-sm text-muted-foreground">{stake.symbol}</div>
+                              {renderRestakeBadge(stake)}
+                              {/* Show committees for CNPY */}
+                              {stake.isCnpy && stake.committees && stake.committees.length > 0 && (
+                                <div className="flex items-center gap-1 mt-1.5">
+                                  <Layers className="w-3 h-3 text-muted-foreground" />
+                                  <div className="flex -space-x-1.5">
+                                    {stake.committees.slice(0, 5).map((committee) => (
+                                      <Tooltip key={committee.chainId}>
+                                        <TooltipTrigger asChild>
+                                          <div
+                                            className="w-5 h-5 rounded-full flex items-center justify-center border-2 border-background"
+                                            style={{ backgroundColor: committee.color }}
+                                          >
+                                            <span className="text-[8px] font-bold text-white">
+                                              {committee.symbol.slice(0, 1)}
+                                            </span>
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Staking for {committee.chain}</p>
+                                          {committee.rewards > 0 && (
+                                            <p className="text-xs text-muted-foreground">
+                                              Earned: {committee.rewards} {committee.symbol}
+                                            </p>
+                                          )}
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    ))}
+                                    {stake.committees.length > 5 && (
+                                      <div className="w-5 h-5 rounded-full flex items-center justify-center bg-muted border-2 border-background">
+                                        <span className="text-[8px] font-medium">+{stake.committees.length - 5}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span className="text-xs text-muted-foreground ml-1">
+                                    {stake.committees.length} chain{stake.committees.length !== 1 ? 's' : ''}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="font-medium">{stake.amount} {stake.symbol}</div>
-                          <div className="text-sm text-muted-foreground">
-                            ${stakedValueUSD.toFixed(2)} USD
-                          </div>
+                          {isActive ? (
+                            <>
+                              <div className="font-medium">{stake.amount} {stake.symbol}</div>
+                              <div className="text-sm text-muted-foreground">
+                                ${stakedValueUSD.toFixed(2)} USD
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-sm text-muted-foreground">Not staked</div>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="font-medium">{stake.apy}%</div>
                         </TableCell>
                         <TableCell>
-                          <div className="font-medium">{stake.rewards || 0} {stake.symbol}</div>
-                          {stake.rewardsUSD > 0 && (
+                          {stake.rewards && stake.rewards > 0 ? (
+                            <div>
+                              <div className="font-medium">
+                                {stake.rewards} {stake.symbol}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {stake.rewardsUSD ? `$${stake.rewardsUSD.toFixed(2)} USD` : ''}
+                              </div>
+                            </div>
+                          ) : (
                             <div className="text-sm text-muted-foreground">
-                              ${stake.rewardsUSD.toFixed(2)} USD
+                              {isActive ? 'Earning...' : '-'}
                             </div>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-9"
-                            onClick={() => handleUnstakeClick(stake)}
-                          >
-                            Unstake
-                          </Button>
+                          {renderActionButtons(stake)}
                         </TableCell>
                       </TableRow>
                     )
@@ -383,7 +506,9 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
                           <CheckCircle2 className="w-8 h-8 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
-                          <p className="text-sm font-medium text-muted-foreground">No active stakes</p>
+                          <p className="text-sm font-medium text-muted-foreground">
+                            {activeFilter === 'active' ? 'No active stakes' : 'No staking positions'}
+                          </p>
                           <p className="text-xs text-muted-foreground">Start staking to earn rewards</p>
                         </div>
                       </div>
@@ -393,18 +518,18 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
               </TableBody>
             </Table>
           </Card>
-        </TabsContent>
+        )}
 
-        {/* Tab 3: Unstaking Queue */}
-        <TabsContent value="queue">
+        {/* Unstaking Queue Table */}
+        {activeFilter === 'queue' && (
           <Card>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Chain</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Available In</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="whitespace-nowrap">Chain</TableHead>
+                  <TableHead className="whitespace-nowrap">Amount</TableHead>
+                  <TableHead className="whitespace-nowrap">Available In</TableHead>
+                  <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -475,58 +600,55 @@ export default function StakingTab({ stakes, assets, unstaking, earningsHistory 
               </TableBody>
             </Table>
           </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+        )}
+      </div>
 
-    {/* Stake Dialog */}
-    <StakeDialog
-      open={stakeDialogOpen}
-      onOpenChange={setStakeDialogOpen}
-      selectedChain={selectedStake}
-      availableChains={stakes}
-      assets={assets}
-    />
+      {/* Stake Dialog */}
+      <StakeDialog
+        open={stakeDialogOpen}
+        onOpenChange={setStakeDialogOpen}
+        selectedChain={selectedStake}
+        availableChains={stakes}
+        assets={assets}
+        onCnpySelected={(cnpyStake) => {
+          setSelectedStake(cnpyStake)
+          setCnpyStakeDialogOpen(true)
+        }}
+      />
 
-    {/* Claim Dialog */}
-    <ClaimDialog
-      open={claimDialogOpen}
-      onOpenChange={setClaimDialogOpen}
-      selectedStake={selectedStake}
-    />
+      {/* Unstake Dialog */}
+      <UnstakeDialog
+        open={unstakeDialogOpen}
+        onOpenChange={setUnstakeDialogOpen}
+        selectedStake={selectedStake}
+        onUnstakeSuccess={handleUnstakeSuccess}
+      />
 
-    {/* Unstake Dialog */}
-    <UnstakeDialog
-      open={unstakeDialogOpen}
-      onOpenChange={setUnstakeDialogOpen}
-      selectedStake={selectedStake}
-      onUnstakeSuccess={handleUnstakeSuccess}
-    />
+      {/* Unstaking Detail Sheet */}
+      <UnstakingDetailSheet
+        unstakingItem={selectedUnstaking}
+        stakes={stakes}
+        open={unstakingDetailOpen}
+        onOpenChange={setUnstakingDetailOpen}
+        onCancel={handleCancelUnstake}
+      />
 
-    {/* Unstaking Detail Sheet */}
-    <UnstakingDetailSheet
-      unstakingItem={selectedUnstaking}
-      stakes={stakes}
-      open={unstakingDetailOpen}
-      onOpenChange={setUnstakingDetailOpen}
-      onCancel={handleCancelUnstake}
-    />
+      {/* Cancel Unstake Confirmation Dialog */}
+      <CancelUnstakeDialog
+        open={cancelUnstakeDialogOpen}
+        onOpenChange={setCancelUnstakeDialogOpen}
+        unstakingItem={selectedUnstaking}
+        onConfirm={handleConfirmCancelUnstake}
+      />
 
-    {/* Cancel Unstake Confirmation Dialog */}
-    <CancelUnstakeDialog
-      open={cancelUnstakeDialogOpen}
-      onOpenChange={setCancelUnstakeDialogOpen}
-      unstakingItem={selectedUnstaking}
-      onConfirm={handleConfirmCancelUnstake}
-    />
-
-    {/* Earnings History Sheet */}
-    <EarningsHistorySheet
-      open={earningsHistoryOpen}
-      onOpenChange={setEarningsHistoryOpen}
-      stakes={stakes}
-      earningsHistory={earningsHistory}
-    />
+      {/* CNPY Multi-Chain Stake Dialog */}
+      <CnpyStakeDialog
+        open={cnpyStakeDialogOpen}
+        onOpenChange={setCnpyStakeDialogOpen}
+        cnpyStake={selectedStake?.isCnpy ? selectedStake : null}
+        cnpyAsset={assets?.find(a => a.chainId === 0)}
+        allChains={stakes.filter(s => !s.isCnpy)}
+      />
     </TooltipProvider>
   )
 }

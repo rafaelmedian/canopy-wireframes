@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import {
   DropdownMenu,
@@ -11,11 +11,20 @@ import { Button } from '@/components/ui/button'
 import { ArrowUpRight, ArrowDownLeft, Repeat, TrendingUp, TrendingDown, CheckCircle, ChevronDown, Activity } from 'lucide-react'
 import TransactionDetailSheet from './transaction-detail-sheet'
 
-export default function ActivityTab({ transactions, compact = false }) {
+export default function ActivityTab({ transactions, compact = false, initialFilter = null }) {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [selectedTypes, setSelectedTypes] = useState([])
   const [selectedStatuses, setSelectedStatuses] = useState([])
   const [selectedAssets, setSelectedAssets] = useState([])
+
+  // Apply initial filter from URL or prop
+  useEffect(() => {
+    const filterParam = searchParams.get('filter') || initialFilter
+    if (filterParam === 'reward') {
+      setSelectedTypes(['reward'])
+    }
+  }, [searchParams, initialFilter])
   const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [detailSheetOpen, setDetailSheetOpen] = useState(false)
 
@@ -47,7 +56,7 @@ export default function ActivityTab({ transactions, compact = false }) {
         return <TrendingUp className="w-2.5 h-2.5" />
       case 'unstaked':
         return <TrendingDown className="w-2.5 h-2.5" />
-      case 'claimed':
+      case 'reward':
         return <CheckCircle className="w-2.5 h-2.5" />
       default:
         return <ArrowUpRight className="w-2.5 h-2.5" />
@@ -67,8 +76,8 @@ export default function ActivityTab({ transactions, compact = false }) {
         return `Staked ${tx.symbol}`
       case 'unstaked':
         return `Unstaked ${tx.symbol}`
-      case 'claimed':
-        return `Claimed ${tx.symbol}`
+      case 'reward':
+        return `Reward ${tx.symbol}`
       default:
         return tx.type
     }
@@ -104,7 +113,7 @@ export default function ActivityTab({ transactions, compact = false }) {
     { value: 'swap', label: 'Swap' },
     { value: 'staked', label: 'Staked' },
     { value: 'unstaked', label: 'Unstaked' },
-    { value: 'claimed', label: 'Claimed' }
+    { value: 'reward', label: 'Reward' }
   ]
 
   const statuses = [

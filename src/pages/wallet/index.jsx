@@ -18,6 +18,7 @@ import StakingTab from './components/staking-tab'
 import ActivityTab from './components/activity-tab'
 import GovernanceTab from './components/governance-tab'
 import StakeDialog from './components/stake-dialog'
+import CnpyStakeDialog from './components/cnpy-stake-dialog'
 import SendDialog from './components/send-dialog'
 import BuyDialog from './components/buy-dialog'
 import WalletConnectionDialog from '@/components/wallet-connection-dialog'
@@ -30,6 +31,8 @@ export default function Wallet() {
   const tabParam = searchParams.get('tab') || 'assets'
   const [activeTab, setActiveTab] = useState(tabParam)
   const [stakeDialogOpen, setStakeDialogOpen] = useState(false)
+  const [cnpyStakeDialogOpen, setCnpyStakeDialogOpen] = useState(false)
+  const [selectedCnpyStake, setSelectedCnpyStake] = useState(null)
   const [sendDialogOpen, setSendDialogOpen] = useState(false)
   const [buyDialogOpen, setBuyDialogOpen] = useState(false)
   const [switchWalletDialogOpen, setSwitchWalletDialogOpen] = useState(false)
@@ -67,6 +70,11 @@ export default function Wallet() {
     setTimeout(() => {
       disconnectWallet()
     }, 100)
+  }
+
+  const handleCnpySelected = (cnpyChain) => {
+    setSelectedCnpyStake(cnpyChain)
+    setCnpyStakeDialogOpen(true)
   }
 
   return (
@@ -138,16 +146,16 @@ export default function Wallet() {
                   Assets
                 </TabsTrigger>
                 <TabsTrigger
-                  value="staking"
-                  className="py-4 px-0 mr-8 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent bg-transparent"
-                >
-                  Staking
-                </TabsTrigger>
-                <TabsTrigger
                   value="activity"
                   className="py-4 px-0 mr-8 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent bg-transparent"
                 >
                   Activity
+                </TabsTrigger>
+                <TabsTrigger
+                  value="staking"
+                  className="py-4 px-0 mr-8 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent bg-transparent"
+                >
+                  Staking
                 </TabsTrigger>
                 <TabsTrigger
                   value="governance"
@@ -234,6 +242,16 @@ export default function Wallet() {
           selectedChain={null}
           availableChains={walletData.stakes}
           assets={walletData.assets}
+          onCnpySelected={handleCnpySelected}
+        />
+
+        {/* CNPY Multi-Chain Stake Dialog for Quick Actions */}
+        <CnpyStakeDialog
+          open={cnpyStakeDialogOpen}
+          onOpenChange={setCnpyStakeDialogOpen}
+          cnpyStake={selectedCnpyStake}
+          cnpyAsset={walletData.assets?.find(a => a.chainId === 0)}
+          allChains={walletData.stakes.filter(s => !s.isCnpy)}
         />
 
         {/* Send Dialog for Quick Actions */}
