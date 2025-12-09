@@ -42,7 +42,7 @@ function ChainBadge({ chain, size = 'sm' }) {
   )
 }
 
-// Calculate order selection
+// Calculate order selection for BUY direction (stablecoin → CNPY)
 function calculateOrderSelection(orders, inputAmount, sortMode) {
   if (!inputAmount || inputAmount <= 0) {
     return { selectedOrders: [], totalSavings: 0, totalCost: 0, cnpyReceived: 0, gap: 0 }
@@ -81,7 +81,61 @@ function calculateOrderSelection(orders, inputAmount, sortMode) {
   }
 }
 
-// Compact Order Row with fill percentage
+// Calculate order selection for SELL direction (CNPY → stablecoin)
+function calculateSellOrderSelection(orders, cnpyAmount, destinationToken, sortMode) {
+  if (!cnpyAmount || cnpyAmount <= 0) {
+    return { selectedOrders: [], totalReceived: 0, cnpySold: 0, gap: 0 }
+  }
+
+  // Filter orders by destination token if specified
+  let filteredOrders = orders
+  if (destinationToken) {
+    filteredOrders = orders.filter(
+      order => order.token === destinationToken.symbol && order.chain === destinationToken.chain
+    )
+  }
+
+  // Sort by price - highest first is best for seller (they receive more)
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    if (sortMode === 'best_price') return b.price - a.price // Descending for sell
+    return b.amount - a.amount
+  })
+
+  let remainingCnpy = cnpyAmount
+  const selectedOrders = []
+  let totalReceived = 0
+  let cnpySold = 0
+
+  for (const order of sortedOrders) {
+    if (remainingCnpy <= 0) break
+    
+    const cnpyToSell = Math.min(order.amount, remainingCnpy)
+    const stablecoinReceived = cnpyToSell * order.price
+    
+    selectedOrders.push({ 
+      ...order, 
+      cnpySold: cnpyToSell, 
+      received: stablecoinReceived,
+      // For display consistency with buy direction
+      cost: cnpyToSell,
+      savings: stablecoinReceived - cnpyToSell // negative = "loss" vs $1 peg
+    })
+    
+    totalReceived += stablecoinReceived
+    cnpySold += cnpyToSell
+    remainingCnpy -= cnpyToSell
+  }
+
+  return {
+    selectedOrders,
+    totalReceived,
+    cnpySold,
+    gap: cnpyAmount - cnpySold,
+    isFullyFilled: remainingCnpy < 1
+  }
+}
+
+// Compact Order Row with fill percentage (BUY direction)
 function OrderRow({ order, isSelected, index, percentOfBudget }) {
   return (
     <div
@@ -121,6 +175,48 @@ function OrderRow({ order, isSelected, index, percentOfBudget }) {
   )
 }
 
+// Compact Order Row for SELL direction (CNPY → stablecoin)
+function SellOrderRow({ order, isSelected, index, percentOfTotal }) {
+  return (
+    <div
+      className={`relative flex items-center justify-between py-2 px-3 rounded-lg transition-all duration-200 overflow-hidden ${
+        isSelected
+          ? 'border border-green-500/20'
+          : 'opacity-40'
+      }`}
+      style={{ transitionDelay: isSelected ? `${index * 30}ms` : '0ms' }}
+    >
+      {/* Background fill showing % of order filled */}
+      {isSelected && (
+        <div 
+          className="absolute inset-0 bg-green-500/15 transition-all duration-300 ease-out"
+          style={{ width: `${percentOfTotal}%` }}
+        />
+      )}
+      
+      <div className="relative flex items-center gap-2">
+        <div
+          className={`w-4 h-4 rounded-full flex items-center justify-center transition-all ${
+            isSelected ? 'bg-green-500 text-white' : 'border border-muted-foreground/30'
+          }`}
+        >
+          {isSelected && <Check className="w-2.5 h-2.5" />}
+        </div>
+        <span className="text-sm font-medium">{order.amount} CNPY</span>
+        <span className="text-xs text-green-500">${order.price}</span>
+        {isSelected && (
+          <span className="text-xs text-muted-foreground">({Math.round(percentOfTotal)}%)</span>
+        )}
+      </div>
+      {isSelected && (
+        <span className="relative text-xs text-green-500 font-medium">
+          ${order.received?.toFixed(2) || (order.amount * order.price).toFixed(2)}
+        </span>
+      )}
+    </div>
+  )
+}
+
 export default function ConvertTab({ 
   chainData, 
   isPreview = false, 
@@ -134,11 +230,16 @@ export default function ConvertTab({
   
   const [showBridgeDialog, setShowBridgeDialog] = useState(false)
   const [sourceToken, setSourceToken] = useState(null)
+  const [destinationToken, setDestinationToken] = useState(null)
   const [amount, setAmount] = useState('')
   const [sortMode, setSortMode] = useState('best_price')
   const [showOrders, setShowOrders] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
   const [showTransactionDialog, setShowTransactionDialog] = useState(false)
+  const [direction, setDirection] = useState('buy') // 'buy' = stablecoin→CNPY, 'sell' = CNPY→stablecoin
+  
+  // Mock CNPY balance for sell direction
+  const cnpyBalance = 5000
 
   const [connectedWallets, setConnectedWallets] = useState({
     ethereum: {
@@ -162,39 +263,83 @@ export default function ConvertTab({
         address: chainId === 'solana' 
           ? '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU'
           : '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199',
-        balances: { USDC: 2100.00, USDT: 500.75 }
+        balances: chainId === 'solana' 
+          ? { USDC: 0, USDT: 500.75 }  // Solana USDC has 0 balance
+          : { USDC: 2100.00, USDT: 500.75 }
       }
     }))
   }
 
   const handleTokenSelected = (token) => {
-    setSourceToken(token)
+    if (direction === 'buy') {
+      setSourceToken(token)
+      onSourceTokenChange?.(token)
+    } else {
+      setDestinationToken(token)
+    }
     setAmount('')
-    onSourceTokenChange?.(token)
     onAmountChange?.(0)
   }
 
-  // Calculate order selection locally
-  const availableOrders = useMemo(() => {
+  const handleSwapDirection = () => {
+    setDirection(d => {
+      const newDirection = d === 'buy' ? 'sell' : 'buy'
+      // When swapping, transfer token selection to the appropriate state
+      if (newDirection === 'sell' && sourceToken) {
+        setDestinationToken(sourceToken)
+        setSourceToken(null)
+      } else if (newDirection === 'buy' && destinationToken) {
+        setSourceToken(destinationToken)
+        setDestinationToken(null)
+      }
+      return newDirection
+    })
+    setAmount('')
+    setShowOrders(false)
+  }
+
+  // Calculate order selection locally - for BUY direction
+  const availableSellOrders = useMemo(() => {
     if (!sourceToken) return orderBookData.sellOrders
     return orderBookData.sellOrders.filter(
       order => order.token === sourceToken.symbol || !sourceToken.symbol
     )
   }, [sourceToken])
 
-  const selection = useMemo(
-    () => calculateOrderSelection(availableOrders, parseFloat(amount) || 0, sortMode),
-    [availableOrders, amount, sortMode]
-  )
+  // Calculate order selection for SELL direction
+  const availableBuyOrders = useMemo(() => {
+    return orderBookData.buyOrders || []
+  }, [])
+
+  // Selection based on direction
+  const selection = useMemo(() => {
+    if (direction === 'buy') {
+      return calculateOrderSelection(availableSellOrders, parseFloat(amount) || 0, sortMode)
+    } else {
+      return calculateSellOrderSelection(availableBuyOrders, parseFloat(amount) || 0, destinationToken, sortMode)
+    }
+  }, [direction, availableSellOrders, availableBuyOrders, amount, sortMode, destinationToken])
 
   const selectedOrderIds = new Set(selection.selectedOrders.map(o => o.id))
 
   const displayOrders = useMemo(() => {
-    return [...availableOrders].sort((a, b) => {
-      if (sortMode === 'best_price') return a.price - b.price
+    const orders = direction === 'buy' ? availableSellOrders : availableBuyOrders
+    
+    // Filter by destination token for sell direction
+    let filteredOrders = orders
+    if (direction === 'sell' && destinationToken) {
+      filteredOrders = orders.filter(
+        order => order.token === destinationToken.symbol && order.chain === destinationToken.chain
+      )
+    }
+    
+    return [...filteredOrders].sort((a, b) => {
+      if (sortMode === 'best_price') {
+        return direction === 'buy' ? a.price - b.price : b.price - a.price
+      }
       return b.amount - a.amount
     })
-  }, [availableOrders, sortMode])
+  }, [direction, availableSellOrders, availableBuyOrders, sortMode, destinationToken])
 
   // Notify parent
   useEffect(() => {
@@ -202,57 +347,169 @@ export default function ConvertTab({
   }, [amount])
 
   const handleUseMax = () => {
-    if (sourceToken) {
+    if (direction === 'buy' && sourceToken) {
       setAmount(sourceToken.balance.toString())
+    } else if (direction === 'sell') {
+      setAmount(cnpyBalance.toString())
     }
   }
 
   const getButtonState = () => {
     if (!isConnected) return { disabled: false, text: 'Connect Wallet', variant: 'connect' }
-    if (!sourceToken) return { disabled: true, text: 'Select token', variant: 'disabled' }
-    if (!amount || parseFloat(amount) <= 0) return { disabled: true, text: 'Enter amount', variant: 'disabled' }
-    if (parseFloat(amount) > sourceToken.balance) return { disabled: true, text: 'Insufficient balance', variant: 'error' }
-    if (selection.selectedOrders.length === 0) return { disabled: true, text: 'No orders available', variant: 'disabled' }
-    return { disabled: false, text: `Convert $${selection.totalCost.toFixed(2)}`, variant: 'convert' }
+    
+    if (direction === 'buy') {
+      if (!sourceToken) return { disabled: true, text: 'Select token', variant: 'disabled' }
+      if (!amount || parseFloat(amount) <= 0) return { disabled: true, text: 'Enter amount', variant: 'disabled' }
+      if (parseFloat(amount) > sourceToken.balance) return { disabled: true, text: 'Insufficient balance', variant: 'error' }
+      if (selection.selectedOrders.length === 0) return { disabled: true, text: 'No orders available', variant: 'disabled' }
+      return { disabled: false, text: `Convert $${selection.totalCost.toFixed(2)}`, variant: 'convert' }
+    } else {
+      // Sell direction: CNPY → stablecoin
+      if (!destinationToken) return { disabled: true, text: 'Select destination', variant: 'disabled' }
+      if (!amount || parseFloat(amount) <= 0) return { disabled: true, text: 'Enter amount', variant: 'disabled' }
+      if (parseFloat(amount) > cnpyBalance) return { disabled: true, text: 'Insufficient CNPY', variant: 'error' }
+      if (selection.selectedOrders.length === 0) return { disabled: true, text: 'No orders available', variant: 'disabled' }
+      return { disabled: false, text: `Convert ${parseFloat(amount).toLocaleString()} CNPY`, variant: 'convert' }
+    }
   }
 
   const buttonState = getButtonState()
+
+  // Get the current balance for shake validation
+  const currentBalance = direction === 'buy' ? (sourceToken?.balance || 0) : cnpyBalance
 
   return (
     <>
       {/* Input Token Card */}
       <div className="px-4">
-        {sourceToken ? (
-          <Card className="bg-muted/30 p-4 space-y-3">
-            {/* Token Header */}
-            <div className="flex items-center justify-between">
-              <button 
-                onClick={() => setShowBridgeDialog(true)}
-                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-              >
-                {/* Token Avatar with Chain Badge */}
-                <div className="relative">
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold"
-                    style={{ backgroundColor: sourceToken.color }}
-                  >
-                    {sourceToken.symbol === 'USDC' ? '$' : 'T'}
+        {direction === 'buy' ? (
+          // BUY DIRECTION: Stablecoin input
+          sourceToken ? (
+            <Card className="bg-muted/30 p-4 space-y-3">
+              {/* Token Header */}
+              <div className="flex items-center justify-between">
+                <button 
+                  onClick={() => setShowBridgeDialog(true)}
+                  className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                >
+                  {/* Token Avatar with Chain Badge */}
+                  <div className="relative">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold"
+                      style={{ backgroundColor: sourceToken.color }}
+                    >
+                      {sourceToken.symbol === 'USDC' ? '$' : 'T'}
+                    </div>
+                    <ChainBadge chain={sourceToken.chain} />
                   </div>
-                  <ChainBadge chain={sourceToken.chain} />
+                  <div className="text-left">
+                    <div className="flex items-center gap-2">
+                      <p className="text-base font-semibold">{sourceToken.symbol}</p>
+                      <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground capitalize">
+                        {sourceToken.chain}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {sourceToken.balance.toLocaleString()} {sourceToken.symbol}
+                    </p>
+                  </div>
+                </button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={handleUseMax}
+                >
+                  Use max
+                </Button>
+              </div>
+
+              {/* Budget Label */}
+              {amount && parseFloat(amount) > 0 && (
+                <div className="text-center">
+                  <span className="text-xs text-muted-foreground tracking-wider">BUDGET</span>
+                </div>
+              )}
+
+              {/* Amount Input - Centered */}
+              <div className="flex items-center justify-center">
+                <div className="flex items-center gap-1">
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={amount}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                        setAmount(value)
+                        // Trigger shake when exceeding balance
+                        if (parseFloat(value) > currentBalance && parseFloat(amount) <= currentBalance) {
+                          setIsShaking(true)
+                          setTimeout(() => setIsShaking(false), 400)
+                        }
+                      }
+                    }}
+                    placeholder="0"
+                    className={`text-4xl font-bold bg-transparent border-0 outline-none p-0 h-auto text-center w-full placeholder:text-muted-foreground ${
+                      isShaking ? 'animate-shake' : ''
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Spending Display */}
+              {selection.totalCost > 0 && parseFloat(amount) > 0 && (
+                <div className="space-y-1 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-xs text-muted-foreground tracking-wider">SPENDING</span>
+                    <span className="text-lg font-semibold text-green-500">
+                      ${selection.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  {selection.gap > 0.01 && (
+                    <div className="text-sm text-muted-foreground">
+                      ${selection.gap.toFixed(2)} unused
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
+          ) : (
+            <Card 
+              className="bg-muted/30 p-4 hover:bg-muted/40 transition-colors cursor-pointer"
+              onClick={() => setShowBridgeDialog(true)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-base font-semibold">Select token</p>
+                    <p className="text-sm text-muted-foreground">Choose USDC or USDT to convert</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </Card>
+          )
+        ) : (
+          // SELL DIRECTION: CNPY input
+          <Card className="bg-muted/30 p-4 space-y-3">
+            {/* CNPY Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <CnpyLogo className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <p className="text-base font-semibold">{sourceToken.symbol}</p>
-                    <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground capitalize">
-                      {sourceToken.chain}
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </div>
+                  <p className="text-base font-semibold">CNPY</p>
                   <p className="text-sm text-muted-foreground">
-                    {sourceToken.balance.toLocaleString()} {sourceToken.symbol}
+                    {cnpyBalance.toLocaleString()} CNPY
                   </p>
                 </div>
-              </button>
+              </div>
               <Button
                 variant="secondary"
                 size="sm"
@@ -263,10 +520,10 @@ export default function ConvertTab({
               </Button>
             </div>
 
-            {/* Budget Label */}
+            {/* Selling Label */}
             {amount && parseFloat(amount) > 0 && (
               <div className="text-center">
-                <span className="text-xs text-muted-foreground tracking-wider">BUDGET</span>
+                <span className="text-xs text-muted-foreground tracking-wider">SELLING</span>
               </div>
             )}
 
@@ -282,7 +539,7 @@ export default function ConvertTab({
                     if (value === '' || /^\d*\.?\d*$/.test(value)) {
                       setAmount(value)
                       // Trigger shake when exceeding balance
-                      if (parseFloat(value) > sourceToken.balance && parseFloat(amount) <= sourceToken.balance) {
+                      if (parseFloat(value) > cnpyBalance && parseFloat(amount) <= cnpyBalance) {
                         setIsShaking(true)
                         setTimeout(() => setIsShaking(false), 400)
                       }
@@ -296,155 +553,275 @@ export default function ConvertTab({
               </div>
             </div>
 
-            {/* Spending Display */}
-            {selection.totalCost > 0 && parseFloat(amount) > 0 && (
+            {/* CNPY being sold display */}
+            {selection.cnpySold > 0 && parseFloat(amount) > 0 && (
               <div className="space-y-1 text-center">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-xs text-muted-foreground tracking-wider">SPENDING</span>
+                  <span className="text-xs text-muted-foreground tracking-wider">MATCHED</span>
                   <span className="text-lg font-semibold text-green-500">
-                    ${selection.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {selection.cnpySold.toLocaleString()} CNPY
                   </span>
                 </div>
-                {selection.gap > 0.01 && (
+                {selection.gap > 0.5 && (
                   <div className="text-sm text-muted-foreground">
-                    ${selection.gap.toFixed(2)} unused
+                    {selection.gap.toFixed(0)} CNPY unmatched
                   </div>
                 )}
               </div>
             )}
           </Card>
-        ) : (
-          <Card 
-            className="bg-muted/30 p-4 hover:bg-muted/40 transition-colors cursor-pointer"
-            onClick={() => setShowBridgeDialog(true)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <p className="text-base font-semibold">Select token</p>
-                  <p className="text-sm text-muted-foreground">Choose USDC or USDT to convert</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </div>
-          </Card>
         )}
       </div>
 
-      {/* Arrow Divider */}
+      {/* Arrow Divider - Clickable to swap direction */}
       <div className="relative flex justify-center">
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full h-8 w-8 bg-background border-2"
-          disabled
+          className="rounded-full h-8 w-8 bg-background border-2 hover:bg-muted transition-colors"
+          onClick={handleSwapDirection}
         >
-          <ArrowDown className="w-4 h-4" />
+          <ArrowDown className={`w-4 h-4 transition-transform duration-200 ${direction === 'sell' ? 'rotate-180' : ''}`} />
         </Button>
       </div>
 
-      {/* Output Token Card (CNPY) with Orders */}
+      {/* Output Token Card with Orders */}
       <div className="px-4">
         <Card className="bg-muted/30 p-4">
-          {/* CNPY Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                <CnpyLogo className="w-5 h-5 text-white" />
-              </div>
-              <div className="text-left">
-                <p className="text-base font-semibold">CNPY</p>
-                <p className="text-sm text-muted-foreground">0 CNPY</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-base font-semibold">
-                {selection.cnpyReceived > 0 ? selection.cnpyReceived.toLocaleString() : '0'}
-              </p>
-              {selection.totalSavings > 0 ? (
-                <p className="text-sm text-green-500">+${selection.totalSavings.toFixed(2)} bonus</p>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  ${selection.cnpyReceived > 0 ? selection.cnpyReceived.toFixed(2) : '0.00'}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Collapsible Orders Section */}
-          {sourceToken && (
-            <div className="mt-4 pt-4 border-t border-border">
-              {/* Orders Header */}
-              <div className="flex items-center justify-between mb-3">
-                <button
-                  onClick={() => setShowOrders(!showOrders)}
-                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <ChevronDown className={`w-4 h-4 transition-transform ${showOrders ? '' : '-rotate-90'}`} />
-                  <span>Orders</span>
-                  {selection.selectedOrders.length > 0 && (
-                    <span className="text-xs bg-green-500/20 text-green-500 px-1.5 py-0.5 rounded">
-                      {selection.selectedOrders.length} matched
-                    </span>
+          {direction === 'buy' ? (
+            // BUY DIRECTION: CNPY output
+            <>
+              {/* CNPY Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                    <CnpyLogo className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-base font-semibold">CNPY</p>
+                    <p className="text-sm text-muted-foreground">0 CNPY</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-base font-semibold">
+                    {selection.cnpyReceived > 0 ? selection.cnpyReceived.toLocaleString() : '0'}
+                  </p>
+                  {selection.totalSavings > 0 ? (
+                    <p className="text-sm text-green-500">+${selection.totalSavings.toFixed(2)} bonus</p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      ${selection.cnpyReceived > 0 ? selection.cnpyReceived.toFixed(2) : '0.00'}
+                    </p>
                   )}
-                </button>
-                <div className="flex gap-1 p-0.5 bg-muted/50 rounded-md">
-                  <button
-                    onClick={() => setSortMode('best_price')}
-                    className={`px-2 py-1 text-xs font-medium rounded transition-all ${
-                      sortMode === 'best_price'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground'
-                    }`}
-                  >
-                    Best price
-                  </button>
-                  <button
-                    onClick={() => setSortMode('best_fill')}
-                    className={`px-2 py-1 text-xs font-medium rounded transition-all ${
-                      sortMode === 'best_fill'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground'
-                    }`}
-                  >
-                    Best fill
-                  </button>
                 </div>
               </div>
 
-              {/* Order List */}
-              {showOrders && (
-                <div className="space-y-1.5 max-h-[160px] overflow-y-auto">
-                  {displayOrders.slice(0, 6).map((order, index) => {
-                    const selectedOrder = selection.selectedOrders.find(o => o.id === order.id)
-                    const isSelected = selectedOrderIds.has(order.id)
-                    // Calculate what % of the total budget this order's cost represents
-                    const orderCost = order.amount * order.price
-                    const budgetAmount = parseFloat(amount) || 0
-                    const percentOfBudget = budgetAmount > 0 ? (orderCost / budgetAmount) * 100 : 0
-                    return (
-                      <OrderRow
-                        key={order.id}
-                        order={selectedOrder || order}
-                        isSelected={isSelected}
-                        index={index}
-                        percentOfBudget={percentOfBudget}
-                      />
-                    )
-                  })}
+              {/* Collapsible Orders Section */}
+              {sourceToken && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  {/* Orders Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <button
+                      onClick={() => setShowOrders(!showOrders)}
+                      className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showOrders ? '' : '-rotate-90'}`} />
+                      <span>Orders</span>
+                      {selection.selectedOrders.length > 0 && (
+                        <span className="text-xs bg-green-500/20 text-green-500 px-1.5 py-0.5 rounded">
+                          {selection.selectedOrders.length} matched
+                        </span>
+                      )}
+                    </button>
+                    <div className="flex gap-1 p-0.5 bg-muted/50 rounded-md">
+                      <button
+                        onClick={() => setSortMode('best_price')}
+                        className={`px-2 py-1 text-xs font-medium rounded transition-all ${
+                          sortMode === 'best_price'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground'
+                        }`}
+                      >
+                        Best price
+                      </button>
+                      <button
+                        onClick={() => setSortMode('best_fill')}
+                        className={`px-2 py-1 text-xs font-medium rounded transition-all ${
+                          sortMode === 'best_fill'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground'
+                        }`}
+                      >
+                        Best fill
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Order List */}
+                  {showOrders && (
+                    <div className="space-y-1.5 max-h-[160px] overflow-y-auto">
+                      {displayOrders.slice(0, 6).map((order, index) => {
+                        const selectedOrder = selection.selectedOrders.find(o => o.id === order.id)
+                        const isSelected = selectedOrderIds.has(order.id)
+                        // Calculate what % of the total budget this order's cost represents
+                        const orderCost = order.amount * order.price
+                        const budgetAmount = parseFloat(amount) || 0
+                        const percentOfBudget = budgetAmount > 0 ? (orderCost / budgetAmount) * 100 : 0
+                        return (
+                          <OrderRow
+                            key={order.id}
+                            order={selectedOrder || order}
+                            isSelected={isSelected}
+                            index={index}
+                            percentOfBudget={percentOfBudget}
+                          />
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  {/* No amount state */}
+                  {(!amount || parseFloat(amount) <= 0) && showOrders && (
+                    <p className="text-center text-xs text-muted-foreground py-3">
+                      Enter an amount to see matched orders
+                    </p>
+                  )}
                 </div>
               )}
+            </>
+          ) : (
+            // SELL DIRECTION: Stablecoin output
+            <>
+              {/* Stablecoin Header */}
+              <div className="flex items-center justify-between">
+                {destinationToken ? (
+                  <>
+                    <button 
+                      onClick={() => setShowBridgeDialog(true)}
+                      className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                    >
+                      <div className="relative">
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold"
+                          style={{ backgroundColor: destinationToken.color }}
+                        >
+                          {destinationToken.symbol === 'USDC' ? '$' : 'T'}
+                        </div>
+                        <ChainBadge chain={destinationToken.chain} />
+                      </div>
+                      <div className="text-left">
+                        <div className="flex items-center gap-2">
+                          <p className="text-base font-semibold">{destinationToken.symbol}</p>
+                          <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground capitalize">
+                            {destinationToken.chain}
+                          </span>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {destinationToken.balance.toLocaleString()} {destinationToken.symbol}
+                        </p>
+                      </div>
+                    </button>
+                    <div className="text-right">
+                      <p className="text-base font-semibold">
+                        {selection.totalReceived > 0 ? `$${selection.totalReceived.toFixed(2)}` : '$0.00'}
+                      </p>
+                      {selection.totalReceived > 0 && selection.cnpySold > 0 && (
+                        <p className="text-sm text-muted-foreground">
+                          @${(selection.totalReceived / selection.cnpySold).toFixed(3)}/CNPY
+                        </p>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <button 
+                    onClick={() => setShowBridgeDialog(true)}
+                    className="flex items-center gap-3 w-full hover:opacity-80 transition-opacity"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
+                      <Plus className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <div className="text-left flex-1">
+                      <p className="text-base font-semibold">Select destination</p>
+                      <p className="text-sm text-muted-foreground">Choose where to receive funds</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
 
-              {/* No amount state */}
-              {(!amount || parseFloat(amount) <= 0) && showOrders && (
-                <p className="text-center text-xs text-muted-foreground py-3">
-                  Enter an amount to see matched orders
-                </p>
+              {/* Collapsible Orders Section for sell direction */}
+              {destinationToken && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  {/* Orders Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <button
+                      onClick={() => setShowOrders(!showOrders)}
+                      className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showOrders ? '' : '-rotate-90'}`} />
+                      <span>Orders</span>
+                      {selection.selectedOrders.length > 0 && (
+                        <span className="text-xs bg-green-500/20 text-green-500 px-1.5 py-0.5 rounded">
+                          {selection.selectedOrders.length} matched
+                        </span>
+                      )}
+                    </button>
+                    <div className="flex gap-1 p-0.5 bg-muted/50 rounded-md">
+                      <button
+                        onClick={() => setSortMode('best_price')}
+                        className={`px-2 py-1 text-xs font-medium rounded transition-all ${
+                          sortMode === 'best_price'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground'
+                        }`}
+                      >
+                        Best price
+                      </button>
+                      <button
+                        onClick={() => setSortMode('best_fill')}
+                        className={`px-2 py-1 text-xs font-medium rounded transition-all ${
+                          sortMode === 'best_fill'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground'
+                        }`}
+                      >
+                        Best fill
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Order List for sell direction */}
+                  {showOrders && (
+                    <div className="space-y-1.5 max-h-[160px] overflow-y-auto">
+                      {displayOrders.slice(0, 6).map((order, index) => {
+                        const selectedOrder = selection.selectedOrders.find(o => o.id === order.id)
+                        const isSelected = selectedOrderIds.has(order.id)
+                        // For sell direction, show % of total CNPY being sold
+                        const cnpyAmount = parseFloat(amount) || 0
+                        const percentOfTotal = cnpyAmount > 0 ? ((selectedOrder?.cnpySold || order.amount) / cnpyAmount) * 100 : 0
+                        return (
+                          <SellOrderRow
+                            key={order.id}
+                            order={selectedOrder || order}
+                            isSelected={isSelected}
+                            index={index}
+                            percentOfTotal={Math.min(percentOfTotal, 100)}
+                          />
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  {/* No amount state */}
+                  {(!amount || parseFloat(amount) <= 0) && showOrders && (
+                    <p className="text-center text-xs text-muted-foreground py-3">
+                      Enter an amount to see matched orders
+                    </p>
+                  )}
+                </div>
               )}
-            </div>
+            </>
           )}
         </Card>
       </div>
@@ -476,13 +853,26 @@ export default function ConvertTab({
       </div>
 
       {/* Exchange Rate Info */}
-      {sourceToken && selection.cnpyReceived > 0 && (
+      {direction === 'buy' && sourceToken && selection.cnpyReceived > 0 && (
         <div className="px-4 pb-4">
           <div className="flex items-center justify-center text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Zap className="w-3.5 h-3.5" />
               <span>
                 ${selection.totalCost.toFixed(2)} → {selection.cnpyReceived.toLocaleString()} CNPY
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {direction === 'sell' && destinationToken && selection.totalReceived > 0 && (
+        <div className="px-4 pb-4">
+          <div className="flex items-center justify-center text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5" />
+              <span>
+                {selection.cnpySold.toLocaleString()} CNPY → ${selection.totalReceived.toFixed(2)} {destinationToken.symbol}
               </span>
             </div>
           </div>
@@ -496,6 +886,7 @@ export default function ConvertTab({
         onSelectToken={handleTokenSelected}
         connectedWallets={connectedWallets}
         onConnectWallet={handleConnectWallet}
+        mode={direction === 'buy' ? 'source' : 'destination'}
       />
 
       {/* Convert Transaction Progress Dialog */}
@@ -507,10 +898,12 @@ export default function ConvertTab({
             // Reset form after successful transaction
             setAmount('')
           }}
-          sourceToken={sourceToken}
-          cnpyReceived={selection.cnpyReceived}
-          totalCost={selection.totalCost}
-          totalSavings={selection.totalSavings}
+          direction={direction}
+          sourceToken={direction === 'buy' ? sourceToken : null}
+          destinationToken={direction === 'sell' ? destinationToken : null}
+          cnpyAmount={direction === 'sell' ? selection.cnpySold : selection.cnpyReceived}
+          stablecoinAmount={direction === 'buy' ? selection.totalCost : selection.totalReceived}
+          totalSavings={selection.totalSavings || 0}
           ordersMatched={selection.selectedOrders.length}
         />
       )}
