@@ -1,4 +1,94 @@
 {
+  "buyOrders": [
+    {
+      "id": "buy-1",
+      "maker": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "amount": 500,
+      "price": 0.98,
+      "premium": -2,
+      "token": "USDC",
+      "chain": "ethereum",
+      "expiresIn": 200,
+      "status": "available"
+    },
+    {
+      "id": "buy-2",
+      "maker": "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+      "amount": 1200,
+      "price": 0.97,
+      "premium": -3,
+      "token": "USDC",
+      "chain": "ethereum",
+      "expiresIn": 350,
+      "status": "available"
+    },
+    {
+      "id": "buy-3",
+      "maker": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+      "amount": 800,
+      "price": 0.96,
+      "premium": -4,
+      "token": "USDT",
+      "chain": "ethereum",
+      "expiresIn": 280,
+      "status": "available"
+    },
+    {
+      "id": "buy-4",
+      "maker": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+      "amount": 2000,
+      "price": 0.95,
+      "premium": -5,
+      "token": "USDC",
+      "chain": "solana",
+      "expiresIn": 450,
+      "status": "available"
+    },
+    {
+      "id": "buy-5",
+      "maker": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+      "amount": 350,
+      "price": 0.99,
+      "premium": -1,
+      "token": "USDT",
+      "chain": "solana",
+      "expiresIn": 180,
+      "status": "available"
+    },
+    {
+      "id": "buy-6",
+      "maker": "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+      "amount": 1500,
+      "price": 0.94,
+      "premium": -6,
+      "token": "USDC",
+      "chain": "ethereum",
+      "expiresIn": 520,
+      "status": "available"
+    },
+    {
+      "id": "buy-7",
+      "maker": "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+      "amount": 600,
+      "price": 0.97,
+      "premium": -3,
+      "token": "USDT",
+      "chain": "solana",
+      "expiresIn": 300,
+      "status": "available"
+    },
+    {
+      "id": "buy-8",
+      "maker": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+      "amount": 900,
+      "price": 0.96,
+      "premium": -4,
+      "token": "USDC",
+      "chain": "solana",
+      "expiresIn": 400,
+      "status": "available"
+    }
+  ],
   "sellOrders": [
     {
       "id": "order-1",
