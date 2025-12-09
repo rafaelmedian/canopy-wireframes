@@ -3,14 +3,15 @@ import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { X, ArrowLeft, Check, Info, Wallet } from 'lucide-react'
+import { X, ArrowLeft, Check, Info, Wallet, RefreshCw } from 'lucide-react'
 
-export default function StakeDialog({ open, onOpenChange, selectedChain, availableChains = [], assets = [] }) {
+export default function StakeDialog({ open, onOpenChange, selectedChain, availableChains = [], assets = [], onCnpySelected }) {
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState('')
-  const [source, setSource] = useState('trading')
+  const [autoCompound, setAutoCompound] = useState(true)
   const [internalSelectedChain, setInternalSelectedChain] = useState(null)
 
   // Determine if we need to show chain selection
@@ -23,13 +24,27 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
       setInternalSelectedChain(null)
       setStep(1)
       setAmount('')
-      setSource('trading')
+      setAutoCompound(true)
     }
   }, [open])
+
+  // Initialize auto-compound with existing stake setting when opening with pre-selected chain
+  useEffect(() => {
+    if (open && selectedChain) {
+      setAutoCompound(selectedChain.restakeRewards ?? true)
+    }
+  }, [open, selectedChain])
 
   const handleChainSelect = (chainId) => {
     const chain = availableChains.find(c => c.chainId === chainId)
     if (chain) {
+      // If CNPY is selected, notify parent to open CNPY dialog instead
+      if (chain.isCnpy && onCnpySelected) {
+        onOpenChange(false)
+        onCnpySelected(chain)
+        return
+      }
+
       // Enrich with asset data
       const asset = assets?.find(a => a.chainId === chainId)
       const enrichedChain = {
@@ -38,6 +53,8 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
         balance: asset?.balance || 0
       }
       setInternalSelectedChain(enrichedChain)
+      // Initialize auto-compound with the selected chain's setting
+      setAutoCompound(chain.restakeRewards ?? true)
     }
   }
 
@@ -45,6 +62,8 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
 
   // Calculate values (only when we have an active chain)
   const availableBalance = activeChain?.balance || 0
+  const currentStakedAmount = activeChain?.amount || 0
+  const isAddingMore = currentStakedAmount > 0
   const amountNum = parseFloat(amount) || 0
   const amountUSD = activeChain ? amountNum * (activeChain.price || 0) : 0
   const projectedYearlyInterest = activeChain ? amountNum * (activeChain.apy / 100) : 0
@@ -71,7 +90,6 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
   const handleClose = () => {
     setStep(1)
     setAmount('')
-    setSource('trading')
     setInternalSelectedChain(null)
     onOpenChange(false)
   }
@@ -88,7 +106,7 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
           {step === 1 && (
             <>
               {/* Header */}
-              <div className="relative px-6 py-3  border-b">
+              <div className="relative px-6 py-3 border-b">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -98,7 +116,9 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                   <X className="w-5 h-5" />
                 </Button>
                 <div className="space-y-1">
-                  <h2 className="text-xl font-bold">Earn Rewards</h2>
+                  <h2 className="text-xl font-bold">
+                    {isAddingMore ? `Add More ${activeChain?.symbol || ''}` : 'Earn Rewards'}
+                  </h2>
                 </div>
               </div>
 
@@ -172,10 +192,17 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                           <p className="text-sm text-muted-foreground">{activeChain.symbol}</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold">{activeChain.apy}%</p>
-                        <p className="text-xs text-muted-foreground">APY</p>
-                      </div>
+                      {isAddingMore ? (
+                        <div className="text-right">
+                          <p className="text-sm text-muted-foreground">Currently staked</p>
+                          <p className="font-semibold">{currentStakedAmount.toLocaleString()} {activeChain.symbol}</p>
+                        </div>
+                      ) : (
+                        <div className="text-right">
+                          <p className="text-2xl font-bold">{activeChain.apy}%</p>
+                          <p className="text-xs text-muted-foreground">APY</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -184,38 +211,17 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                 {activeChain && (
                   <div className="space-y-2">
                     <Label className="block text-sm font-medium">Source</Label>
-                    <Select value={source} onValueChange={setSource}>
-                      <SelectTrigger className="h-auto py-3 [&>span]:line-clamp-none [&>span]:block">
-                        <SelectValue>
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
-                              <Wallet className="w-4 h-4" />
-                            </div>
-                            <div className="flex flex-col items-start">
-                              <span className="font-medium text-sm">Wallet balance</span>
-                              <span className="text-xs text-muted-foreground">
-                                {activeChain.symbol} balance: {availableBalance} {activeChain.symbol}
-                              </span>
-                            </div>
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="trading" className="h-auto py-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
-                              <Wallet className="w-4 h-4" />
-                            </div>
-                            <div className="flex flex-col items-start gap-1">
-                              <span className="font-medium">Wallet balance</span>
-                              <span className="text-xs text-muted-foreground">
-                                {activeChain.symbol} balance: {availableBalance} {activeChain.symbol}
-                              </span>
-                            </div>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center gap-3 h-auto py-3 px-3 border rounded-md bg-background">
+                      <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
+                        <Wallet className="w-4 h-4" />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium text-sm">Wallet balance</span>
+                        <span className="text-xs text-muted-foreground">
+                          {activeChain.symbol} balance: {availableBalance} {activeChain.symbol}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -224,7 +230,9 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                   <>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="block text-sm font-medium">Amount</Label>
+                        <Label className="block text-sm font-medium">
+                          {isAddingMore ? 'Amount to add' : 'Amount'}
+                        </Label>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -280,6 +288,43 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                         </p>
                       </div>
                     </div>
+
+                    {/* Auto-compound Toggle */}
+                    <div className="p-4 bg-muted/30 rounded-lg border">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-3">
+                          <RefreshCw className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                          <div className="space-y-1">
+                            <Label htmlFor="auto-compound" className="text-sm font-medium cursor-pointer">
+                              Auto-compound rewards
+                            </Label>
+                            <p className="text-xs text-muted-foreground">
+                              {autoCompound
+                                ? 'Rewards will be automatically restaked to maximize your earnings through compound interest.'
+                                : 'Rewards will be transferred to your wallet balance instead of being restaked.'}
+                            </p>
+                          </div>
+                        </div>
+                        <Switch
+                          id="auto-compound"
+                          checked={autoCompound}
+                          onCheckedChange={setAutoCompound}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Penalty Warning when auto-compound is disabled */}
+                    {!autoCompound && (
+                      <div className="flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                        <Info className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-yellow-500">20% Reward Penalty</p>
+                          <p className="text-xs text-muted-foreground">
+                            Disabling auto-compound incurs a 20% penalty on your staking rewards to help maintain network security and stability.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
 
@@ -339,11 +384,43 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                       <span className="text-sm font-medium">{activeChain.apy}%</span>
                     </div>
 
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Auto-compound</span>
+                      {autoCompound ? (
+                        <span className="text-sm font-medium">Enabled</span>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm font-medium text-yellow-500">Disabled (20% penalty)</span>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="w-3.5 h-3.5 text-yellow-500" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p>Disabling auto-compound incurs a 20% penalty on your staking rewards to help maintain network security and stability.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">Amount</span>
+                      <span className="text-sm font-medium">{amountNum.toLocaleString()} {activeChain.symbol}</span>
+                    </div>
+
+                    {isAddingMore && (
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">New total</span>
+                        <span className="text-sm font-medium">
+                          {(currentStakedAmount + amountNum).toLocaleString()} {activeChain.symbol}
+                        </span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between pt-2 border-t">
-                      <span className="text-sm font-semibold">Total</span>
+                      <span className="text-sm font-semibold">Total value</span>
                       <div className="text-right">
-                        <p className="text-sm font-semibold">{amountNum} {activeChain.symbol}</p>
-                        <p className="text-xs text-muted-foreground">${amountUSD.toFixed(2)} USD</p>
+                        <p className="text-sm font-semibold">${amountUSD.toFixed(2)} USD</p>
                       </div>
                     </div>
                   </div>
@@ -402,11 +479,23 @@ export default function StakeDialog({ open, onOpenChange, selectedChain, availab
                   </div>
                   <h2 className="text-2xl font-bold">Success!</h2>
                   <p className="text-center text-muted-foreground">
-                    You will begin earning interest on{' '}
-                    <span className="font-semibold text-foreground">
-                      {amountNum} {activeChain.symbol}
-                    </span>{' '}
-                    after one business day.
+                    {isAddingMore ? (
+                      <>
+                        You are now staking{' '}
+                        <span className="font-semibold text-foreground">
+                          {(currentStakedAmount + amountNum).toLocaleString()} {activeChain.symbol}
+                        </span>{' '}
+                        in total.
+                      </>
+                    ) : (
+                      <>
+                        You will begin earning interest on{' '}
+                        <span className="font-semibold text-foreground">
+                          {amountNum.toLocaleString()} {activeChain.symbol}
+                        </span>{' '}
+                        after one business day.
+                      </>
+                    )}
                   </p>
                 </div>
 

@@ -50,10 +50,10 @@ export default function TransactionDetailSheet({ transaction, open, onOpenChange
           subtitle: `${transaction.symbol}`,
           icon: <Unlock className="w-12 h-12 text-primary" />
         }
-      case 'claimed':
+      case 'reward':
         return {
-          title: 'Claim Rewards',
-          subtitle: `${transaction.symbol}`,
+          title: 'Staking Reward',
+          subtitle: `+${Math.abs(transaction.amount)} ${transaction.symbol}`,
           icon: <Gift className="w-12 h-12 text-primary" />
         }
       default:
@@ -85,36 +85,38 @@ export default function TransactionDetailSheet({ transaction, open, onOpenChange
             </div>
           </div>
 
-          {/* Transaction Info Card */}
-          <div className="mx-6 mb-4 rounded-2xl bg-muted/30 overflow-hidden">
-            {/* Date */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-              <span className="text-sm text-muted-foreground">Date</span>
-              <span className="text-sm font-medium">{transaction.timestamp}</span>
-            </div>
+          {/* Transaction Info Card - hide blockchain details for rewards */}
+          {transaction.type !== 'reward' && (
+            <div className="mx-6 mb-4 rounded-2xl bg-muted/30 overflow-hidden">
+              {/* Date */}
+              <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+                <span className="text-sm text-muted-foreground">Date</span>
+                <span className="text-sm font-medium">{transaction.timestamp}</span>
+              </div>
 
-            {/* Status */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-              <span className="text-sm text-muted-foreground">Status</span>
-              <span className="text-sm font-medium text-green-500">
-                {transaction.status === 'completed' ? 'Succeeded' : 'Pending'}
-              </span>
-            </div>
+              {/* Status */}
+              <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+                <span className="text-sm text-muted-foreground">Status</span>
+                <span className="text-sm font-medium text-green-500">
+                  {transaction.status === 'completed' ? 'Succeeded' : 'Pending'}
+                </span>
+              </div>
 
-            {/* Network */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-              <span className="text-sm text-muted-foreground">Network</span>
-              <span className="text-sm font-medium">{transaction.network || 'Ethereum'}</span>
-            </div>
+              {/* Network */}
+              <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+                <span className="text-sm text-muted-foreground">Network</span>
+                <span className="text-sm font-medium">{transaction.network || 'Ethereum'}</span>
+              </div>
 
-            {/* Network Fee */}
-            <div className="flex items-center justify-between px-4 py-4">
-              <span className="text-sm text-muted-foreground">Network Fee</span>
-              <span className="text-sm font-medium">
-                {transaction.fee ? `${transaction.fee} ${transaction.symbol || transaction.symbolFrom}` : `~< 0.00001 ${transaction.symbol || transaction.symbolFrom}`}
-              </span>
+              {/* Network Fee */}
+              <div className="flex items-center justify-between px-4 py-4">
+                <span className="text-sm text-muted-foreground">Network Fee</span>
+                <span className="text-sm font-medium">
+                  {transaction.fee ? `${transaction.fee} ${transaction.symbol || transaction.symbolFrom}` : `~< 0.00001 ${transaction.symbol || transaction.symbolFrom}`}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Type-specific Details */}
           {transaction.type === 'swap' && (
@@ -186,25 +188,25 @@ export default function TransactionDetailSheet({ transaction, open, onOpenChange
             </div>
           )}
 
-          {transaction.type === 'claimed' && (
+          {transaction.type === 'reward' && (
             <div className="mx-6 mb-4 rounded-2xl bg-muted/30 overflow-hidden">
               <div className="px-4 py-3 border-b border-border bg-muted/50">
-                <h3 className="text-sm font-semibold">Claim Details</h3>
+                <h3 className="text-sm font-semibold">Reward Details</h3>
               </div>
 
               <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-                <span className="text-sm text-muted-foreground">Rewards Claimed</span>
+                <span className="text-sm text-muted-foreground">Date Received</span>
+                <span className="text-sm font-medium">{transaction.timestamp}</span>
+              </div>
+
+              <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+                <span className="text-sm text-muted-foreground">Amount</span>
                 <span className="text-sm font-medium text-green-500">+{Math.abs(transaction.amount)} {transaction.symbol}</span>
               </div>
 
-              <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-                <span className="text-sm text-muted-foreground">From Contract</span>
-                <span className="text-sm font-mono">{transaction.from?.slice(0, 6)}...{transaction.from?.slice(-4)}</span>
-              </div>
-
               <div className="flex items-center justify-between px-4 py-4">
-                <span className="text-sm text-muted-foreground">To Wallet</span>
-                <span className="text-sm font-mono">{transaction.to?.slice(0, 6)}...{transaction.to?.slice(-4)}</span>
+                <span className="text-sm text-muted-foreground">Source</span>
+                <span className="text-sm font-medium">{transaction.source || `${transaction.symbol} Staking`}</span>
               </div>
             </div>
           )}
@@ -234,26 +236,28 @@ export default function TransactionDetailSheet({ transaction, open, onOpenChange
             </div>
           )}
 
-          {/* Copy Hash Button */}
-          <div className="px-6 py-6 mt-auto">
-            <Button
-              variant="outline"
-              className="w-full h-12 rounded-xl text-sm font-medium"
-              onClick={copyHash}
-            >
-              {copiedHash ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Transaction Hash
-                </>
-              )}
-            </Button>
-          </div>
+          {/* Copy Hash Button - hide for rewards since there's no blockchain transaction */}
+          {transaction.type !== 'reward' && (
+            <div className="px-6 py-6 mt-auto">
+              <Button
+                variant="outline"
+                className="w-full h-12 rounded-xl text-sm font-medium"
+                onClick={copyHash}
+              >
+                {copiedHash ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Transaction Hash
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </SheetContent>
     </Sheet>
