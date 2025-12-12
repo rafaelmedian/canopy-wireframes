@@ -319,15 +319,20 @@ export default function SwapTab({
                     <p className="text-base font-semibold">{toToken.symbol}</p>
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </div>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); handleUseMaxOutput(); }}
-                    className="text-sm text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer"
-                  >
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
                     <Wallet className="w-3 h-3" />
                     {getTokenBalance(toToken.symbol).toLocaleString()} {toToken.symbol}
-                  </button>
+                  </p>
                 </div>
               </button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={handleUseMaxOutput}
+              >
+                Use max
+              </Button>
               <div className="text-right flex flex-col items-end">
                 <input
                   type="text"
