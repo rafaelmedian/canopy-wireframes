@@ -18,11 +18,12 @@ export default function TradingPanel({ chainData, isOwner, isPreview = false }) 
     const tokenPrice = chainData.currentPrice || 0.001 // Price per token in USD
 
     if (activeTab === 'buy') {
-      // User inputs CNPY (assuming 1 CNPY = $1)
-      const tokensReceived = inputAmount / tokenPrice
+      // User inputs CNPY (1 CNPY = $2)
+      const cnpyPrice = 2.0
+      const tokensReceived = (inputAmount * cnpyPrice) / tokenPrice
       return {
         tokens: tokensReceived.toLocaleString('en-US', { maximumFractionDigits: 2 }),
-        usd: `$${inputAmount.toFixed(2)}`
+        usd: `$${(inputAmount * cnpyPrice).toFixed(2)}`
       }
     } else if (activeTab === 'sell') {
       // User inputs chain tokens, outputs CNPY

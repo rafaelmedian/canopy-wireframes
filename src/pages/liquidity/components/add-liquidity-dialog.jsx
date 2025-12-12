@@ -131,7 +131,7 @@ export default function AddLiquidityDialog({ open, onOpenChange, selectedPool = 
   // Calculate estimated values
   const amountANum = parseFloat(amountA) || 0
   const amountBNum = parseFloat(amountB) || 0
-  const totalValueUSD = amountANum * 1 + amountBNum * (tokenBData?.price || 1) // CNPY = $1
+  const totalValueUSD = amountANum * 2 + amountBNum * (tokenBData?.price || 1) // CNPY = $2
   const shareOfPool = activePool ? ((amountANum / (activePool.tokenAReserve + amountANum)) * 100).toFixed(4) : 0
   const estimatedApr = activePool?.apr || 0
 

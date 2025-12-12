@@ -33,8 +33,8 @@ export default function BuySellTab({
   const [showSlippageSettings, setShowSlippageSettings] = useState(false)
   const [inputMode, setInputMode] = useState('token') // 'token' or 'usd'
 
-  // CNPY price is $1 (stablecoin)
-  const cnpyPrice = 1
+  // CNPY price is $2
+  const cnpyPrice = 2
   const tokenPrice = chainData?.currentPrice || 0.001
 
   // CNPY token object

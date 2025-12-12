@@ -138,7 +138,7 @@ export function WalletProvider({ children }) {
       // If CNPY balance was overridden, recalculate total
       if (cnpyBalanceOverride !== null) {
         const cnpyAsset = fundedWalletData.assets?.find(a => a.symbol === 'CNPY')
-        const cnpyPrice = cnpyAsset?.price || 1.50
+        const cnpyPrice = cnpyAsset?.price || 2.0
         const originalCnpyValue = cnpyAsset?.value || 0
         const newCnpyValue = cnpyBalanceOverride * cnpyPrice
         return fundedWalletData.totalValue - originalCnpyValue + newCnpyValue
@@ -154,7 +154,7 @@ export function WalletProvider({ children }) {
       // If CNPY balance was overridden, recalculate total
       if (cnpyBalanceOverride !== null) {
         const cnpyAsset = userData.assets?.find(a => a.symbol === 'CNPY')
-        const cnpyPrice = cnpyAsset?.price || 1.50
+        const cnpyPrice = cnpyAsset?.price || 2.0
         const originalCnpyValue = cnpyAsset?.value || 0
         const newCnpyValue = cnpyBalanceOverride * cnpyPrice
         return userData.totalValue - originalCnpyValue + newCnpyValue

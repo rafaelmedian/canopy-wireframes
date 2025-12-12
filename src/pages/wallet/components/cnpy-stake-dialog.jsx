@@ -45,7 +45,7 @@ export default function CnpyStakeDialog({
   const availableBalance = cnpyAsset?.balance || 0
   const currentStakedAmount = cnpyStake.amount || 0
   const amountNum = parseFloat(amount) || 0
-  const price = cnpyAsset?.price || 1.50
+  const price = cnpyAsset?.price || 2.0
   const amountUSD = amountNum * price
 
   // Combine current committees with available chains
