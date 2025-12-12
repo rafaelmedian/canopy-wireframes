@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card'
 import { Plus, ChevronRight, ChevronDown, ArrowDown, Check, Zap, Wallet, AlertTriangle, Minus } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useWallet } from '@/contexts/wallet-context'
+import { toast } from 'sonner'
 import BridgeTokenDialog from '@/components/bridge-token-dialog'
 import ConvertTransactionDialog from '@/components/trading-module/convert-transaction-dialog'
 import SellOrderConfirmationDialog from '@/components/trading-module/sell-order-confirmation-dialog'
@@ -249,7 +250,7 @@ export default function ConvertTab({
   const [direction, setDirection] = useState('buy') // 'buy' = stablecoin→CNPY, 'sell' = CNPY→stablecoin
   const [sellMode, setSellMode] = useState('instant') // 'instant' or 'create'
   const [orderPrice, setOrderPrice] = useState(null) // null = use preset
-  const [pricePreset, setPricePreset] = useState('normal') // 'fast', 'normal', 'urgent'
+  const [pricePreset, setPricePreset] = useState('market') // 'market', 'minus1', 'minus2', 'minus5', 'custom'
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false)
   const [expandedCard, setExpandedCard] = useState(null) // 'instant' | 'create' | null
   const [userOrders, setUserOrders] = useState(() => {
@@ -268,11 +269,12 @@ export default function ConvertTab({
   // Get external wallet balances from context
   const connectedWallets = getExternalBalances()
 
-  // Price presets for create order
+  // Price presets for create order (CNPY market price = $2.00)
   const pricePresets = {
-    fast: 0.98,    // Below market, faster fill
-    normal: 0.99,  // Current market rate
-    urgent: 1.00   // At peg, slower fill
+    market: 2.00,    // Current market price (100%)
+    minus1: 1.98,    // -1% below market
+    minus2: 1.96,    // -2% below market
+    minus5: 1.90     // -5% below market
   }
 
   // Calculate instant sell values
@@ -281,7 +283,8 @@ export default function ConvertTab({
     if (cnpyAmount <= 0) return { received: 0, rate: 0, fee: 0, feeAmount: 0 }
     
     const instantSellFee = 0.10 // 10% fee
-    const instantSellRate = 1.0 - instantSellFee // $0.90 per CNPY (10% fee)
+    const cnpyMarketPrice = 2.0 // CNPY market price
+    const instantSellRate = cnpyMarketPrice * (1.0 - instantSellFee) // $1.80 per CNPY (10% fee)
     const received = cnpyAmount * instantSellRate
     const feeAmount = cnpyAmount * instantSellFee
     
@@ -302,7 +305,7 @@ export default function ConvertTab({
     if (orderPrice !== null) {
       selectedPrice = orderPrice
     } else if (pricePreset === 'custom') {
-      selectedPrice = pricePresets.normal // Default to normal if custom but no price set
+      selectedPrice = pricePresets.market // Default to normal if custom but no price set
     } else {
       selectedPrice = pricePresets[pricePreset]
     }
@@ -352,7 +355,7 @@ export default function ConvertTab({
       // Reset sell mode to instant when switching to sell direction
       if (newDirection === 'sell') {
         setSellMode('instant')
-        setPricePreset('normal')
+        setPricePreset('market')
         setOrderPrice(null)
       }
       return newDirection
@@ -617,7 +620,7 @@ export default function ConvertTab({
                 <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                   <span>${parseFloat(amount).toFixed(0)}</span>
                   <span>•</span>
-                  <span>$1.00/CNPY</span>
+                  <span>$2.00/CNPY</span>
                 </div>
               </div>
             )}
@@ -860,26 +863,39 @@ export default function ConvertTab({
                         setSellMode('instant')
                         setExpandedCard(null) // Reset expanded state when switching modes
                       }}
-                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all ${
+                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all flex flex-col items-center ${
                         sellMode === 'instant'
                           ? 'bg-background text-foreground shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      Instant Sell
+                      <span className="flex items-center gap-1.5">
+                        <Zap className="w-3.5 h-3.5" />
+                        Instant
+                      </span>
+                      {parseFloat(amount) > 0 && createOrder.received > instantSell.received && (
+                        <span className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                          -${(createOrder.received - instantSell.received).toFixed(2)}
+                        </span>
+                      )}
                     </button>
                     <button
                       onClick={() => {
                         setSellMode('create')
                         setExpandedCard(null) // Reset expanded state when switching modes
                       }}
-                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all ${
+                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all flex flex-col items-center ${
                         sellMode === 'create'
                           ? 'bg-background text-foreground shadow-sm'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      Create Order
+                      <span>Create Order</span>
+                      {parseFloat(amount) > 0 && createOrder.received > instantSell.received && (
+                        <span className="text-[10px] text-green-500 font-medium mt-0.5">
+                          +${(createOrder.received - instantSell.received).toFixed(2)}
+                        </span>
+                      )}
                     </button>
                   </div>
 
@@ -959,7 +975,7 @@ export default function ConvertTab({
                             
                             {/* Est. fill time - always visible */}
                             <div className="mt-2 text-xs text-muted-foreground">
-                              Est. fill time: <span className="font-medium text-foreground">~2-4 hours</span>
+                              Est. fill time: <span className="font-medium text-foreground">24 hours</span>
                             </div>
                           </button>
                           
@@ -976,7 +992,7 @@ export default function ConvertTab({
                                         setPricePreset('custom')
                                         // Set default price if none exists
                                         if (orderPrice === null) {
-                                          setOrderPrice(pricePresets.normal)
+                                          setOrderPrice(pricePresets.market)
                                         }
                                       } else {
                                         setPricePreset(value)
@@ -988,21 +1004,30 @@ export default function ConvertTab({
                                       <SelectValue>
                                         {pricePreset === 'custom' || orderPrice !== null
                                           ? 'Custom'
-                                          : pricePreset && pricePresets[pricePreset]
-                                            ? pricePreset.charAt(0).toUpperCase() + pricePreset.slice(1)
-                                            : 'Select...'
+                                          : pricePreset === 'market'
+                                            ? 'Market'
+                                            : pricePreset === 'minus1'
+                                              ? '-1%'
+                                              : pricePreset === 'minus2'
+                                                ? '-2%'
+                                                : pricePreset === 'minus5'
+                                                  ? '-5%'
+                                                  : 'Select...'
                                         }
                                       </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="fast">
-                                        Fast (${pricePresets.fast.toFixed(3)})
+                                      <SelectItem value="market">
+                                        Market (${pricePresets.market.toFixed(2)})
                                       </SelectItem>
-                                      <SelectItem value="normal">
-                                        Normal (${pricePresets.normal.toFixed(3)})
+                                      <SelectItem value="minus1">
+                                        -1% (${pricePresets.minus1.toFixed(2)})
                                       </SelectItem>
-                                      <SelectItem value="urgent">
-                                        Urgent (${pricePresets.urgent.toFixed(3)})
+                                      <SelectItem value="minus2">
+                                        -2% (${pricePresets.minus2.toFixed(2)})
+                                      </SelectItem>
+                                      <SelectItem value="minus5">
+                                        -5% (${pricePresets.minus5.toFixed(2)})
                                       </SelectItem>
                                       <SelectItem value="custom">
                                         Custom
@@ -1015,7 +1040,7 @@ export default function ConvertTab({
                                       <button
                                         type="button"
                                         onClick={() => {
-                                          const currentPrice = orderPrice !== null ? orderPrice : pricePresets[pricePreset] || pricePresets.normal
+                                          const currentPrice = orderPrice !== null ? orderPrice : pricePresets[pricePreset] || pricePresets.market
                                           const newPrice = Math.max(0.001, currentPrice - 0.001)
                                           setOrderPrice(newPrice)
                                           setPricePreset('custom')
@@ -1027,22 +1052,22 @@ export default function ConvertTab({
                                       <input
                                         type="text"
                                         inputMode="decimal"
-                                        value={orderPrice !== null ? orderPrice.toString() : (pricePresets[pricePreset] || pricePresets.normal).toString()}
+                                        value={orderPrice !== null ? orderPrice.toString() : (pricePresets[pricePreset] || pricePresets.market).toString()}
                                         onChange={(e) => {
                                           const value = e.target.value
                                           if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                                            const numValue = value === '' ? pricePresets.normal : parseFloat(value)
+                                            const numValue = value === '' ? pricePresets.market : parseFloat(value)
                                             setOrderPrice(numValue)
                                             setPricePreset('custom')
                                           }
                                         }}
-                                        placeholder={pricePresets.normal.toFixed(3)}
+                                        placeholder={pricePresets.market.toFixed(3)}
                                         className="flex-1 min-w-0 bg-background border border-border rounded-md px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-center overflow-visible"
                                       />
                                       <button
                                         type="button"
                                         onClick={() => {
-                                          const currentPrice = orderPrice !== null ? orderPrice : pricePresets[pricePreset] || pricePresets.normal
+                                          const currentPrice = orderPrice !== null ? orderPrice : pricePresets[pricePreset] || pricePresets.market
                                           const newPrice = Math.min(1.5, currentPrice + 0.001)
                                           setOrderPrice(newPrice)
                                           setPricePreset('custom')
@@ -1244,11 +1269,12 @@ export default function ConvertTab({
           onClose={() => setShowOrderConfirmation(false)}
           onConfirm={() => {
             // Save order to user orders
+            const pricePerCnpy = orderPrice !== null ? orderPrice : (pricePreset === 'custom' ? pricePresets.market : pricePresets[pricePreset])
             const newOrder = {
               id: `order-${Date.now()}`,
               type: 'sell',
               cnpyAmount: parseFloat(amount) || 0,
-              pricePerCnpy: orderPrice !== null ? orderPrice : (pricePreset === 'custom' ? pricePresets.normal : pricePresets[pricePreset]),
+              pricePerCnpy: pricePerCnpy,
               destinationToken: destinationToken.symbol,
               destinationChain: destinationToken.chain,
               expectedReceive: createOrder.received,
@@ -1268,12 +1294,24 @@ export default function ConvertTab({
               console.error('Failed to save order to localStorage', e)
             }
             
+            // Show toast notification
+            toast.success('Order created successfully', {
+              description: `Selling ${parseFloat(amount).toLocaleString()} CNPY at $${pricePerCnpy.toFixed(3)}/CNPY`,
+              action: {
+                label: 'View Orders',
+                onClick: () => {
+                  // Navigate to wallet orders tab
+                  window.location.href = '/wallet?tab=orders'
+                }
+              }
+            })
+            
             setShowOrderConfirmation(false)
             // Reset form
             setAmount('')
           }}
           cnpyAmount={parseFloat(amount) || 0}
-          pricePerCnpy={orderPrice !== null ? orderPrice : (pricePreset === 'custom' ? pricePresets.normal : pricePresets[pricePreset])}
+          pricePerCnpy={orderPrice !== null ? orderPrice : (pricePreset === 'custom' ? pricePresets.market : pricePresets[pricePreset])}
           destinationToken={destinationToken}
           expectedReceive={createOrder.received}
           fee={createOrder.fee}
