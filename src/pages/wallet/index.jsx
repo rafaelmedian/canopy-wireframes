@@ -17,6 +17,7 @@ import AssetsTab from './components/assets-tab'
 import StakingTab from './components/staking-tab'
 import ActivityTab from './components/activity-tab'
 import GovernanceTab from './components/governance-tab'
+import OrdersTab from './components/orders-tab'
 import StakeDialog from './components/stake-dialog'
 import CnpyStakeDialog from './components/cnpy-stake-dialog'
 import SendDialog from './components/send-dialog'
@@ -163,6 +164,12 @@ export default function Wallet() {
                 >
                   Governance
                 </TabsTrigger>
+                <TabsTrigger
+                  value="orders"
+                  className="py-4 px-0 mr-8 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent bg-transparent"
+                >
+                  Orders
+                </TabsTrigger>
               </TabsList>
 
               {/* Assets Tab */}
@@ -191,6 +198,11 @@ export default function Wallet() {
               {/* Governance Tab */}
               <TabsContent value="governance">
                 <GovernanceTab userVotingPower={walletData.totalValue || 2500} />
+              </TabsContent>
+
+              {/* Orders Tab */}
+              <TabsContent value="orders">
+                <OrdersTab />
               </TabsContent>
             </Tabs>
           </div>
