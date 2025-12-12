@@ -251,6 +251,7 @@ export default function ConvertTab({
   const [orderPrice, setOrderPrice] = useState(null) // null = use preset
   const [pricePreset, setPricePreset] = useState('normal') // 'fast', 'normal', 'urgent'
   const [showOrderConfirmation, setShowOrderConfirmation] = useState(false)
+  const [expandedCard, setExpandedCard] = useState(null) // 'instant' | 'create' | null
   const [userOrders, setUserOrders] = useState(() => {
     // Load user orders from localStorage
     try {
@@ -855,7 +856,10 @@ export default function ConvertTab({
                   {/* Mode Toggle */}
                   <div className="flex gap-1 p-1 bg-muted/50 rounded-lg mb-4">
                     <button
-                      onClick={() => setSellMode('instant')}
+                      onClick={() => {
+                        setSellMode('instant')
+                        setExpandedCard(null) // Reset expanded state when switching modes
+                      }}
                       className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all ${
                         sellMode === 'instant'
                           ? 'bg-background text-foreground shadow-sm'
@@ -865,7 +869,10 @@ export default function ConvertTab({
                       Instant Sell
                     </button>
                     <button
-                      onClick={() => setSellMode('create')}
+                      onClick={() => {
+                        setSellMode('create')
+                        setExpandedCard(null) // Reset expanded state when switching modes
+                      }}
                       className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all ${
                         sellMode === 'create'
                           ? 'bg-background text-foreground shadow-sm'
@@ -878,41 +885,49 @@ export default function ConvertTab({
 
                   {/* Instant Sell Mode */}
                   {sellMode === 'instant' && (
-                    <div className="bg-muted/30 rounded-lg p-3 space-y-2">
-                      {/* Compact header */}
-                      <div className="flex items-center gap-1.5">
-                        <Zap className="w-3.5 h-3.5 text-green-500" />
-                        <h3 className="text-xs font-semibold">INSTANT SELL</h3>
-                      </div>
-                      
+                    <div className="bg-muted/30 rounded-lg p-3">
                       {parseFloat(amount) > 0 ? (
                         <>
-                          {/* Prominent amount */}
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-0.5">You receive</p>
-                            <p className="text-2xl font-bold">
-                              ${instantSell.received.toFixed(2)} {destinationToken.symbol}
-                            </p>
-                          </div>
+                          {/* Clickable header area */}
+                          <button
+                            onClick={() => setExpandedCard(expandedCard === 'instant' ? null : 'instant')}
+                            className="w-full text-left cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-0.5">You receive</p>
+                                <p className="text-2xl font-bold">
+                                  ${instantSell.received.toFixed(2)} {destinationToken.symbol}
+                                </p>
+                              </div>
+                              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedCard === 'instant' ? 'rotate-180' : ''}`} />
+                            </div>
+                            
+                            {/* Fee - always visible */}
+                            <div className="mt-2 text-xs text-muted-foreground">
+                              Fee: <span className="font-medium text-foreground">{(instantSell.fee * 100).toFixed(0)}% (${instantSell.feeAmount.toFixed(2)})</span>
+                            </div>
+                          </button>
                           
-                          {/* Combined details */}
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>Rate: <span className="font-medium text-foreground">${instantSell.rate.toFixed(3)}/CNPY</span></span>
-                            <span>•</span>
-                            <span>Fee: <span className="font-medium text-foreground">{(instantSell.fee * 100).toFixed(0)}% (${instantSell.feeAmount.toFixed(2)})</span></span>
-                          </div>
-                          
-                          {/* Compact features */}
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1 border-t border-border">
-                            <span className="flex items-center gap-1">
-                              <Check className="w-3 h-3 text-green-500" />
-                              Instant
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Check className="w-3 h-3 text-green-500" />
-                              Guaranteed
-                            </span>
-                          </div>
+                          {/* Expanded details */}
+                          {expandedCard === 'instant' && (
+                            <div className="mt-3 pt-3 border-t border-border space-y-2">
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>Rate: <span className="font-medium text-foreground">${instantSell.rate.toFixed(3)}/CNPY</span></span>
+                              </div>
+                              
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Check className="w-3 h-3 text-green-500" />
+                                  Instant
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Check className="w-3 h-3 text-green-500" />
+                                  Guaranteed
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </>
                       ) : (
                         <p className="text-xs text-muted-foreground text-center py-2">
@@ -924,131 +939,142 @@ export default function ConvertTab({
 
                   {/* Create Order Mode */}
                   {sellMode === 'create' && (
-                    <div className="bg-muted/30 rounded-lg p-3 space-y-2.5">
-                      {/* Compact header */}
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm">📋</span>
-                        <h3 className="text-xs font-semibold">CREATE SELL ORDER</h3>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1.5">Set your price:</p>
-                          <div className="flex items-center gap-2">
-                            <Select
-                              value={pricePreset === 'custom' || orderPrice !== null ? 'custom' : pricePreset}
-                              onValueChange={(value) => {
-                                if (value === 'custom') {
-                                  setPricePreset('custom')
-                                  // Set default price if none exists
-                                  if (orderPrice === null) {
-                                    setOrderPrice(pricePresets.normal)
-                                  }
-                                } else {
-                                  setPricePreset(value)
-                                  setOrderPrice(null)
-                                }
-                              }}
-                            >
-                              <SelectTrigger className="flex-1 h-9 text-xs">
-                                <SelectValue>
-                                  {pricePreset === 'custom' || orderPrice !== null
-                                    ? `Custom${orderPrice !== null ? ` ($${orderPrice.toFixed(3)})` : ''}`
-                                    : pricePreset && pricePresets[pricePreset]
-                                      ? `${pricePreset.charAt(0).toUpperCase() + pricePreset.slice(1)} ($${pricePresets[pricePreset].toFixed(3)})`
-                                      : 'Select...'
-                                  }
-                                </SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="fast">
-                                  Fast (${pricePresets.fast.toFixed(3)})
-                                </SelectItem>
-                                <SelectItem value="normal">
-                                  Normal (${pricePresets.normal.toFixed(3)})
-                                </SelectItem>
-                                <SelectItem value="urgent">
-                                  Urgent (${pricePresets.urgent.toFixed(3)})
-                                </SelectItem>
-                                <SelectItem value="custom">
-                                  Custom
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            {(pricePreset === 'custom' || orderPrice !== null) && (
-                              <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                                <span className="text-xs text-muted-foreground flex-shrink-0">$</span>
-                                <div className="flex items-center gap-0.5 flex-1 min-w-0">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const currentPrice = orderPrice !== null ? orderPrice : pricePresets.normal
-                                      const newPrice = Math.max(0.001, currentPrice - 0.001)
-                                      setOrderPrice(newPrice)
-                                    }}
-                                    className="w-6 h-6 flex items-center justify-center rounded border border-border bg-background hover:bg-muted transition-colors flex-shrink-0"
-                                  >
-                                    <Minus className="w-3 h-3" />
-                                  </button>
-                                  <input
-                                    type="text"
-                                    inputMode="decimal"
-                                    value={orderPrice !== null ? orderPrice.toString() : ''}
-                                    onChange={(e) => {
-                                      const value = e.target.value
-                                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                                        const numValue = value === '' ? pricePresets.normal : parseFloat(value)
-                                        setOrderPrice(numValue)
+                    <div className="bg-muted/30 rounded-lg p-3">
+                      {parseFloat(amount) > 0 ? (
+                        <>
+                          {/* Clickable header area */}
+                          <button
+                            onClick={() => setExpandedCard(expandedCard === 'create' ? null : 'create')}
+                            className="w-full text-left cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-0.5">You receive (if filled)</p>
+                                <p className="text-2xl font-bold">
+                                  ${createOrder.received.toFixed(2)} {destinationToken.symbol}
+                                </p>
+                              </div>
+                              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expandedCard === 'create' ? 'rotate-180' : ''}`} />
+                            </div>
+                            
+                            {/* Est. fill time - always visible */}
+                            <div className="mt-2 text-xs text-muted-foreground">
+                              Est. fill time: <span className="font-medium text-foreground">~2-4 hours</span>
+                            </div>
+                          </button>
+                          
+                          {/* Expanded details */}
+                          {expandedCard === 'create' && (
+                            <div className="mt-3 pt-3 border-t border-border space-y-2.5">
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-1.5">Set your price:</p>
+                                <div className="flex items-center gap-2">
+                                  <Select
+                                    value={pricePreset === 'custom' || orderPrice !== null ? 'custom' : pricePreset}
+                                    onValueChange={(value) => {
+                                      if (value === 'custom') {
+                                        setPricePreset('custom')
+                                        // Set default price if none exists
+                                        if (orderPrice === null) {
+                                          setOrderPrice(pricePresets.normal)
+                                        }
+                                      } else {
+                                        setPricePreset(value)
+                                        setOrderPrice(null)
                                       }
                                     }}
-                                    placeholder={pricePresets.normal.toFixed(3)}
-                                    className="flex-1 min-w-0 bg-background border border-border rounded-md px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-center overflow-visible"
-                                    style={{ minWidth: '60px' }}
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const currentPrice = orderPrice !== null ? orderPrice : pricePresets.normal
-                                      const newPrice = Math.min(1.5, currentPrice + 0.001)
-                                      setOrderPrice(newPrice)
-                                    }}
-                                    className="w-6 h-6 flex items-center justify-center rounded border border-border bg-background hover:bg-muted transition-colors flex-shrink-0"
                                   >
-                                    <Plus className="w-3 h-3" />
-                                  </button>
+                                    <SelectTrigger className="w-24 h-9 text-xs flex-shrink-0">
+                                      <SelectValue>
+                                        {pricePreset === 'custom' || orderPrice !== null
+                                          ? 'Custom'
+                                          : pricePreset && pricePresets[pricePreset]
+                                            ? pricePreset.charAt(0).toUpperCase() + pricePreset.slice(1)
+                                            : 'Select...'
+                                        }
+                                      </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="fast">
+                                        Fast (${pricePresets.fast.toFixed(3)})
+                                      </SelectItem>
+                                      <SelectItem value="normal">
+                                        Normal (${pricePresets.normal.toFixed(3)})
+                                      </SelectItem>
+                                      <SelectItem value="urgent">
+                                        Urgent (${pricePresets.urgent.toFixed(3)})
+                                      </SelectItem>
+                                      <SelectItem value="custom">
+                                        Custom
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                                    <span className="text-xs text-muted-foreground flex-shrink-0">$</span>
+                                    <div className="flex items-center gap-0.5 flex-1 min-w-0">
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const currentPrice = orderPrice !== null ? orderPrice : pricePresets[pricePreset] || pricePresets.normal
+                                          const newPrice = Math.max(0.001, currentPrice - 0.001)
+                                          setOrderPrice(newPrice)
+                                          setPricePreset('custom')
+                                        }}
+                                        className="w-6 h-6 flex items-center justify-center rounded border border-border bg-background hover:bg-muted transition-colors flex-shrink-0"
+                                      >
+                                        <Minus className="w-3 h-3" />
+                                      </button>
+                                      <input
+                                        type="text"
+                                        inputMode="decimal"
+                                        value={orderPrice !== null ? orderPrice.toString() : (pricePresets[pricePreset] || pricePresets.normal).toString()}
+                                        onChange={(e) => {
+                                          const value = e.target.value
+                                          if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                            const numValue = value === '' ? pricePresets.normal : parseFloat(value)
+                                            setOrderPrice(numValue)
+                                            setPricePreset('custom')
+                                          }
+                                        }}
+                                        placeholder={pricePresets.normal.toFixed(3)}
+                                        className="flex-1 min-w-0 bg-background border border-border rounded-md px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-center overflow-visible"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const currentPrice = orderPrice !== null ? orderPrice : pricePresets[pricePreset] || pricePresets.normal
+                                          const newPrice = Math.min(1.5, currentPrice + 0.001)
+                                          setOrderPrice(newPrice)
+                                          setPricePreset('custom')
+                                        }}
+                                        className="w-6 h-6 flex items-center justify-center rounded border border-border bg-background hover:bg-muted transition-colors flex-shrink-0"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground flex-shrink-0">/CNPY</span>
+                                  </div>
                                 </div>
-                                <span className="text-xs text-muted-foreground flex-shrink-0">/CNPY</span>
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {parseFloat(amount) > 0 && (
-                        <>
-                          <div className="pt-1.5 border-t border-border space-y-1.5">
-                            {/* Prominent amount */}
-                            <div>
-                              <p className="text-xs text-muted-foreground mb-0.5">You receive (if filled)</p>
-                              <p className="text-2xl font-bold">
-                                ${createOrder.received.toFixed(2)} {destinationToken.symbol}
-                              </p>
+                              
+                              <div className="space-y-1.5">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <span>Rate: <span className="font-medium text-foreground">${createOrder.rate.toFixed(3)}/CNPY</span></span>
+                                  <span>•</span>
+                                  <span className="text-green-500">No fees</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 pt-1">
+                                  <span className="text-xs">⚠️</span>
+                                  <span className="text-xs text-muted-foreground">May not fill immediately</span>
+                                </div>
+                              </div>
                             </div>
-                            
-                            {/* Combined details */}
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <span>Fee: <span className="font-medium text-green-500">No fees</span></span>
-                              <span>•</span>
-                              <span>Est: <span className="font-medium text-foreground">~2-4h</span></span>
-                            </div>
-                            
-                            {/* Compact warning */}
-                            <div className="flex items-center gap-1.5 pt-1 border-t border-border">
-                              <span className="text-xs">⚠️</span>
-                              <span className="text-xs text-muted-foreground">May not fill immediately</span>
-                            </div>
-                          </div>
+                          )}
                         </>
+                      ) : (
+                        <p className="text-xs text-muted-foreground text-center py-2">
+                          Enter an amount to see create order details
+                        </p>
                       )}
                     </div>
                   )}
