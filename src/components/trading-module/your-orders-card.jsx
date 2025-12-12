@@ -1,10 +1,21 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { ChevronDown, Edit2, X, ExternalLink } from 'lucide-react'
 
 export default function YourOrdersCard({ orders = [], onEdit, onCancel, onViewAll }) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [orderToCancel, setOrderToCancel] = useState(null)
 
   if (!orders || orders.length === 0) {
     return null
@@ -82,7 +93,7 @@ export default function YourOrdersCard({ orders = [], onEdit, onCancel, onViewAl
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-500/10"
-                      onClick={() => onCancel(order)}
+                      onClick={() => setOrderToCancel(order)}
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -98,6 +109,31 @@ export default function YourOrdersCard({ orders = [], onEdit, onCancel, onViewAl
           </div>
         )}
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={!!orderToCancel} onOpenChange={(open) => !open && setOrderToCancel(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Order</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this order for {orderToCancel?.cnpyAmount.toLocaleString()} CNPY?
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Order</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => { 
+                onCancel(orderToCancel)
+                setOrderToCancel(null)
+              }} 
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Cancel Order
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

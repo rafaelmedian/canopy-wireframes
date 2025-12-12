@@ -1,11 +1,23 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { toast } from 'sonner'
 import { Edit2, X, Clock, CheckCircle, XCircle, Filter } from 'lucide-react'
 
 export default function OrdersTab() {
   const [orders, setOrders] = useState([])
   const [filter, setFilter] = useState('all') // 'all', 'active', 'filled', 'cancelled'
+  const [orderToCancel, setOrderToCancel] = useState(null)
 
   useEffect(() => {
     // Load orders from localStorage
@@ -31,6 +43,7 @@ export default function OrdersTab() {
     setOrders(updatedOrders)
     try {
       localStorage.setItem('userSellOrders', JSON.stringify(updatedOrders))
+      toast.success('Order cancelled')
     } catch (e) {
       console.error('Failed to update orders', e)
     }
@@ -174,7 +187,7 @@ export default function OrdersTab() {
                     variant="outline"
                     size="sm"
                     className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
-                    onClick={() => handleCancel(order)}
+                    onClick={() => setOrderToCancel(order)}
                   >
                     <X className="w-4 h-4 mr-2" />
                     Cancel
@@ -185,6 +198,31 @@ export default function OrdersTab() {
           </Card>
         ))}
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={!!orderToCancel} onOpenChange={(open) => !open && setOrderToCancel(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Order</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this order for {orderToCancel?.cnpyAmount.toLocaleString()} CNPY?
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Order</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => { 
+                handleCancel(orderToCancel)
+                setOrderToCancel(null)
+              }} 
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Cancel Order
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
