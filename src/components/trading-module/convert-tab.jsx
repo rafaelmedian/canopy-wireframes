@@ -883,6 +883,8 @@ export default function ConvertTab({
                       onClick={() => {
                         setSellMode('create')
                         setExpandedCard(null) // Reset expanded state when switching modes
+                        setPricePreset('market') // Reset to market when switching to create order
+                        setOrderPrice(null) // Clear any custom price
                       }}
                       className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-all flex flex-col items-center ${
                         sellMode === 'create'
