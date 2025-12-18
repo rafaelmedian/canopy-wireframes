@@ -1,5 +1,5 @@
 {
-  "withfunds@email.com": {
+  "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199": {
     "totalValue": 17055.22,
     "change24h": 5.2,
     "assets": [
@@ -150,6 +150,74 @@
   ],
   "stakes": [
     {
+      "id": 0,
+      "chainId": 0,
+      "symbol": "CNPY",
+      "chain": "Canopy",
+      "amount": 5000,
+      "apy": 8.5,
+      "rewards": 12.45,
+      "rewardsUSD": 18.68,
+      "color": "#1dd13a",
+      "restakeRewards": true,
+      "isCnpy": true,
+      "committees": [
+        {
+          "chainId": 1,
+          "symbol": "OENS",
+          "chain": "Onchain ENS",
+          "color": "#10b981",
+          "rewards": 3.25,
+          "rewardsUSD": 7.28
+        },
+        {
+          "chainId": 2,
+          "symbol": "GAME",
+          "chain": "MyGameChain",
+          "color": "#8b5cf6",
+          "rewards": 1.85,
+          "rewardsUSD": 12.81
+        }
+      ],
+      "availableChains": [
+        {
+          "chainId": 3,
+          "symbol": "SOCL",
+          "chain": "Social Connect",
+          "color": "#06b6d4",
+          "estimatedApy": 6.2
+        },
+        {
+          "chainId": 5,
+          "symbol": "STRM",
+          "chain": "StreamVault",
+          "color": "#f59e0b",
+          "estimatedApy": 7.8
+        },
+        {
+          "chainId": 6,
+          "symbol": "DFIM",
+          "chain": "DeFi Masters",
+          "color": "#ec4899",
+          "estimatedApy": 5.5
+        },
+        {
+          "chainId": 14,
+          "symbol": "HLTH",
+          "chain": "HealthChain",
+          "color": "#dc2626",
+          "estimatedApy": 4.9
+        },
+        {
+          "chainId": 15,
+          "symbol": "DYPRO",
+          "chain": "DeFi Yield Pro",
+          "color": "#3b82f6",
+          "estimatedApy": 8.2
+        }
+      ]
+    },
+    {
       "id": 1,
       "chainId": 1,
       "symbol": "OENS",
@@ -158,7 +226,8 @@
       "apy": 12.5,
       "rewards": 2.15,
       "rewardsUSD": 4.82,
-      "color": "#10b981"
+      "color": "#10b981",
+      "restakeRewards": true
     },
     {
       "id": 2,
@@ -169,7 +238,8 @@
       "apy": 18.2,
       "rewards": 0.82,
       "rewardsUSD": 5.68,
-      "color": "#8b5cf6"
+      "color": "#8b5cf6",
+      "restakeRewards": false
     },
     {
       "id": 3,
@@ -179,7 +249,8 @@
       "amount": 0,
       "apy": 8.5,
       "rewards": 0,
-      "color": "#06b6d4"
+      "color": "#06b6d4",
+      "restakeRewards": true
     },
     {
       "id": 4,
@@ -189,7 +260,8 @@
       "amount": 0,
       "apy": 15.3,
       "rewards": 0,
-      "color": "#f59e0b"
+      "color": "#f59e0b",
+      "restakeRewards": true
     },
     {
       "id": 5,
@@ -199,7 +271,8 @@
       "amount": 0,
       "apy": 10.8,
       "rewards": 0,
-      "color": "#ec4899"
+      "color": "#ec4899",
+      "restakeRewards": false
     }
   ],
   "unstaking": [
@@ -284,16 +357,69 @@
     },
     {
       "id": 6,
-      "type": "claimed",
+      "type": "reward",
       "amount": 2.15,
       "symbol": "OENS",
       "chainId": 1,
       "timestamp": "1 week ago",
       "status": "completed",
-      "hash": "0x998877665544332211009988776655443322110099887766",
-      "from": "0xStakingContract1234567890abcdef1234567890ab",
-      "to": "0xYourWallet1234567890abcdef1234567890abcdef",
-      "fee": 0.0005
+      "source": "CNPY Staking",
+      "sourceSymbol": "CNPY"
+    },
+    {
+      "id": 7,
+      "type": "reward",
+      "amount": 0.82,
+      "symbol": "GAME",
+      "chainId": 2,
+      "timestamp": "1 week ago",
+      "status": "completed",
+      "source": "CNPY Staking",
+      "sourceSymbol": "CNPY"
+    },
+    {
+      "id": 8,
+      "type": "reward",
+      "amount": 12.45,
+      "symbol": "CNPY",
+      "chainId": 0,
+      "timestamp": "Today",
+      "status": "completed",
+      "source": "CNPY Staking",
+      "sourceSymbol": "CNPY"
+    },
+    {
+      "id": 9,
+      "type": "reward",
+      "amount": 3.25,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "Yesterday",
+      "status": "completed",
+      "source": "CNPY Staking",
+      "sourceSymbol": "CNPY"
+    },
+    {
+      "id": 10,
+      "type": "reward",
+      "amount": 1.85,
+      "symbol": "GAME",
+      "chainId": 2,
+      "timestamp": "Yesterday",
+      "status": "completed",
+      "source": "CNPY Staking",
+      "sourceSymbol": "CNPY"
+    },
+    {
+      "id": 11,
+      "type": "reward",
+      "amount": 0.45,
+      "symbol": "OENS",
+      "chainId": 1,
+      "timestamp": "2 days ago",
+      "status": "completed",
+      "source": "OENS Staking",
+      "sourceSymbol": "OENS"
     }
   ],
   "earningsHistory": [
@@ -449,15 +575,141 @@
         }
       ]
     }
+  ],
+  "lpPositions": [
+    {
+      "id": 1,
+      "poolId": "pool-1",
+      "tokenA": "CNPY",
+      "tokenB": "OENS",
+      "lpTokens": 125.45,
+      "tokenAAmount": 500,
+      "tokenBAmount": 1000,
+      "valueUSD": 2800.90,
+      "initialValueUSD": 2500.00,
+      "earnings": 300.90,
+      "share": 0.18,
+      "depositDate": "2024-11-10"
+    },
+    {
+      "id": 2,
+      "poolId": "pool-8",
+      "tokenA": "CNPY",
+      "tokenB": "GAME",
+      "lpTokens": 85.20,
+      "tokenAAmount": 300,
+      "tokenBAmount": 450,
+      "valueUSD": 1850.50,
+      "initialValueUSD": 1650.00,
+      "earnings": 200.50,
+      "share": 0.12,
+      "depositDate": "2024-11-15"
+    },
+    {
+      "id": 3,
+      "poolId": "pool-3",
+      "tokenA": "CNPY",
+      "tokenB": "SOCN",
+      "lpTokens": 200.00,
+      "tokenAAmount": 800,
+      "tokenBAmount": 533,
+      "valueUSD": 3200.00,
+      "initialValueUSD": 2800.00,
+      "earnings": 400.00,
+      "share": 0.25,
+      "depositDate": "2024-10-28"
+    }
+  ],
+  "lpWithdrawing": [
+    {
+      "id": 1,
+      "poolId": "pool-2",
+      "tokenA": "CNPY",
+      "tokenB": "MGC",
+      "lpTokens": 50,
+      "tokenAAmount": 150,
+      "tokenBAmount": 300,
+      "valueUSD": 450.50,
+      "hoursRemaining": 12
+    }
+  ],
+  "lpEarningsHistory": [
+    {
+      "date": "Today",
+      "transactions": [
+        {
+          "id": "lp-earn-1",
+          "poolId": "pool-1",
+          "tokenB": "OENS",
+          "amount": 2.45,
+          "amountUSD": 5.49
+        },
+        {
+          "id": "lp-earn-2",
+          "poolId": "pool-8",
+          "tokenB": "GAME",
+          "amount": 1.20,
+          "amountUSD": 8.31
+        }
+      ]
+    },
+    {
+      "date": "Yesterday",
+      "transactions": [
+        {
+          "id": "lp-earn-3",
+          "poolId": "pool-1",
+          "tokenB": "OENS",
+          "amount": 2.38,
+          "amountUSD": 5.33
+        },
+        {
+          "id": "lp-earn-4",
+          "poolId": "pool-8",
+          "tokenB": "GAME",
+          "amount": 1.15,
+          "amountUSD": 7.96
+        },
+        {
+          "id": "lp-earn-5",
+          "poolId": "pool-3",
+          "tokenB": "SOCN",
+          "amount": 3.50,
+          "amountUSD": 7.35
+        }
+      ]
+    },
+    {
+      "date": "Dec 28, 2024",
+      "transactions": [
+        {
+          "id": "lp-earn-6",
+          "poolId": "pool-1",
+          "tokenB": "OENS",
+          "amount": 2.52,
+          "amountUSD": 5.65
+        },
+        {
+          "id": "lp-earn-7",
+          "poolId": "pool-8",
+          "tokenB": "GAME",
+          "amount": 1.28,
+          "amountUSD": 8.87
+        }
+      ]
+    }
   ]
   },
-  "nofunds@email.com": {
+  "0x742d35Cc6634C0532925a3b844Bc9e7595f00000": {
     "totalValue": 0,
     "change24h": 0,
     "assets": [],
     "stakes": [],
     "unstaking": [],
     "transactions": [],
-    "earningsHistory": []
+    "earningsHistory": [],
+    "lpPositions": [],
+    "lpWithdrawing": [],
+    "lpEarningsHistory": []
   }
 }

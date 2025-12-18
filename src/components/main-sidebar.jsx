@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Separator } from '@/components/ui/separator'
-import { Search, Plus, Zap, BarChart3, Activity, TrendingUp, User, Home, PieChart, Repeat, MoreHorizontal, Wallet as WalletIcon } from 'lucide-react'
+import { Search, Plus, Zap, BarChart3, Droplets, TrendingUp, Home, PieChart, Repeat, MoreHorizontal, Wallet as WalletIcon } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import LaunchOverviewDialog from './launch-overview-dialog'
 import CommandSearchDialog from './command-search-dialog'
-import WalletSheet from '../pages/wallet/components/wallet-sheet.jsx'
 import WalletConnectionDialog from './wallet-connection-dialog'
 import { useWallet } from '@/contexts/wallet-context'
 
@@ -13,12 +12,13 @@ export default function MainSidebar({ variant = 'default' }) {
   const location = useLocation()
   const [showDialog, setShowDialog] = useState(false)
   const [showCommandSearch, setShowCommandSearch] = useState(false)
-  const [showWalletSheet, setShowWalletSheet] = useState(false)
   const [showWalletConnection, setShowWalletConnection] = useState(false)
   const { isConnected, walletAddress, getTotalBalance, formatAddress } = useWallet()
 
   // Check if we're on the launchpad (home page)
   const isLaunchpad = location.pathname === '/'
+  const isTrade = location.pathname.startsWith('/trade')
+  const isLiquidity = location.pathname.startsWith('/liquidity')
 
   const handleStartLaunch = () => {
     setShowDialog(false)
@@ -100,25 +100,22 @@ export default function MainSidebar({ variant = 'default' }) {
                 <span className="text-[10px]">Explorer</span>
               </button>
               <button
-                onClick={() => {
-                  if (isConnected) {
-                    navigate('/wallet?tab=staking')
-                  } else {
-                    setShowWalletConnection(true)
-                  }
-                }}
-                className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+                onClick={() => navigate('/liquidity')}
+                className={`w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isLiquidity ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
               >
-                <Activity className="w-4 h-4" />
-                <span className="text-[10px]">Staking</span>
+                <Droplets className="w-4 h-4" />
+                <span className="text-[10px]">Liquidity</span>
               </button>
-              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button
+                onClick={() => navigate('/trade')}
+                className={`w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isTrade ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
+              >
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-[10px]">Trade</span>
-              </button>
-              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
-                <User className="w-4 h-4" />
-                <span className="text-[10px]">Profile</span>
               </button>
             </nav>
           </div>
@@ -127,7 +124,7 @@ export default function MainSidebar({ variant = 'default' }) {
           <div className="px-2">
             {isConnected ? (
               <button
-                onClick={() => setShowWalletSheet(true)}
+                onClick={() => navigate('/wallet')}
                 className="w-full h-11 rounded-xl bg-[#0e200e] border border-white/15 text-sm font-medium text-[#1dd13a] backdrop-blur transition-colors hover:bg-[#0e200e]/80 flex items-center justify-center"
               >
                 <WalletIcon className="w-5 h-5" />
@@ -154,11 +151,6 @@ export default function MainSidebar({ variant = 'default' }) {
           onOpenChange={setShowCommandSearch}
         />
 
-        <WalletSheet
-          open={showWalletSheet}
-          onOpenChange={setShowWalletSheet}
-        />
-
         <WalletConnectionDialog
           open={showWalletConnection}
           onOpenChange={setShowWalletConnection}
@@ -180,7 +172,7 @@ export default function MainSidebar({ variant = 'default' }) {
               <img
                 src="/svg/logo.svg"
                 alt="Canopy"
-                className="h-4 invert"
+                className="h-6"
               />
             </button>
 
@@ -230,25 +222,22 @@ export default function MainSidebar({ variant = 'default' }) {
                 <span>Explorer</span>
               </button>
               <button
-                onClick={() => {
-                  if (isConnected) {
-                    navigate('/wallet?tab=staking')
-                  } else {
-                    setShowWalletConnection(true)
-                  }
-                }}
-                className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors"
+                onClick={() => navigate('/liquidity')}
+                className={`w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isLiquidity ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
               >
-                <Activity className="w-4 h-4" />
-                <span>Staking</span>
+                <Droplets className="w-4 h-4" />
+                <span>Liquidity</span>
               </button>
-              <button className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <button
+                onClick={() => navigate('/trade')}
+                className={`w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white transition-colors ${
+                  isTrade ? 'bg-white/10 shadow-[0px_2px_3px_0px_rgba(0,0,0,0.1)]' : 'hover:bg-white/5'
+                }`}
+              >
                 <TrendingUp className="w-4 h-4" />
                 <span>Trade</span>
-              </button>
-              <button className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
-                <User className="w-4 h-4" />
-                <span>Profile</span>
               </button>
             </nav>
           </div>
@@ -258,7 +247,7 @@ export default function MainSidebar({ variant = 'default' }) {
           {/* Connect Wallet or Wallet Card */}
           {isConnected ? (
             <button
-              onClick={() => setShowWalletSheet(true)}
+              onClick={() => navigate('/wallet')}
               className="w-full rounded-xl bg-gradient-to-br from-neutral-900 to-neutral-700 p-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="flex items-start justify-between mb-2">
@@ -295,11 +284,6 @@ export default function MainSidebar({ variant = 'default' }) {
       <CommandSearchDialog
         open={showCommandSearch}
         onOpenChange={setShowCommandSearch}
-      />
-
-      <WalletSheet
-        open={showWalletSheet}
-        onOpenChange={setShowWalletSheet}
       />
 
       <WalletConnectionDialog

@@ -70,10 +70,10 @@ export default function BuyDialog({ open, onOpenChange, defaultTab = 'cnpy', ass
     if (buyType === 'cnpy-swap' && selectedSourceAsset) {
       // Converting chain token to CNPY
       const sourceUSDValue = amountNum * selectedSourceAsset.price
-      return sourceUSDValue / (cnpyAsset?.price || 1) - calculatedFee
+      return sourceUSDValue / (cnpyAsset?.price || 2) - calculatedFee
     } else if (buyType === 'chain-token' && selectedTargetAsset) {
       // Converting CNPY to chain token
-      const cnpyUSDValue = amountNum * (cnpyAsset?.price || 1)
+      const cnpyUSDValue = amountNum * (cnpyAsset?.price || 2)
       return cnpyUSDValue / selectedTargetAsset.price - calculatedFee
     }
     return amountNum - calculatedFee
@@ -89,7 +89,7 @@ export default function BuyDialog({ open, onOpenChange, defaultTab = 'cnpy', ass
     ? targetAmount * selectedTokenToBuy.price
     : (buyType === 'chain-token'
       ? targetAmount * (selectedTargetAsset?.price || 1)
-      : targetAmount * (cnpyAsset?.price || 1))
+      : targetAmount * (cnpyAsset?.price || 2))
 
   // Validate amount
   const validateAmount = () => {
@@ -174,7 +174,7 @@ export default function BuyDialog({ open, onOpenChange, defaultTab = 'cnpy', ass
     const asset = chainTokenAssets.find(a => a.id === parseInt(assetId))
     if (asset) {
       setSelectedSourceAsset(asset)
-      setExchangeRate(asset.price / (cnpyAsset?.price || 1))
+      setExchangeRate(asset.price / (cnpyAsset?.price || 2))
     }
   }
 
@@ -648,7 +648,7 @@ export default function BuyDialog({ open, onOpenChange, defaultTab = 'cnpy', ass
                       <span className="text-sm text-muted-foreground">Fee (0.5%)</span>
                       <div className="text-right">
                         <p className="text-sm font-medium">
-                          ${(calculatedFee * (buyType === 'chain-token' ? (cnpyAsset?.price || 1) : (selectedSourceAsset?.price || 1))).toFixed(4)}
+                          ${(calculatedFee * (buyType === 'chain-token' ? (cnpyAsset?.price || 2) : (selectedSourceAsset?.price || 1))).toFixed(4)}
                         </p>
                       </div>
                     </div>
@@ -839,7 +839,7 @@ export default function BuyDialog({ open, onOpenChange, defaultTab = 'cnpy', ass
       <WalletConnectionDialog
         open={walletDialogOpen}
         onOpenChange={setWalletDialogOpen}
-        initialStep={4}
+        initialStep={5}
       />
     </TooltipProvider>
   )

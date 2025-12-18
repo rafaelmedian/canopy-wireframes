@@ -1,31 +1,23 @@
 import { useState } from 'react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { X, Check, AlertCircle } from 'lucide-react'
 
 export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUnstakeSuccess }) {
   const [step, setStep] = useState(1)
-  const [amount, setAmount] = useState('')
 
   if (!selectedStake) return null
 
   const stakedAmount = selectedStake.amount || 0
-  const amountNum = parseFloat(amount) || 0
-  const amountUSD = amountNum * (selectedStake.price || 0)
+  const amountUSD = stakedAmount * (selectedStake.price || 0)
   const unstakingPeriod = 7 // 7 days unstaking period
 
-  const handleMaxClick = () => {
-    setAmount(stakedAmount.toString())
-  }
-
   const handleContinue = () => {
-    if (step === 1 && amountNum > 0) {
+    if (step === 1) {
       setStep(2)
     } else if (step === 2) {
       // Call the success handler before moving to step 3
-      onUnstakeSuccess && onUnstakeSuccess(selectedStake, amountNum)
+      onUnstakeSuccess && onUnstakeSuccess(selectedStake, stakedAmount)
       setStep(3)
     }
   }
@@ -38,7 +30,6 @@ export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUns
 
   const handleClose = () => {
     setStep(1)
-    setAmount('')
     onOpenChange(false)
   }
 
@@ -49,7 +40,7 @@ export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUns
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] p-0" hideClose noAnimation>
-        {/* Step 1: Unstake Form */}
+        {/* Step 1: Unstake Confirmation */}
         {step === 1 && (
           <>
             <div className="relative p-6 pb-4">
@@ -80,72 +71,27 @@ export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUns
                 </div>
               </div>
 
-              {/* Staked Amount Info */}
-              <div className="p-4 bg-muted/50 rounded-lg">
+              {/* Amount to Unstake */}
+              <div className="p-4 bg-muted/50 rounded-lg space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Currently Staked</span>
-                  <span className="font-medium">{stakedAmount} {selectedStake.symbol}</span>
+                  <span className="text-muted-foreground">Amount to Unstake</span>
+                  <span className="font-medium">{stakedAmount.toLocaleString()} {selectedStake.symbol}</span>
                 </div>
-              </div>
-
-              {/* Amount */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Amount to Unstake</Label>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 text-xs"
-                    onClick={handleMaxClick}
-                  >
-                    Max
-                  </Button>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Value</span>
+                  <span className="font-medium">${amountUSD.toFixed(2)} USD</span>
                 </div>
-                <div className="relative">
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="0"
-                    value={amount}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
-                        setAmount(value)
-                      }
-                    }}
-                    className="pr-16 text-lg"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                    {selectedStake.symbol}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  approx. ${amountUSD.toFixed(2)} USD
-                </p>
               </div>
 
               {/* Warning */}
               <div className="flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                 <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  {amountNum >= stakedAmount ? (
-                    <>
-                      <p className="text-sm font-medium text-yellow-500">Unstaking Period</p>
-                      <p className="text-xs text-muted-foreground">
-                        Your funds will be available after {unstakingPeriod} days. You will stop earning
-                        rewards immediately.
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-sm font-medium text-yellow-500">Partial Unstake</p>
-                      <p className="text-xs text-muted-foreground">
-                        Your remaining staked amount will continue earning rewards, but your rewards counter
-                        will reset to 0 as this creates a new staking position. Unstaked funds will be
-                        available after {unstakingPeriod} days.
-                      </p>
-                    </>
-                  )}
+                  <p className="text-sm font-medium text-yellow-500">Unstaking Period</p>
+                  <p className="text-xs text-muted-foreground">
+                    Your funds will be available after {unstakingPeriod} days. You will stop earning
+                    rewards immediately. Your entire staked position will be unstaked.
+                  </p>
                 </div>
               </div>
 
@@ -153,7 +99,6 @@ export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUns
               <Button
                 className="w-full h-12"
                 onClick={handleContinue}
-                disabled={!amountNum || amountNum <= 0 || amountNum > stakedAmount}
               >
                 Continue
               </Button>
@@ -208,7 +153,7 @@ export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUns
                   <div className="flex justify-between pt-2 border-t">
                     <span className="text-sm font-semibold">Total</span>
                     <div className="text-right">
-                      <p className="text-sm font-semibold">{amountNum} {selectedStake.symbol}</p>
+                      <p className="text-sm font-semibold">{stakedAmount.toLocaleString()} {selectedStake.symbol}</p>
                       <p className="text-xs text-muted-foreground">${amountUSD.toFixed(2)} USD</p>
                     </div>
                   </div>
@@ -267,7 +212,7 @@ export default function UnstakeDialog({ open, onOpenChange, selectedStake, onUns
                 <p className="text-center text-muted-foreground">
                   Your{' '}
                   <span className="font-semibold text-foreground">
-                    {amountNum} {selectedStake.symbol}
+                    {stakedAmount.toLocaleString()} {selectedStake.symbol}
                   </span>{' '}
                   will be available in {unstakingPeriod} days.
                 </p>

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "pool-1",
+    "tokenA": "CNPY",
+    "tokenB": "OENS",
+    "tokenAReserve": 50000,
+    "tokenBReserve": 100000,
+    "totalLiquidity": 70710.67,
+    "apr": 12.5,
+    "volume24h": 15000,
+    "fees24h": 45,
+    "verified": true
+  },
+  {
+    "id": "pool-2",
+    "tokenA": "CNPY",
+    "tokenB": "MGC",
+    "tokenAReserve": 75000,
+    "tokenBReserve": 150000,
+    "totalLiquidity": 106066,
+    "apr": 18.3,
+    "volume24h": 22000,
+    "fees24h": 66,
+    "verified": true
+  },
+  {
+    "id": "pool-3",
+    "tokenA": "CNPY",
+    "tokenB": "SOCN",
+    "tokenAReserve": 120000,
+    "tokenBReserve": 80000,
+    "totalLiquidity": 98039.22,
+    "apr": 25.7,
+    "volume24h": 35000,
+    "fees24h": 105,
+    "verified": true
+  },
+  {
+    "id": "pool-4",
+    "tokenA": "CNPY",
+    "tokenB": "DEFI",
+    "tokenAReserve": 30000,
+    "tokenBReserve": 45000,
+    "totalLiquidity": 36742.35,
+    "apr": 8.9,
+    "volume24h": 8500,
+    "fees24h": 25.5,
+    "verified": true
+  },
+  {
+    "id": "pool-5",
+    "tokenA": "CNPY",
+    "tokenB": "SVLT",
+    "tokenAReserve": 90000,
+    "tokenBReserve": 120000,
+    "totalLiquidity": 103923.05,
+    "apr": 15.2,
+    "volume24h": 18000,
+    "fees24h": 54,
+    "verified": true
+  },
+  {
+    "id": "pool-6",
+    "tokenA": "CNPY",
+    "tokenB": "HLTH",
+    "tokenAReserve": 45000,
+    "tokenBReserve": 67500,
+    "totalLiquidity": 55112.5,
+    "apr": 22.4,
+    "volume24h": 28000,
+    "fees24h": 84,
+    "verified": true
+  },
+  {
+    "id": "pool-7",
+    "tokenA": "CNPY",
+    "tokenB": "NFTX",
+    "tokenAReserve": 25000,
+    "tokenBReserve": 37500,
+    "totalLiquidity": 30618.62,
+    "apr": 31.2,
+    "volume24h": 42000,
+    "fees24h": 126,
+    "verified": false
+  },
+  {
+    "id": "pool-8",
+    "tokenA": "CNPY",
+    "tokenB": "GAME",
+    "tokenAReserve": 60000,
+    "tokenBReserve": 90000,
+    "totalLiquidity": 73484.69,
+    "apr": 14.8,
+    "volume24h": 16500,
+    "fees24h": 49.5,
+    "verified": true
+  },
+  {
+    "id": "pool-9",
+    "tokenA": "CNPY",
+    "tokenB": "GOVR",
+    "tokenAReserve": 15000,
+    "tokenBReserve": 22500,
+    "totalLiquidity": 18371.17,
+    "apr": 9.5,
+    "volume24h": 5200,
+    "fees24h": 15.6,
+    "verified": true
+  },
+  {
+    "id": "pool-10",
+    "tokenA": "CNPY",
+    "tokenB": "META",
+    "tokenAReserve": 85000,
+    "tokenBReserve": 127500,
+    "totalLiquidity": 104083.3,
+    "apr": 19.8,
+    "volume24h": 31000,
+    "fees24h": 93,
+    "verified": true
+  }
+]

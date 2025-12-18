@@ -6,58 +6,38 @@ import { Badge } from '@/components/ui/badge.jsx'
 import { Textarea } from '@/components/ui/textarea.jsx'
 import { Button } from '@/components/ui/button.jsx'
 import { toast } from 'sonner'
-import { AlertTriangle, Ban, Shield, FileWarning, TrendingDown, Scale } from 'lucide-react'
+import { AlertTriangle, Ban, Shield, FileWarning, TrendingDown, Scale, Info } from 'lucide-react'
 
 const reportReasons = {
   scam: {
     icon: Ban,
     label: 'Scam/Fraud',
     options: [
-      'Rug pull attempt',
-      'Fake/misleading project',
-      'Impersonation',
-      'Pump and dump scheme'
-    ]
-  },
-  inappropriate: {
-    icon: AlertTriangle,
-    label: 'Inappropriate Content',
-    options: [
-      'Offensive or hateful content',
-      'Adult/NSFW content',
-      'Violence or illegal activities',
-      'Harassment'
+      'Suspect team identities',
+      'Plagiarized whitepaper',
+      'Impersonating existing project',
+      'Pump and dump scheme indicators',
+      'Exit scam patterns'
     ]
   },
   security: {
     icon: Shield,
     label: 'Security Concerns',
     options: [
-      'Malicious code in repository',
-      'Contract vulnerabilities',
-      'Backdoors or admin keys abuse',
-      'Suspicious smart contract behavior'
+      'Malicious code',
+      'Known exploit vulnerabilities',
+      'Backdoors in code'
     ]
   },
   misleading: {
     icon: FileWarning,
     label: 'Misleading Information',
     options: [
-      'False claims or promises',
-      'Fake team/advisors',
-      'Plagiarized documentation',
-      'Fake partnerships'
-    ]
-  },
-  manipulation: {
-    icon: TrendingDown,
-    label: 'Market Manipulation',
-    options: [
-      'Wash trading',
-      'Price manipulation',
-      'Coordinated pump schemes',
-      'Fake volume',
-      'Other manipulation tactics'
+      'Exaggerated claims about partnerships',
+      'False technical capabilities',
+      'Unverifiable team credentials',
+      'Misleading tokenomics',
+      'Hidden fees or taxes'
     ]
   },
   legal: {
@@ -67,7 +47,35 @@ const reportReasons = {
       'Copyright infringement',
       'Trademark violation',
       'Using others\' IP without permission',
-      'Regulatory violations'
+      'Regulatory violations in specific jurisdictions'
+    ]
+  },
+  manipulation: {
+    icon: TrendingDown,
+    label: 'Market Manipulation',
+    options: [
+      'Wash trading indicators',
+      'Coordinated pump groups',
+      'Artificial volume generation',
+      'Sybil attack patterns'
+    ]
+  },
+  inappropriate: {
+    icon: AlertTriangle,
+    label: 'Inappropriate Content',
+    options: [
+      'NSFW content without warning',
+      'Offensive material',
+      'Spam/low effort project'
+    ]
+  },
+  technical: {
+    icon: Info,
+    label: 'Technical Concerns',
+    options: [
+      'No GitHub repository',
+      'Template not customized',
+      'Missing documentation'
     ]
   }
 }
@@ -112,9 +120,9 @@ export default function ReportProblemDialog({ open, onOpenChange, chainData }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Report {chainData?.name}</DialogTitle>
+          <DialogTitle>Flag {chainData?.name}</DialogTitle>
           <DialogDescription>
-            Help us keep the Canopy ecosystem safe by reporting chains that violate our policies.
+            Help us keep the Canopy ecosystem safe by flagging chains that violate our policies.
           </DialogDescription>
         </DialogHeader>
 
@@ -204,7 +212,7 @@ export default function ReportProblemDialog({ open, onOpenChange, chainData }) {
             onClick={handleSubmit}
             disabled={!mainReason || !specificReason || isSubmitting}
           >
-            {isSubmitting ? 'Submitting...' : 'Send Report'}
+            {isSubmitting ? 'Submitting...' : 'Submit Flag'}
           </Button>
         </div>
       </DialogContent>

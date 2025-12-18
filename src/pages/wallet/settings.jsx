@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MainSidebar from '@/components/main-sidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -13,12 +12,7 @@ import {
   Shield,
   Eye,
   Bell,
-  User,
-  Wallet,
-  Plus,
-  Trash2,
-  ChevronRight,
-  X
+  Wallet
 } from 'lucide-react'
 import { useWallet } from '@/contexts/wallet-context'
 import { toast } from 'sonner'
@@ -46,7 +40,7 @@ const DEFAULT_SETTINGS = {
 
 export default function WalletSettings() {
   const navigate = useNavigate()
-  const { walletAddress, formatAddress, currentUser } = useWallet()
+  const { formatAddress, evmAddress } = useWallet()
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
 
   // Track changes per section
@@ -54,46 +48,8 @@ export default function WalletSettings() {
   const [displayChanged, setDisplayChanged] = useState(false)
   const [notificationsChanged, setNotificationsChanged] = useState(false)
 
-  // External wallets state
-  const [externalWallets, setExternalWallets] = useState([])
-  const [showWalletSelect, setShowWalletSelect] = useState(false)
-
-  // Get email from currentUser or localStorage
-  const userEmail = currentUser?.email || localStorage.getItem('userEmail') || ''
-
-  // Load external wallets from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('externalWallets')
-    if (saved) {
-      setExternalWallets(JSON.parse(saved))
-    }
-  }, [])
-
-  const handleConnectExternalWallet = (provider) => {
-    // Simulate wallet connection
-    const mockWallet = {
-      id: Date.now(),
-      provider,
-      address: '0x' + Math.random().toString(16).substr(2, 40),
-      balances: {
-        ETH: 0.5,
-        USDC: 150.75
-      }
-    }
-
-    const updated = [...externalWallets, mockWallet]
-    setExternalWallets(updated)
-    localStorage.setItem('externalWallets', JSON.stringify(updated))
-    setShowWalletSelect(false)
-    toast.success(`${provider} wallet connected`)
-  }
-
-  const handleDisconnectExternalWallet = (walletId) => {
-    const updated = externalWallets.filter(w => w.id !== walletId)
-    setExternalWallets(updated)
-    localStorage.setItem('externalWallets', JSON.stringify(updated))
-    toast.success('Wallet disconnected')
-  }
+  // Get connected EVM provider from localStorage
+  const connectedEvmProvider = localStorage.getItem('evmProvider') || 'MetaMask'
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -145,58 +101,39 @@ export default function WalletSettings() {
             </p>
           </div>
 
-          {/* Connected Wallets */}
+          {/* Wallet Linked to */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Wallet className="w-5 h-5 text-primary" />
-                <CardTitle>Connected Wallets</CardTitle>
+                <CardTitle>Wallet Linked to</CardTitle>
               </div>
-              <CardDescription>
-                Manage your external wallets for funding
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {externalWallets.length > 0 ? (
-                <>
-                  {/* Connected External Wallets */}
-                  {externalWallets.map((wallet) => (
-                    <div key={wallet.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-lg ${
-                          wallet.provider === 'MetaMask' ? 'bg-orange-500' : 'bg-blue-500'
-                        } flex items-center justify-center flex-shrink-0`}>
-                          <Wallet className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-foreground">{wallet.provider}</div>
-                          <div className="text-sm text-muted-foreground font-mono">
-                            {formatAddress(wallet.address)}
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-red-500 hover:text-red-500 hover:bg-red-500/10"
-                        onClick={() => handleDisconnectExternalWallet(wallet.id)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Disconnect
-                      </Button>
+              {evmAddress ? (
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      connectedEvmProvider === 'MetaMask' ? 'bg-[#F5841F]' : 'bg-[#3B99FC]'
+                    }`}>
+                      <img
+                        src={connectedEvmProvider === 'MetaMask' ? '/svg/metamaskt.svg' : '/svg/walletconnect.svg'}
+                        alt={connectedEvmProvider}
+                        className="w-6 h-6"
+                      />
                     </div>
-                  ))}
-
-                  {/* Connect Additional Wallet */}
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setShowWalletSelect(true)}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Connect Another Wallet
-                  </Button>
-                </>
+                    <div>
+                      <div className="font-medium text-foreground">{connectedEvmProvider}</div>
+                      <div className="text-sm text-muted-foreground font-mono">
+                        {formatAddress(evmAddress)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-[#1dd13a]">
+                    <div className="w-2 h-2 rounded-full bg-[#1dd13a]" />
+                    Connected
+                  </div>
+                </div>
               ) : (
                 <div className="text-center py-8">
                   <div className="flex flex-col items-center gap-4">
@@ -204,15 +141,11 @@ export default function WalletSettings() {
                       <Wallet className="w-6 h-6 text-muted-foreground" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-semibold">No external wallets connected</h3>
+                      <h3 className="font-semibold">No wallet connected</h3>
                       <p className="text-sm text-muted-foreground">
-                        Connect wallets like MetaMask or WalletConnect to fund your account
+                        Connect your EVM wallet to use Canopy
                       </p>
                     </div>
-                    <Button onClick={() => setShowWalletSelect(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Connect Wallet
-                    </Button>
                   </div>
                 </div>
               )}
@@ -227,7 +160,7 @@ export default function WalletSettings() {
                 <CardTitle>Security & Privacy</CardTitle>
               </div>
               <CardDescription>
-                Configure security settings and privacy options
+                Configure security settings and privacy options for your Canopy wallet
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -315,10 +248,25 @@ export default function WalletSettings() {
                 <CardTitle>Display Preferences</CardTitle>
               </div>
               <CardDescription>
-                Customize how information is displayed
+                Customize how your Canopy wallet displays information
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="wallet-nickname">Wallet Nickname</Label>
+                <Input
+                  id="wallet-nickname"
+                  type="text"
+                  placeholder="e.g., Main Wallet, Trading, Savings"
+                  value={settings.walletNickname || ''}
+                  onChange={(e) => updateSetting('walletNickname', e.target.value, 'display')}
+                  maxLength={30}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Customize the name displayed for your current wallet
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label>Display Currency</Label>
                 <Select
@@ -404,7 +352,7 @@ export default function WalletSettings() {
                 <CardTitle>Notifications</CardTitle>
               </div>
               <CardDescription>
-                Configure alert preferences
+                Configure alert preferences for your Canopy wallet
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -471,106 +419,9 @@ export default function WalletSettings() {
             </CardContent>
           </Card>
 
-          {/* Account Information */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <User className="w-5 h-5 text-primary" />
-                <CardTitle>Account Information</CardTitle>
-              </div>
-              <CardDescription>
-                View your account details
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input
-                  value={userEmail}
-                  readOnly
-                  placeholder="user@example.com"
-                  className="bg-muted cursor-default"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Changing your email address is not allowed at the moment.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Wallet Address</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={formatAddress(walletAddress)}
-                    readOnly
-                    className="font-mono bg-muted cursor-default"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      navigator.clipboard.writeText(walletAddress)
-                      toast.success('Address copied')
-                    }}
-                  >
-                    Copy
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
-      {/* Wallet Selection Dialog */}
-      <Dialog open={showWalletSelect} onOpenChange={setShowWalletSelect}>
-        <DialogContent className="sm:max-w-[400px] p-0 gap-0" hideClose>
-          <div className="relative p-6 border-b">
-            <h3 className="text-xl font-bold">Select Wallet</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-2 rounded-full"
-              onClick={() => setShowWalletSelect(false)}
-            >
-              <X className="w-5 h-5" />
-            </Button>
-          </div>
-
-          <div className="p-6 space-y-3">
-            <button
-              onClick={() => handleConnectExternalWallet('MetaMask')}
-              className="w-full p-4 bg-muted hover:bg-muted/70 rounded-xl flex items-center justify-between transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center">
-                  <Wallet className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium">MetaMask</p>
-                  <p className="text-sm text-muted-foreground">EVM Compatible</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5" />
-            </button>
-
-            <button
-              onClick={() => handleConnectExternalWallet('WalletConnect')}
-              className="w-full p-4 bg-muted hover:bg-muted/70 rounded-xl flex items-center justify-between transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
-                  <Wallet className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium">WalletConnect</p>
-                  <p className="text-sm text-muted-foreground">Multi-chain</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

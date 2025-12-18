@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip.jsx'
-import { Upload, Star } from 'lucide-react'
+import { Upload, Star, Flag } from 'lucide-react'
 import { toast } from 'sonner'
 import { getCompletedMilestones } from '@/utils/milestones'
 
@@ -42,6 +42,29 @@ export default function ChainHeader({ chainData }) {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h2 className="text-base font-medium">{chainData.name}</h2>
+
+              {/* Flag Badge - Show if chain has flags */}
+              {chainData.flag && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center cursor-help">
+                        <Flag
+                          className={`w-4 h-4 ${
+                            chainData.flag.severity === 'critical' ? 'text-red-500 fill-red-500/20' :
+                            chainData.flag.severity === 'warning' ? 'text-yellow-500 fill-yellow-500/20' :
+                            'text-blue-500 fill-blue-500/20'
+                          }`}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="font-medium">{chainData.flag.reason}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{chainData.flag.count} community flag{chainData.flag.count !== 1 ? 's' : ''}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
 
               {/* Milestone Badges */}
               {completedMilestones.length > 0 && (

@@ -24,7 +24,7 @@ I met with Rafa to review the wallet progress. Implemented the chain wallet as s
 2. Enter email: `withfunds@email.com`
 3. Enter OTP: `1111`
 4. Wallet connects automatically and dialog closes
-5. Click wallet icon to open wallet sheet
+5. Click wallet icon to go to wallet page
 6. View assets, activity, and balance ($12,458.32)
 
 ### Test Flow - User without Funds
@@ -37,7 +37,7 @@ I met with Rafa to review the wallet progress. Implemented the chain wallet as s
 7. Verify seed phrase (select correct words)
 8. Wallet created - choose "Do It Later" or "Fund Wallet"
 9. Wallet connects with $0 balance
-10. View empty states in wallet sheet
+10. View empty states in wallet page
 
 ## Features Implemented ✅
 
@@ -53,15 +53,6 @@ I met with Rafa to review the wallet progress. Implemented the chain wallet as s
 - Wallet address generation
 - Optional funding flow
 - Seed phrase login option
-
-### Wallet Sheet (Sidebar)
-- Balance display with chevron (clickable → navigates to /wallet)
-- Top 5 assets display
-- Activity tab with transaction history
-- Empty states for no assets/activity
-- Action buttons: Swap, Buy, Send, Stake
-- Disconnect wallet functionality
-- Settings button
 
 ### Full Wallet Page (/wallet)
 - Complete assets list with tabs
@@ -125,7 +116,6 @@ src/
 │   └── wallet/
 │       ├── index.jsx                    # Main wallet page
 │       └── components/
-│           ├── wallet-sheet.jsx         # Sidebar wallet display
 │           ├── activity-tab.jsx         # Transaction history
 │           ├── assets-tab.jsx           # Assets display
 │           └── staking-tab.jsx          # Staking interface

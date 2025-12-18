@@ -1205,40 +1205,48 @@ Full-page view accessible via direct URL: `/block/[hash]`
 
 ---
 
-## 6. Report a Problem
+## 6. Flag Project
 
-Feature for users to report chains that violate platform policies.
+Flag-based system for users to flag chains that violate platform policies. Flagged chains continue to trade but display community warnings.
+
+**Flag Severity Levels:**
+- 🔴 **Critical (Red):** Scam/Fraud, Security Concerns
+- 🟡 **Warning (Yellow):** Misleading Information, Legal/Copyright Issues, Market Manipulation
+- 🔵 **Information (Blue):** Inappropriate Content, Technical Concerns
 
 **Access Point:**
-- "Report a Problem" button shown at bottom of chain detail pages
+- "Flag Project" button shown at bottom of chain detail pages
 - Hidden for draft chains
-- Opens dialog when clicked
+- Opens flag dialog when clicked
 
-**Report Dialog:**
+**Flag Dialog:**
 
 **Header:**
-- Title: "Report {Chain Name}"
-- Description: "Help us keep the Canopy ecosystem safe by reporting chains that violate our policies."
+- Title: "Flag {Chain Name}"
+- Description: "Help us keep the Canopy ecosystem safe by flagging chains that violate our policies."
 
 **Step 1: Choose Main Reason**
-- 6 category cards in 2-column grid:
-  1. Scam/Fraud
-  2. Inappropriate Content
-  3. Security Concerns
-  4. Misleading Information
-  5. Market Manipulation
-  6. Legal/Copyright Issues
+- 7 category cards in 2-column grid:
+  1. **Scam/Fraud** (Critical - Red)
+  2. **Security Concerns** (Critical - Red)
+  3. **Misleading Information** (Warning - Yellow)
+  4. **Legal/Copyright Issues** (Warning - Yellow)
+  5. **Market Manipulation** (Warning - Yellow)
+  6. **Inappropriate Content** (Info - Blue)
+  7. **Technical Concerns** (Info - Blue)
 - Radio selection, only one can be selected
+- Each category has an icon (Ban, Shield, FileWarning, Scale, TrendingDown, AlertTriangle, Info)
 
 **Step 2: Specify the Issue**
 - Shows after main reason selected
 - Each category has specific options:
-  - **Scam/Fraud:** Rug pull attempt, Fake/misleading project, Impersonation, Pump and dump scheme
-  - **Inappropriate Content:** Offensive or hateful content, Adult/NSFW content, Violence or illegal activities, Harassment
-  - **Security Concerns:** Malicious code in repository, Contract vulnerabilities, Backdoors or admin keys abuse, Suspicious smart contract behavior
-  - **Misleading Information:** False claims or promises, Fake team/advisors, Plagiarized documentation, Fake partnerships
-  - **Market Manipulation:** Wash trading, Price manipulation, Coordinated pump schemes, Fake volume, Other manipulation tactics
-  - **Legal/Copyright Issues:** Copyright infringement, Trademark violation, Using others' IP without permission, Regulatory violations
+  - **Scam/Fraud:** Suspect team identities, Plagiarized whitepaper, Impersonating existing project, Pump and dump scheme indicators, Exit scam patterns
+  - **Security Concerns:** Malicious code, Known exploit vulnerabilities, Backdoors in code
+  - **Misleading Information:** Exaggerated claims about partnerships, False technical capabilities, Unverifiable team credentials, Misleading tokenomics, Hidden fees or taxes
+  - **Legal/Copyright Issues:** Copyright infringement, Trademark violation, Using others' IP without permission, Regulatory violations in specific jurisdictions
+  - **Market Manipulation:** Wash trading indicators, Coordinated pump groups, Artificial volume generation, Sybil attack patterns
+  - **Inappropriate Content:** NSFW content without warning, Offensive material, Spam/low effort project
+  - **Technical Concerns:** No GitHub repository, Template not customized, Missing documentation
 - Radio selection list
 
 **Step 3: Additional Comments (Optional)**
@@ -1248,7 +1256,7 @@ Feature for users to report chains that violate platform policies.
 
 **Footer:**
 - Cancel button
-- "Send Report" button (disabled until main reason and specific reason selected)
+- "Submit Flag" button (disabled until main reason and specific reason selected)
 - Shows "Submitting..." state while sending
 
 **After Submission:**
@@ -1256,7 +1264,47 @@ Feature for users to report chains that violate platform policies.
 - Dialog closes
 - Form resets
 
-![Report dialog with category selection](public/imgs/report-dialog-category-selection.png)
+**Flag Display on Chain Pages:**
+
+**Chain Header Flag Icon:**
+- Small flag icon next to chain name (if flagged)
+- Icon color matches severity level (red/yellow/blue)
+- Hover tooltip shows:
+  - Flag reason
+  - Number of community flags (e.g., "12 community flags")
+
+**Overview Tab Warning Callout:**
+- Displayed at top of Overview tab (if flagged)
+- Card styling with colored border matching severity
+- Contains:
+  - Icon (AlertTriangle for critical, Flag for warning/info)
+  - "Community Warning" heading
+  - Flag count badge
+  - Main message: "This project has been flagged by the community for: {reason}"
+  - Divider
+  - Disclaimer with AlertTriangle icon: "Flags are community-driven warnings. This project continues to trade but proceed with caution. All flags are transparent and recorded on-chain."
+
+**Flag Data Structure:**
+```javascript
+{
+  severity: "critical", // critical, warning, info
+  reason: "Suspect team identities",
+  count: 12 // Number of flags
+}
+```
+
+**Demo Chains with Flags:**
+- MyGameChain (id: 2) - Blue flag: "No GitHub repository", 3 flags
+- Social Connect (id: 3) - Yellow flag: "Exaggerated claims about partnerships", 7 flags
+- StreamVault (id: 5) - Red flag: "Suspect team identities", 12 flags
+
+**Important Notes:**
+- Flags are warnings, not removals - chains continue to trade
+- All flags are transparent and recorded on-chain
+- Community-driven system
+- Flags are visible to all users
+
+![Flag dialog with category selection](public/imgs/flag-dialog-category-selection.png)
 
 ---
 
@@ -1300,10 +1348,9 @@ Cross-chain wallet system for managing assets, staking, and transactions across 
 The wallet implementation provides a complete solution for wallet creation, connection, funding, asset management, and staking functionality. It integrates with the launchpad and chain pages to enable seamless token transactions.
 
 **Access Points:**
-- Wallet icon in sidebar (globally accessible)
-- Opens wallet sheet (sidebar overlay)
+- Wallet icon in sidebar (globally accessible) - navigates to `/wallet` page
 - Dedicated `/wallet` page for full view
-- Buy buttons in wallet sheet and full wallet page open funding dialog
+- Buy buttons in wallet page open funding dialog
 
 ---
 
@@ -1565,92 +1612,9 @@ Global context providing wallet state and functions:
 
 ---
 
-### Wallet Sheet (Sidebar)
-
-**Access:** Click wallet icon in sidebar
-
-Side sheet overlay that shows wallet summary and quick actions.
-
-**Layout:**
-- Opens from left side
-- Full height
-- Width: `sm:max-w-[420px]`
-- Three sections: Header (fixed), Tabs (scrollable), Footer (fixed)
-
-**Header Section** (Fixed, non-scrollable):
-
-**Wallet Identity:**
-- Canopy logo avatar (green circle with "C")
-- Wallet address (formatted: "0x8626...1199")
-- Copy button (copies full address to clipboard)
-- Connection status: "Connected" in green text
-
-**Total Balance Display:**
-- Label: "Estimated Balance" with chevron icon
-- Clickable → Navigates to `/wallet` page
-- Large balance display: "$12,458.32" (formatted with 2 decimals)
-
-**Quick Action Buttons:**
-- 4-column grid layout
-- Each button shows icon + label:
-  1. **Swap:** Repeat icon, "Swap" label (no functionality)
-  2. **Buy:** Download icon, "Buy" label → Opens WalletConnectionDialog at step 4
-  3. **Send:** Send icon, "Send" label (no functionality)
-  4. **Stake:** Coins icon, "Stake" label → Opens StakeDialog
-
-**Tabs Section** (Scrollable):
-
-**Two tabs:** Balances, Activity
-
-**Balances Tab:**
-- Empty state (when no assets):
-  - Wallet icon in muted circle
-  - Heading: "No assets yet"
-  - Description: "Start your blockchain journey by creating or investing in chains on the launchpad."
-  - "Go to Launchpad" button → Navigates to `/`
-
-- With assets:
-  - Section header: "TOP ASSETS" with "VIEW ALL" link → Navigates to `/wallet`
-  - Shows top 5 assets only
-  - Each asset card (clickable):
-    - Token avatar (colored circle with symbol initial)
-    - Token name and symbol
-    - Balance: "{amount} {symbol}"
-    - Price: "${price}" (per token)
-    - Value: "${total value}" (balance × price)
-    - Click → Navigates to chain detail page
-
-**Activity Tab:**
-- Empty state (when no transactions):
-  - Activity icon in muted circle
-  - Heading: "No activity yet"
-  - Description: "Start your blockchain journey by creating or investing in chains on the launchpad."
-  - "Go to Launchpad" button → Navigates to `/`
-
-- With transactions:
-  - Shows ActivityTab component in compact mode
-  - No search or filters (compact=true)
-  - Click transaction → Opens TransactionDetailSheet
-
-**Footer Section** (Fixed, non-scrollable):
-
-Two buttons:
-1. **Wallet settings:** Ghost button with Settings icon (no functionality)
-2. **Disconnect wallet:** Ghost button with LogOut icon in red
-   - On click:
-     - Navigates to `/` (home)
-     - After 100ms delay, calls `disconnectWallet()`
-     - Clears all localStorage (walletAddress, isWalletConnected, userEmail, walletData)
-
-**Dialogs:**
-- StakeDialog: Opens when clicking Stake button or asset
-- WalletConnectionDialog: Opens when clicking Buy button (initialStep={4})
-
----
-
 ### Full Wallet Page
 
-**Live Example:** Click "Estimated Balance" in wallet sheet, or navigate to `/wallet`
+**Live Example:** Click wallet icon in sidebar, or navigate to `/wallet`
 
 Full-page wallet view with complete portfolio management.
 
@@ -2075,7 +2039,7 @@ Side sheet showing full transaction details:
 - Amount: With token symbol
 - Transaction Fee: With token symbol (or "< 0.001" if minimal)
 
-**Compact Mode** (used in wallet sheet):
+**Compact Mode** (deprecated - no longer used):
 - No table headers
 - No filter UI
 - Just transaction list
@@ -2451,7 +2415,6 @@ The following features from the wallet PRD are **not implemented**:
 **Main Components:**
 - `/src/components/wallet-connection-dialog.jsx` - 7-step wallet connection/creation flow
 - `/src/pages/wallet/index.jsx` - Full wallet page with tabs
-- `/src/pages/wallet/components/wallet-sheet.jsx` - Sidebar wallet overlay
 - `/src/contexts/wallet-context.jsx` - Global wallet state management
 
 **Wallet Page Components:**
@@ -2481,7 +2444,7 @@ The following features from the wallet PRD are **not implemented**:
 **Sidebar Integration:**
 - Wallet icon in MainSidebar
 - Shows balance when connected
-- Opens wallet sheet on click
+- Navigates to `/wallet` page on click
 
 **Launchpad Integration:**
 - Empty states link to launchpad

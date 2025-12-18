@@ -28,7 +28,7 @@ import CodeTab from '@/pages/chain-detail/components/code-tab'
 import HoldersTab from '@/pages/chain-detail/components/holders-tab'
 import BlockExplorerTab from '@/pages/chain-detail/components/block-explorer-tab'
 import MilestonesTab from '@/pages/chain-detail/components/milestones-tab'
-import TradingPanel from '@/pages/chain-detail/components/trading-panel'
+import TradingModule from '@/components/trading-module'
 import ReportProblemButton from '@/pages/chain-detail/components/report-problem-button'
 import DraftHoldersTab from '@/pages/chain-detail-draft/components/draft-holders-tab'
 import DraftBlockExplorerTab from '@/pages/chain-detail-draft/components/draft-block-explorer-tab'
@@ -256,7 +256,13 @@ export default function ChainDetail() {
               ) : chainData.isDraft ? (
                 <DraftProgressPanel chainData={chainData} />
               ) : (
-                <TradingPanel chainData={chainData} isOwner={isOwner} />
+                <TradingModule 
+                  variant="chain"
+                  chainData={chainData}
+                  defaultTokenPair={{ from: 'CNPY', to: chainData.ticker }}
+                  defaultTab="buy"
+                  isPreview={false}
+                />
               )}
             </div>
           </div>
