@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Separator } from '@/components/ui/separator'
-import { Search, Plus, Zap, BarChart3, Droplets, TrendingUp, User, Home, PieChart, Repeat, MoreHorizontal, Wallet as WalletIcon } from 'lucide-react'
+import { Search, Plus, Zap, BarChart3, Droplets, TrendingUp, Home, PieChart, Repeat, MoreHorizontal, Wallet as WalletIcon } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import LaunchOverviewDialog from './launch-overview-dialog'
 import CommandSearchDialog from './command-search-dialog'
@@ -116,10 +116,6 @@ export default function MainSidebar({ variant = 'default' }) {
               >
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-[10px]">Trade</span>
-              </button>
-              <button className="w-[57px] flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
-                <User className="w-4 h-4" />
-                <span className="text-[10px]">Profile</span>
               </button>
             </nav>
           </div>
@@ -242,10 +238,6 @@ export default function MainSidebar({ variant = 'default' }) {
               >
                 <TrendingUp className="w-4 h-4" />
                 <span>Trade</span>
-              </button>
-              <button className="w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
-                <User className="w-4 h-4" />
-                <span>Profile</span>
               </button>
             </nav>
           </div>
