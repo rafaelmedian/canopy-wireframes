@@ -213,17 +213,14 @@ export default function BuySellTab({
                   <p className="text-base font-semibold">{inputToken.symbol}</p>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <p className="text-sm text-muted-foreground">0 {inputToken.symbol}</p>
+                <button 
+                  onClick={handleUseMax}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
+                  0 {inputToken.symbol}
+                </button>
               </div>
             </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-7 text-xs"
-              onClick={handleUseMax}
-            >
-              Use max
-            </Button>
           </div>
 
           {/* Amount Input */}

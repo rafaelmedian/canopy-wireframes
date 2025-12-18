@@ -180,42 +180,42 @@ export default function SwapTab({
           <Card className="bg-muted/30 p-4 space-y-3">
             {/* Token Header */}
             <div className="flex items-center justify-between">
-              <button 
-                onClick={() => onSelectToken && onSelectToken('from')}
-                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-              >
+              <div className="flex items-center gap-3">
                 {/* Token Avatar */}
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: fromToken.brandColor || '#10b981' }}
+                <button
+                  onClick={() => onSelectToken && onSelectToken('from')}
+                  className="hover:opacity-80 transition-opacity"
                 >
-                  {fromToken.logo ? (
-                    <img src={fromToken.logo} alt={fromToken.symbol} className="w-full h-full rounded-full" />
-                  ) : (
-                    <span className="text-base font-bold text-white">
-                      {fromToken.symbol[0]}
-                    </span>
-                  )}
-                </div>
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: fromToken.brandColor || '#10b981' }}
+                  >
+                    {fromToken.logo ? (
+                      <img src={fromToken.logo} alt={fromToken.symbol} className="w-full h-full rounded-full" />
+                    ) : (
+                      <span className="text-base font-bold text-white">
+                        {fromToken.symbol[0]}
+                      </span>
+                    )}
+                  </div>
+                </button>
                 <div className="text-left">
-                  <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onSelectToken && onSelectToken('from')}
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  >
                     <p className="text-base font-semibold">{fromToken.symbol}</p>
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                  </button>
+                  <button 
+                    onClick={handleUseMax}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                  >
                     <Wallet className="w-3 h-3" />
                     {getTokenBalance(fromToken.symbol).toLocaleString()} {fromToken.symbol}
-                  </p>
+                  </button>
                 </div>
-              </button>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="h-7 text-xs"
-                onClick={handleUseMax}
-              >
-                Use max
-              </Button>
+              </div>
             </div>
 
             {/* Amount Input */}
@@ -297,42 +297,42 @@ export default function SwapTab({
         {toToken ? (
           <Card className="bg-muted/30 p-4">
             <div className="flex items-center justify-between">
-              <button 
-                onClick={() => onSelectToken && onSelectToken('to')}
-                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-              >
+              <div className="flex items-center gap-3">
                 {/* Token Avatar */}
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: toToken.brandColor || '#10b981' }}
+                <button
+                  onClick={() => onSelectToken && onSelectToken('to')}
+                  className="hover:opacity-80 transition-opacity"
                 >
-                  {toToken.logo ? (
-                    <img src={toToken.logo} alt={toToken.symbol} className="w-full h-full rounded-full" />
-                  ) : (
-                    <span className="text-base font-bold text-white">
-                      {toToken.symbol[0]}
-                    </span>
-                  )}
-                </div>
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: toToken.brandColor || '#10b981' }}
+                  >
+                    {toToken.logo ? (
+                      <img src={toToken.logo} alt={toToken.symbol} className="w-full h-full rounded-full" />
+                    ) : (
+                      <span className="text-base font-bold text-white">
+                        {toToken.symbol[0]}
+                      </span>
+                    )}
+                  </div>
+                </button>
                 <div className="text-left">
-                  <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onSelectToken && onSelectToken('to')}
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  >
                     <p className="text-base font-semibold">{toToken.symbol}</p>
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                  </button>
+                  <button 
+                    onClick={handleUseMaxOutput}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                  >
                     <Wallet className="w-3 h-3" />
                     {getTokenBalance(toToken.symbol).toLocaleString()} {toToken.symbol}
-                  </p>
+                  </button>
                 </div>
-              </button>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="h-7 text-xs"
-                onClick={handleUseMaxOutput}
-              >
-                Use max
-              </Button>
+              </div>
               <div className="text-right flex flex-col items-end">
                 <input
                   type="text"
