@@ -12,43 +12,212 @@ html, body, #root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  letter-spacing: -0.01em;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Aave Pro Light Theme - sRGB fallbacks */
+  /* Background layers */
+  --bg-max-light: #fff;
+  --bg-1-light: #fff;
+  --bg-2-light: #fff;
+  --bg-3-light: #fcfbfb;
+  --bg-4-light: #f6f5f5;
+  --bg-5-light: #f2efef;
+  --bg-6-light: #ece9e9;
+  /* Foreground hierarchy */
+  --fg-max-light: #000;
+  --fg-1-light: #201d1d;
+  --fg-2-light: #5a5858;
+  --fg-3-light: #8d8b8b;
+  --fg-4-light: #bcbbbb;
+  --fg-5-light: #cfcece;
+  /* Borders */
+  --border-0-light: rgba(46, 15, 15, 0.02);
+  --border-1-light: rgba(46, 15, 15, 0.04);
+  --border-2-light: rgba(46, 15, 15, 0.06);
+  /* Semantic colors */
+  --selected-light: rgba(46, 15, 15, 0.04);
+  --blue-1-light: #1a88f8;
+  --blue-2-light: #48abff;
+  --blue-3-light: #a9e7ff;
+  --yellow-1-light: #ffb200;
+  --yellow-2-light: #ffd631;
+  --yellow-3-light: #fff798;
+  --red-1-light: #f24900;
+  --red-2-light: #ff8947;
+  --red-3-light: #ffc693;
+  --purple-1-light: #9391f7;
+  --purple-2-light: #bcbbff;
+  --purple-3-light: #e2e0ff;
+  --green-1-light: #1f807b;
+  --green-2-light: #63bbb6;
+  --green-3-light: #9debe7;
+  --cyan-1-light: #6bcef5;
+  --cyan-2-light: #b5e7fa;
+  --cyan-3-light: #dff6ff;
+  --navy-1-light: #1c4886;
+  --navy-2-light: #6188c0;
+  --navy-3-light: #b0d3ff;
+  /* Data visualization colors */
+  --data-red-light: #ff383c;
+  --data-orange-light: #e2a48d;
+  --data-yellow-light: #e3da8d;
+  --data-lime-light: #c1e38d;
+  --data-green-light: #6dbc98;
+  --data-teal-light: #8de3cc;
+  --data-blue-light: #8dcfe3;
+  --data-purple-light: #bcbbff;
+  --data-pink-light: #e1a4d9;
+  /* Shadows */
+  --shadow-low-light: rgba(46, 15, 15, 0.01);
+  --shadow-medium-light: rgba(46, 15, 15, 0.05);
+  --shadow-high-light: rgba(46, 15, 15, 0.07);
+  --shadow-strong-light: rgba(46, 15, 15, 0.12);
+  --shadow-stroke-1-light: rgba(46, 15, 15, 0.08);
+  --shadow-stroke-2-light: rgba(46, 15, 15, 0.06);
+  /* Utility colors */
+  --ethereum-light: #25292e;
+  --focus-light: rgba(26, 136, 248, 0.2);
+  --scrim-light: hsla(0, 6%, 97%, 0.8);
+  /* Map to shadcn/Tailwind variables */
+  --background: var(--bg-1-light);
+  --foreground: var(--fg-1-light);
+  --card: var(--bg-2-light);
+  --card-foreground: var(--fg-1-light);
+  --popover: var(--bg-3-light);
+  --popover-foreground: var(--fg-1-light);
+  --primary: var(--fg-1-light);
+  --primary-foreground: var(--bg-1-light);
+  --secondary: var(--bg-4-light);
+  --secondary-foreground: var(--fg-1-light);
+  --muted: var(--bg-4-light);
+  --muted-foreground: var(--fg-3-light);
+  --accent: var(--bg-4-light);
+  --accent-foreground: var(--fg-1-light);
+  --destructive: var(--data-red-light);
+  --destructive-foreground: var(--fg-1-light);
+  --border: var(--border-1-light);
+  --input: var(--bg-5-light);
+  --ring: var(--fg-3-light);
+  --chart-1: var(--data-red-light);
+  --chart-2: var(--data-orange-light);
+  --chart-3: var(--data-yellow-light);
+  --chart-4: var(--data-green-light);
+  --chart-5: var(--data-blue-light);
+  --sidebar: var(--bg-max-light);
+  --sidebar-foreground: var(--fg-1-light);
+  --sidebar-primary: var(--fg-1-light);
+  --sidebar-primary-foreground: var(--bg-1-light);
+  --sidebar-accent: var(--bg-2-light);
+  --sidebar-accent-foreground: var(--fg-1-light);
+  --sidebar-border: var(--border-1-light);
+  --sidebar-ring: var(--fg-3-light);
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  :root {
+    /* Aave Pro Light Theme - Display P3 */
+    /* Background layers */
+    --bg-max-light: color(display-p3 1 1 1);
+    --bg-1-light: color(display-p3 1 1 1);
+    --bg-2-light: color(display-p3 1 1 1);
+    --bg-3-light: color(display-p3 0.9882352941 0.9843137255 0.9843137255);
+    --bg-4-light: color(display-p3 0.9647058824 0.9607843137 0.9607843137);
+    --bg-5-light: color(display-p3 0.9490196078 0.937254902 0.937254902);
+    --bg-6-light: color(display-p3 0.9254901961 0.9137254902 0.9137254902);
+    /* Foreground hierarchy */
+    --fg-max-light: color(display-p3 0 0 0);
+    --fg-1-light: color(display-p3 0.1254901961 0.1137254902 0.1137254902);
+    --fg-2-light: color(display-p3 0.3529411765 0.3450980392 0.3450980392);
+    --fg-3-light: color(display-p3 0.5529411765 0.5450980392 0.5450980392);
+    --fg-4-light: color(display-p3 0.737254902 0.7333333333 0.7333333333);
+    --fg-5-light: color(display-p3 0.8117647059 0.8078431373 0.8078431373);
+    /* Borders */
+    --border-0-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.02);
+    --border-1-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.04);
+    --border-2-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.06);
+    /* Semantic colors */
+    --selected-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.04);
+    --blue-1-light: color(display-p3 0.1019607843 0.5333333333 0.9725490196);
+    --blue-2-light: color(display-p3 0.2823529412 0.6705882353 1);
+    --blue-3-light: color(display-p3 0.662745098 0.9058823529 1);
+    --yellow-1-light: color(display-p3 1 0.6980392157 0);
+    --yellow-2-light: color(display-p3 1 0.8392156863 0.1921568627);
+    --yellow-3-light: color(display-p3 1 0.968627451 0.5960784314);
+    --red-1-light: color(display-p3 0.9490196078 0.2862745098 0);
+    --red-2-light: color(display-p3 1 0.537254902 0.2784313725);
+    --red-3-light: color(display-p3 1 0.7764705882 0.5764705882);
+    --purple-1-light: color(display-p3 0.5764705882 0.568627451 0.968627451);
+    --purple-2-light: color(display-p3 0.737254902 0.7333333333 1);
+    --purple-3-light: color(display-p3 0.8862745098 0.8784313725 1);
+    --green-1-light: color(display-p3 0.1215686275 0.5019607843 0.4823529412);
+    --green-2-light: color(display-p3 0.3882352941 0.7333333333 0.7137254902);
+    --green-3-light: color(display-p3 0.6156862745 0.9215686275 0.9058823529);
+    --cyan-1-light: color(display-p3 0.4196078431 0.8078431373 0.9607843137);
+    --cyan-2-light: color(display-p3 0.7098039216 0.9058823529 0.9803921569);
+    --cyan-3-light: color(display-p3 0.8745098039 0.9647058824 1);
+    --navy-1-light: color(display-p3 0.1098039216 0.2823529412 0.5254901961);
+    --navy-2-light: color(display-p3 0.3803921569 0.5333333333 0.7529411765);
+    --navy-3-light: color(display-p3 0.6901960784 0.8274509804 1);
+    /* Data visualization colors */
+    --data-red-light: color(display-p3 1 0.2196078431 0.2352941176);
+    --data-orange-light: color(display-p3 0.8862745098 0.6431372549 0.5529411765);
+    --data-yellow-light: color(display-p3 0.8901960784 0.8549019608 0.5529411765);
+    --data-lime-light: color(display-p3 0.7568627451 0.8901960784 0.5529411765);
+    --data-green-light: color(display-p3 0.4274509804 0.737254902 0.5960784314);
+    --data-teal-light: color(display-p3 0.5529411765 0.8901960784 0.8);
+    --data-blue-light: color(display-p3 0.5529411765 0.8117647059 0.8901960784);
+    --data-purple-light: color(display-p3 0.737254902 0.7333333333 1);
+    --data-pink-light: color(display-p3 0.8823529412 0.6431372549 0.8509803922);
+    /* Shadows */
+    --shadow-low-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.01);
+    --shadow-medium-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.05);
+    --shadow-high-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.07);
+    --shadow-strong-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.12);
+    --shadow-stroke-1-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.08);
+    --shadow-stroke-2-light: color(display-p3 0.1803921569 0.0588235294 0.0588235294 / 0.06);
+    /* Utility colors */
+    --ethereum-light: color(display-p3 0.1450980392 0.1607843137 0.1803921569);
+    --focus-light: color(display-p3 0.1019607843 0.5333333333 0.9725490196 / 0.2);
+    --scrim-light: color(display-p3 0.968627451 0.9647058824 0.9647058824 / 0.8);
+    /* Map to shadcn/Tailwind variables */
+    --background: var(--bg-1-light);
+    --foreground: var(--fg-1-light);
+    --card: var(--bg-2-light);
+    --card-foreground: var(--fg-1-light);
+    --popover: var(--bg-3-light);
+    --popover-foreground: var(--fg-1-light);
+    --primary: var(--fg-1-light);
+    --primary-foreground: var(--bg-1-light);
+    --secondary: var(--bg-4-light);
+    --secondary-foreground: var(--fg-1-light);
+    --muted: var(--bg-4-light);
+    --muted-foreground: var(--fg-3-light);
+    --accent: var(--bg-4-light);
+    --accent-foreground: var(--fg-1-light);
+    --destructive: var(--data-red-light);
+    --destructive-foreground: var(--fg-1-light);
+    --border: var(--border-1-light);
+    --input: var(--bg-5-light);
+    --ring: var(--fg-3-light);
+    --chart-1: var(--data-red-light);
+    --chart-2: var(--data-orange-light);
+    --chart-3: var(--data-yellow-light);
+    --chart-4: var(--data-green-light);
+    --chart-5: var(--data-blue-light);
+    --sidebar: var(--bg-max-light);
+    --sidebar-foreground: var(--fg-1-light);
+    --sidebar-primary: var(--fg-1-light);
+    --sidebar-primary-foreground: var(--bg-1-light);
+    --sidebar-accent: var(--bg-2-light);
+    --sidebar-accent-foreground: var(--fg-1-light);
+    --sidebar-border: var(--border-1-light);
+    --sidebar-ring: var(--fg-3-light);
+  }
 }
 
 @theme inline {
@@ -90,37 +259,191 @@ html, body, #root {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Aave Pro Dark Theme - sRGB fallbacks */
+  /* Background layers */
+  --bg-max: #0a0a0a;
+  --bg-1: #100f0f;
+  --bg-2: #1a1919;
+  --bg-3: #1f1e1e;
+  --bg-4: #2a2828;
+  --bg-5: #3b3737;
+  --bg-6: #4a4646;
+  /* Foreground hierarchy */
+  --fg-max: #fff;
+  --fg-1: #fff;
+  --fg-2: #bcbbbb;
+  --fg-3: #8f8e8e;
+  --fg-4: #636161;
+  --fg-5: #fff;
+  /* Borders */
+  --border-0: hsla(0, 0%, 100%, 0.06);
+  --border-1: hsla(0, 0%, 100%, 0.08);
+  --border-2: hsla(0, 0%, 100%, 0.12);
+  /* Semantic colors */
+  --selected: hsla(0, 0%, 100%, 0.06);
+  --blue-1: #008dff;
+  --blue-2: #00b1ff;
+  --blue-3: #79ecff;
+  --yellow-1: #ffbe00;
+  --yellow-2: #ffd200;
+  --yellow-3: #fff799;
+  --red-1: red;
+  --red-2: #ff7800;
+  --red-3: #ffc081;
+  --purple-1: #9391ff;
+  --purple-2: #bdbbff;
+  --purple-3: #e2e0ff;
+  --green-1: #00847d;
+  --green-2: #00c1b8;
+  --green-3: #53f1e9;
+  --cyan-1: #00d5fe;
+  --cyan-2: #93ebff;
+  --cyan-3: #d1f8ff;
+  --navy-1: #004b90;
+  --navy-2: #428bca;
+  --navy-3: #9ad6ff;
+  /* Data visualization colors */
+  --data-red: #d34d63;
+  --data-orange: #ff784d;
+  --data-yellow: #ffc100;
+  --data-lime: #ace674;
+  --data-green: #00c991;
+  --data-teal: #30dbf3;
+  --data-blue: #88d5ed;
+  --data-purple: #a5a3ff;
+  --data-pink: #f99ddf;
+  /* Shadows */
+  --shadow-low: rgba(0, 0, 0, 0.15);
+  --shadow-medium: rgba(0, 0, 0, 0.25);
+  --shadow-high: rgba(0, 0, 0, 0.35);
+  /* Map to shadcn/Tailwind variables */
+  --background: var(--bg-1);
+  --foreground: var(--fg-1);
+  --card: var(--bg-2);
+  --card-foreground: var(--fg-1);
+  --popover: var(--bg-3);
+  --popover-foreground: var(--fg-1);
+  --primary: var(--fg-1);
+  --primary-foreground: var(--bg-1);
+  --secondary: var(--bg-4);
+  --secondary-foreground: var(--fg-1);
+  --muted: var(--bg-4);
+  --muted-foreground: var(--fg-3);
+  --accent: var(--bg-4);
+  --accent-foreground: var(--fg-1);
+  --destructive: var(--data-red);
+  --destructive-foreground: var(--fg-1);
+  --border: var(--border-1);
+  --input: var(--bg-5);
+  --ring: var(--fg-3);
+  --chart-1: var(--data-red);
+  --chart-2: var(--data-orange);
+  --chart-3: var(--data-yellow);
+  --chart-4: var(--data-green);
+  --chart-5: var(--data-blue);
+  --sidebar: var(--bg-max);
+  --sidebar-foreground: var(--fg-1);
+  --sidebar-primary: var(--fg-1);
+  --sidebar-primary-foreground: var(--bg-1);
+  --sidebar-accent: var(--bg-2);
+  --sidebar-accent-foreground: var(--fg-1);
+  --sidebar-border: var(--border-1);
+  --sidebar-ring: var(--fg-3);
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  .dark {
+    /* Aave Pro Dark Theme - Display P3 */
+    /* Background layers */
+    --bg-max: color(display-p3 0.0392156863 0.0392156863 0.0392156863);
+    --bg-1: color(display-p3 0.062745098 0.0588235294 0.0588235294);
+    --bg-2: color(display-p3 0.1019607843 0.0980392157 0.0980392157);
+    --bg-3: color(display-p3 0.1215686275 0.1176470588 0.1176470588);
+    --bg-4: color(display-p3 0.1647058824 0.1568627451 0.1568627451);
+    --bg-5: color(display-p3 0.231372549 0.2156862745 0.2156862745);
+    --bg-6: color(display-p3 0.2901960784 0.2745098039 0.2745098039);
+    /* Foreground hierarchy */
+    --fg-max: color(display-p3 1 1 1);
+    --fg-1: color(display-p3 1 1 1);
+    --fg-2: color(display-p3 0.737254902 0.7333333333 0.7333333333);
+    --fg-3: color(display-p3 0.5607843137 0.5568627451 0.5568627451);
+    --fg-4: color(display-p3 0.3882352941 0.3803921569 0.3803921569);
+    --fg-5: color(display-p3 1 1 1);
+    /* Borders */
+    --border-0: color(display-p3 1 1 1 / 0.06);
+    --border-1: color(display-p3 1 1 1 / 0.08);
+    --border-2: color(display-p3 1 1 1 / 0.12);
+    /* Semantic colors */
+    --selected: color(display-p3 1 1 1 / 0.06);
+    --blue-1: color(display-p3 0 0.5529411765 1);
+    --blue-2: color(display-p3 0 0.6941176471 1);
+    --blue-3: color(display-p3 0.4745098039 0.9254901961 1);
+    --yellow-1: color(display-p3 1 0.7450980392 0);
+    --yellow-2: color(display-p3 1 0.8235294118 0);
+    --yellow-3: color(display-p3 1 0.968627451 0.6);
+    --red-1: color(display-p3 1 0 0);
+    --red-2: color(display-p3 1 0.4705882353 0);
+    --red-3: color(display-p3 1 0.7529411765 0.5058823529);
+    --purple-1: color(display-p3 0.5764705882 0.568627451 1);
+    --purple-2: color(display-p3 0.7411764706 0.7333333333 1);
+    --purple-3: color(display-p3 0.8862745098 0.8784313725 1);
+    --green-1: color(display-p3 0 0.5176470588 0.4901960784);
+    --green-2: color(display-p3 0 0.7568627451 0.7215686275);
+    --green-3: color(display-p3 0.3254901961 0.9450980392 0.9137254902);
+    --cyan-1: color(display-p3 0 0.8352941176 0.9960784314);
+    --cyan-2: color(display-p3 0.5764705882 0.9215686275 1);
+    --cyan-3: color(display-p3 0.8196078431 0.9725490196 1);
+    --navy-1: color(display-p3 0 0.2941176471 0.5647058824);
+    --navy-2: color(display-p3 0.2588235294 0.5450980392 0.7921568627);
+    --navy-3: color(display-p3 0.6039215686 0.8392156863 1);
+    /* Data visualization colors */
+    --data-red: color(display-p3 0.8274509804 0.3019607843 0.3882352941);
+    --data-orange: color(display-p3 1 0.4705882353 0.3019607843);
+    --data-yellow: color(display-p3 1 0.7568627451 0);
+    --data-lime: color(display-p3 0.6745098039 0.9019607843 0.4549019608);
+    --data-green: color(display-p3 0 0.7882352941 0.568627451);
+    --data-teal: color(display-p3 0.1882352941 0.8588235294 0.9529411765);
+    --data-blue: color(display-p3 0.5333333333 0.8352941176 0.9294117647);
+    --data-purple: color(display-p3 0.6470588235 0.6392156863 1);
+    --data-pink: color(display-p3 0.9764705882 0.6156862745 0.8745098039);
+    /* Shadows */
+    --shadow-low: color(display-p3 0 0 0 / 0.15);
+    --shadow-medium: color(display-p3 0 0 0 / 0.25);
+    --shadow-high: color(display-p3 0 0 0 / 0.35);
+    /* Map to shadcn/Tailwind variables */
+    --background: var(--bg-1);
+    --foreground: var(--fg-1);
+    --card: var(--bg-2);
+    --card-foreground: var(--fg-1);
+    --popover: var(--bg-3);
+    --popover-foreground: var(--fg-1);
+    --primary: var(--fg-1);
+    --primary-foreground: var(--bg-1);
+    --secondary: var(--bg-4);
+    --secondary-foreground: var(--fg-1);
+    --muted: var(--bg-4);
+    --muted-foreground: var(--fg-3);
+    --accent: var(--bg-4);
+    --accent-foreground: var(--fg-1);
+    --destructive: var(--data-red);
+    --destructive-foreground: var(--fg-1);
+    --border: var(--border-1);
+    --input: var(--bg-5);
+    --ring: var(--fg-3);
+    --chart-1: var(--data-red);
+    --chart-2: var(--data-orange);
+    --chart-3: var(--data-yellow);
+    --chart-4: var(--data-green);
+    --chart-5: var(--data-blue);
+    --sidebar: var(--bg-max);
+    --sidebar-foreground: var(--fg-1);
+    --sidebar-primary: var(--fg-1);
+    --sidebar-primary-foreground: var(--bg-1);
+    --sidebar-accent: var(--bg-2);
+    --sidebar-accent-foreground: var(--fg-1);
+    --sidebar-border: var(--border-1);
+    --sidebar-ring: var(--fg-3);
+  }
 }
 
 @layer base {
