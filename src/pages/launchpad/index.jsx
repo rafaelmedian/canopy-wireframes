@@ -4,6 +4,8 @@ import TopChainCarousel from './components/top-chain-carousel'
 import FilterBar from './components/filter-bar'
 import ChainCard from './components/chain-card'
 import ChainListItem from './components/chain-list-item'
+import { Button } from '@/components/ui/button'
+import { Share2 } from 'lucide-react'
 import { getAllChains } from '@/data/db'
 
 export default function Launchpad() {
@@ -74,15 +76,25 @@ export default function Launchpad() {
   return (
     <div className="flex min-h-screen bg-background">
       <MainSidebar />
-      <div className="flex-1 p-6 pt-4">
-        <div className="max-w-[1024px] mx-auto space-y-8">
-        {/* Top Chains Carousel */}
-        <div>
-          <h1 className="text-[16px] font-bold mb-6">Top Chains</h1>
-          <TopChainCarousel chains={TOP_CHAINS} />
-        </div>
+      
+      <div className="flex-1 flex flex-col">
+        {/* Header Navigation */}
+        <header className="border-b border-border sticky top-0 bg-background z-10">
+          <div className="flex items-center justify-between h-14 px-6">
+            <div className="flex items-center gap-3">
+              <h1 className="text-base font-semibold">Launchpad</h1>
+            </div>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Share2 className="w-4 h-4" />
+              Share
+            </Button>
+          </div>
+        </header>
 
-        {/* Filter Bar */}
+        {/* Main Content */}
+        <div className="flex-1 p-6 pt-4">
+          <div className="max-w-[1024px] mx-auto space-y-8">
+          {/* Filter Bar */}
         <FilterBar
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
@@ -131,7 +143,8 @@ export default function Launchpad() {
             </div>
           )}
         </div>
-      </div>
+          </div>
+        </div>
       </div>
     </div>
   )

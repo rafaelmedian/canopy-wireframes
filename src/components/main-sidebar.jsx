@@ -163,11 +163,11 @@ export default function MainSidebar({ variant = 'default' }) {
   return (
     <>
       <div className="w-60 border-r border-zinc-800 bg-card flex flex-col justify-between pb-7 h-screen sticky top-0">
-          <div className="space-y-4">
+          <div>
             {/* Logo */}
             <button
               onClick={() => navigate('/')}
-              className="px-8 pt-6 pb-2 w-full text-left hover:opacity-80 transition-opacity cursor-pointer"
+              className="px-8 h-14 w-full flex items-center hover:opacity-80 transition-opacity cursor-pointer"
             >
               <img
                 src="/svg/logo.svg"
@@ -180,7 +180,7 @@ export default function MainSidebar({ variant = 'default' }) {
             <Separator className="bg-zinc-800" />
 
             {/* Search and Create */}
-            <div className="px-4 space-y-3">
+            <div className="px-4 space-y-3 mt-4">
               <button
                 onClick={() => setShowCommandSearch(true)}
                 className="w-full h-9 flex items-center justify-between pl-4 pr-2 rounded-full bg-transparent text-sm text-white/50 hover:bg-white/5 transition-colors"
@@ -207,7 +207,7 @@ export default function MainSidebar({ variant = 'default' }) {
             <Separator className="bg-zinc-800" />
 
             {/* Navigation */}
-            <nav className="px-4 space-y-2">
+            <nav className="px-4 space-y-2 mt-4">
               <button
                 onClick={() => navigate('/')}
                 className={`w-full h-9 flex items-center gap-3 px-4 rounded-xl text-sm font-medium text-white transition-colors ${

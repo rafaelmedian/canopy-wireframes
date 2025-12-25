@@ -36,7 +36,7 @@ import DraftProgressPanel from '@/pages/chain-detail-draft/components/draft-prog
 import ReviewCountdownPanel from '@/pages/chain-detail-owner/components/review-countdown-panel'
 import LaunchSuccessBanner from '@/pages/chain-detail-owner/components/launch-success-banner'
 import { getChainDetailsBySlug } from '@/data/db'
-import { MoreVertical, Trash2 } from 'lucide-react'
+import { MoreVertical, Trash2, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function ChainDetail() {
@@ -134,40 +134,50 @@ export default function ChainDetail() {
       <MainSidebar />
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        {/* Top Bar */}
-        <div className="px-6 py-3 pt-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <button onClick={() => navigate('/')} className="hover:text-foreground">
-                Launchpad
-              </button>
-              <span>/</span>
-              <span className="text-foreground">{chainData.name}</span>
-              {getStatusBadge()}
+      <div className="flex-1 flex flex-col">
+        {/* Header Navigation */}
+        <header className="border-b border-border sticky top-0 bg-background z-10">
+          <div className="flex items-center justify-between h-14 px-6">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <button onClick={() => navigate('/')} className="hover:text-foreground">
+                  Launchpad
+                </button>
+                <span>/</span>
+                <span className="text-foreground">{chainData.name}</span>
+                {getStatusBadge()}
+              </div>
             </div>
-
-            {/* More Menu (only for draft chains owned by user) */}
-            {chainData.isDraft && isOwner && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    className="text-destructive focus:text-destructive cursor-pointer"
-                    onClick={() => setShowDeleteDialog(true)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete draft chain
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Share2 className="w-4 h-4" />
+                Share
+              </Button>
+              {/* More Menu (only for draft chains owned by user) */}
+              {chainData.isDraft && isOwner && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      className="text-destructive focus:text-destructive cursor-pointer"
+                      onClick={() => setShowDeleteDialog(true)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete draft chain
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           </div>
-        </div>
+        </header>
+
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
 
         <div className="max-w-7xl mx-auto px-6 py-6 pt-3">
           {/* Success Banner */}
@@ -266,6 +276,7 @@ export default function ChainDetail() {
               )}
             </div>
           </div>
+        </div>
         </div>
       </div>
 
